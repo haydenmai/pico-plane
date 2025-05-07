@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-// TODO: Only one object per pin
+// TODO: Only one instance per pin
 // TODO?: Use exceptions?
 
 /**

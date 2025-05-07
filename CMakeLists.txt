@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Initialise pico_sdk from installed location
@@ -25,26 +25,19 @@ endif()
 # ====================================================================================
 
 set(PICO_BOARD pico_w CACHE STRING "Board type")
+include(pico_sdk_import.cmake) # Pull in Raspberry Pi Pico SDK (must be before project)
+pico_sdk_init() # Initialise the Raspberry Pi Pico SDK
 
-# Pull in Raspberry Pi Pico SDK (must be before project)
-include(pico_sdk_import.cmake)
-
-# Setup Project
 project(pico_plane
 		DESCRIPTION "A controllable plane using the Raspberry Pi Pico W"
 		VERSION 	0.1
 		LANGUAGES 	C CXX ASM)
-
 set(APP_TARGET pico_plane)
 
 # Configure compiling options
+# Source: https://github.com/xiphonics/picoTracker/blob/master/sources/CMakeLists.txt
 set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 set(PICO_CXX_ENABLE_RTTI 1)
-
-# Initialise the Raspberry Pi Pico SDK
-pico_sdk_init()
-
-# From https://github.com/xiphonics/picoTracker/blob/master/sources/CMakeLists.txt
 add_compile_options(
   -Werror
   -Wall
