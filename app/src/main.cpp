@@ -2,8 +2,8 @@
  * @file main.cpp
  *
  * @author Hayden Mai
- * @brief Controls two servos using a joystick
- * @date May-01-2025
+ * @brief Controls an airplane and data
+ * @date May-06-2025
  */
 
 
