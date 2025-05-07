@@ -28,8 +28,14 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
-project(airplane C CXX ASM)
-set(APP_TARGET servo_control)
+
+# Setup Project
+project(pico_plane
+		DESCRIPTION "A controllable plane using the Raspberry Pi Pico W"
+		VERSION 	0.1
+		LANGUAGES 	C CXX ASM)
+
+set(APP_TARGET pico_plane)
 
 # Configure compiling options
 set(PICO_CXX_ENABLE_EXCEPTIONS 1)

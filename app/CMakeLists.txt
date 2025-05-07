@@ -3,10 +3,6 @@ include_directories(include)
 file(GLOB MY_SOURCES "src/*.cpp")
 add_executable(${APP_TARGET} ${MY_SOURCES})
 
-# Set program name and version (used by tools like picotool)
-pico_set_program_name(${APP_TARGET} "${APP_TARGET}")
-pico_set_program_version(${APP_TARGET} "0.1")
-
 # Link required libraries
 target_link_libraries(${APP_TARGET}
     PRIVATE hal						# Make use of the HAL library
@@ -14,6 +10,10 @@ target_link_libraries(${APP_TARGET}
     PRIVATE pico_cyw43_arch_none
 	PRIVATE hardware_adc
 )
+
+# Set program name and version (used by tools like picotool)
+pico_set_program_name(${APP_TARGET} "${APP_TARGET}")
+pico_set_program_version(${APP_TARGET} "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 # Debug output with USB uses +6K memory
