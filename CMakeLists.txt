@@ -23,44 +23,30 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
+
 set(PICO_BOARD pico_w CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
-
 project(airplane C CXX ASM)
+set(APP_TARGET servo_control)
 
+# Configure compiling options
 set(PICO_CXX_ENABLE_EXCEPTIONS 1)
-
 set(PICO_CXX_ENABLE_RTTI 1)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-# Add executable. Default name is the project name, version 0.1
-
-add_executable(airplane airplane.cpp )
-
-pico_set_program_name(airplane "airplane")
-pico_set_program_version(airplane "0.1")
-
-# Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(airplane 1)
-pico_enable_stdio_usb(airplane 0)
-
-# Add the standard library to the build
-target_link_libraries(airplane
-        pico_stdlib)
-
-# Add the standard include files to the build
-target_include_directories(airplane PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
+# From https://github.com/xiphonics/picoTracker/blob/master/sources/CMakeLists.txt
+add_compile_options(
+  -Werror
+  -Wall
+  -fstack-usage
+  -fcallgraph-info=su # include above info in callgraph
+  -Wstack-usage=2048  # allows high watermark at the time this option was added TODO: reduce this for safety and/or reduce stack size
 )
 
-# Add any user requested libraries
-target_link_libraries(airplane 
-        
-        )
-
-pico_add_extra_outputs(airplane)
-
+# Folders to build 
+add_subdirectory(hal)
+add_subdirectory(app)
