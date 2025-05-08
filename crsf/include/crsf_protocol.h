@@ -32,24 +32,23 @@
 
 #define CRSF_SYNC_BYTE 0XC8
 
-enum {
-    CRSF_FRAME_LENGTH_ADDRESS     = 1, // length of ADDRESS field
-    CRSF_FRAME_LENGTH_FRAMELENGTH = 1, // length of FRAMELENGTH field
-    CRSF_FRAME_LENGTH_TYPE        = 1, // length of TYPE field
-    CRSF_FRAME_LENGTH_CRC         = 1, // length of CRC field
-    CRSF_FRAME_LENGTH_TYPE_CRC    = 2, // length of TYPE and CRC fields combined
-    CRSF_FRAME_LENGTH_EXT_TYPE_CRC =
-        4, // length of Extended Dest/Origin, TYPE and CRC fields combined
-    CRSF_FRAME_LENGTH_NON_PAYLOAD = 4, // combined length of all fields except payload
+enum class eCRSF_frame_len : uint8_t {
+    ADDRESS      = 1, // length of ADDRESS field
+    FRAMELENGTH  = 1, // length of FRAMELENGTH field
+    TYPE         = 1, // length of TYPE field
+    CRC          = 1, // length of CRC field
+    TYPE_CRC     = 2, // length of TYPE and CRC fields combined
+    EXT_TYPE_CRC = 4, // length of Extended Dest/Origin,
+                      //   TYPE & CRC fields combined
+    NON_PAYLOAD = 4,  // combined length of all fields except payload
 };
 
-enum {
-    CRSF_FRAME_GPS_PAYLOAD_SIZE             = 15,
-    CRSF_FRAME_BATTERY_SENSOR_PAYLOAD_SIZE  = 8,
-    CRSF_FRAME_LINK_STATISTICS_PAYLOAD_SIZE = 10,
-    CRSF_FRAME_RC_CHANNELS_PAYLOAD_SIZE =
-        22, // 11 bits per channel * 16 channels = 22 bytes.
-    CRSF_FRAME_ATTITUDE_PAYLOAD_SIZE = 6,
+enum class eCRSF_frame_size : uint8_t {
+    GPS_PAYLOAD             = 15,
+    BATTERY_SENSOR_PAYLOAD  = 8,
+    LINK_STATISTICS_PAYLOAD = 10,
+    RC_CHANNELS_PAYLOAD     = 22, // 11 bits per channel * 16 channels = 22 bytes.
+    ATTITUDE_PAYLOAD        = 6,
 };
 
 enum class eCRSF_devAddr : uint8_t {
@@ -108,7 +107,23 @@ enum class eCRSF_frameType : uint8_t {
     MAVLINK_FC              = 0x1F,
     FLIGHT_MODE             = 0x21,
     ESP_NOW_MSGS            = 0x22,
-    RESERVED                = 0x27,
+};
+
+enum class eCRSF_frameType_ext : uint8_t {
+    DEVICE_PING               = 0x28,
+    DEVICE_INFO               = 0x29,
+    PARAM_SETTINGS_ENTRY      = 0x2B,
+    PARAM_SETTINGS_READ       = 0x2C,
+    PARAM_SETTINGS_WRITE      = 0x2D,
+    COMMAND                   = 0x32,
+    LOGGING                   = 0x34,
+    REMOTE_RELATED_FRAME      = 0x3A,
+    GAME                      = 0x3C,
+    MSP_REQUEST               = 0x7A,
+    MSP_RESPONSE              = 0x7B,
+    ARDUPILOT_PASSTHROUGH     = 0x80,
+    MAVLINK_EVENLOPE          = 0xAA,
+    MAVLINK_SYS_SENSOR_STATUS = 0xAC,
 };
 
 typedef struct crsf_header_s {
