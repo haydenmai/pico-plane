@@ -52,7 +52,7 @@ enum {
     CRSF_FRAME_ATTITUDE_PAYLOAD_SIZE = 6,
 };
 
-enum class eCRSF_addr : uint8_t {
+enum class eCRSF_devAddr : uint8_t {
     BROADCAST         = 0x00,
     CLOUD             = 0x0E,
     USB               = 0x10,
@@ -79,34 +79,36 @@ enum class eCRSF_addr : uint8_t {
     RACE_TAG          = 0xCC,
     VTX               = 0xCE,
     REMOTE_CTRL       = 0xEA,
-    CRSF_RECEIVER     = 0xEC,
-    CRSF_TRANSMITTER  = 0xEE,
+    CRSF_RX           = 0xEC,
+    CRSF_TX           = 0xEE,
     RESERVED_3        = 0xF0,
     RESERVED_4        = 0xF2,
 };
 
 enum class eCRSF_frameType : uint8_t {
-    GPS                = 0x02,
-    GPS_TIME           = 0x02,
-    BATTERY_SENSOR     = 0x08,
-    LINK_STATISTICS    = 0x14,
-    OPENTX_SYNC        = 0x10,
-    RADIO_ID           = 0x3A,
-    RC_CHANNELS_PACKED = 0x16,
-    ATTITUDE           = 0x1E,
-    FLIGHT_MODE        = 0x21,
-    // Extended Header Frames, range: 0x28 to 0x96
-    DEVICE_PING              = 0x28,
-    DEVICE_INFO              = 0x29,
-    PARAMETER_SETTINGS_ENTRY = 0x2B,
-    PARAMETER_READ           = 0x2C,
-    PARAMETER_WRITE          = 0x2D,
-    COMMAND                  = 0x32,
-    // MSP commands
-    MSP_REQ  = 0x7A, // response request using msp sequence as command
-    MSP_RESP = 0x7B, // reply with 58 byte chunked binary
-    MSP_WRITE =
-        0x7C, // write with 8 byte chunked binary (OpenTX outbound telemetry buffer limit)
+    GPS                     = 0x02,
+    GPS_TIME                = 0x03,
+    GPS_EXTENDED            = 0x06,
+    VARIOMETER_SENSOR       = 0x07,
+    BATTERY_SENSOR          = 0x08,
+    ALTITUDE_VERTICAL_SPEED = 0x09,
+    AIRSPEED                = 0x0A,
+    HEARTBEAT               = 0x0B,
+    RPM                     = 0x0C,
+    TEMP                    = 0x0D,
+    CELLS_SENSOR            = 0x0E,
+    VTX_TELEMETRY           = 0x10,
+    LINK_STATISTICS         = 0x14,
+    RC_CHANNELS_PAYLOAD     = 0x16,
+    SUBSET_RC_CHANNELS      = 0x17, // Discouraged
+    RC_CHANNELS_11_BITS     = 0x18, // Unused
+    LINK_STATISTIICS_RX     = 0x1C,
+    LINK_STATISTIICS_TX     = 0x1D,
+    ATTITUDE                = 0x1E, // Angle values within [-180, 180] degrees
+    MAVLINK_FC              = 0x1F,
+    FLIGHT_MODE             = 0x21,
+    ESP_NOW_MSGS            = 0x22,
+    RESERVED                = 0x27,
 };
 
 typedef struct crsf_header_s {
