@@ -52,61 +52,62 @@ enum {
     CRSF_FRAME_ATTITUDE_PAYLOAD_SIZE = 6,
 };
 
-enum crsf_addr_e : uint8_t {
-    CRSF_ADDRESS_BROADCAST         = 0x00,
-    CRSF_ADDRESS_CLOUD             = 0x0E,
-    CRSF_ADDRESS_USB               = 0x10,
-    CRSF_ADDRESS_BLE_WIFI          = 0x12,
-    CRSF_ADDRESS_WIFI_RX           = 0x13,
-    CRSF_ADDRESS_VIDEO_RX          = 0x14,
-    CRSF_ADDRESS_TBS_CORE_PNP_PRO  = 0x80,
-    CRSF_ADDRESS_ESC_1             = 0x90,
-    CRSF_ADDRESS_ESC_2             = 0x91,
-    CRSF_ADDRESS_ESC_3             = 0x92,
-    CRSF_ADDRESS_ESC_4             = 0x93,
-    CRSF_ADDRESS_ESC_5             = 0x94,
-    CRSF_ADDRESS_ESC_6             = 0x95,
-    CRSF_ADDRESS_ESC_7             = 0x96,
-    CRSF_ADDRESS_ESC_8             = 0x97,
-    CRSF_ADDRESS_RESERVED_1        = 0x8A,
-    CRSF_ADDRESS_CRSF_RESERVED_1   = 0xB0,
-    CRSF_ADDRESS_CRSF_RESERVED_2   = 0xB2,
-    CRSF_ADDRESS_CURRENT_SENSOR    = 0xC0,
-    CRSF_ADDRESS_GPS               = 0xC2,
-    CRSF_ADDRESS_TBS_BLACKBOX      = 0xC4,
-    CRSF_ADDRESS_FLIGHT_CONTROLLER = 0xC8,
-    CRSF_ADDRESS_RESERVED_2        = 0xCA,
-    CRSF_ADDRESS_RACE_TAG          = 0xCC,
-    CRSF_ADDRESS_VTX               = 0xCE,
-    CRSF_ADDRESS_REMOTE_CTRL       = 0xEA,
-    CRSF_ADDRESS_CRSF_RECEIVER     = 0xEC,
-    CRSF_ADDRESS_CRSF_TRANSMITTER  = 0xEE,
-    CRSF_ADDRESS_RESERVED_3        = 0xF0,
-    CRSF_ADDRESS_RESERVED_4        = 0xF2,
+enum class eCRSF_addr : uint8_t {
+    BROADCAST         = 0x00,
+    CLOUD             = 0x0E,
+    USB               = 0x10,
+    BLE_WIFI          = 0x12,
+    WIFI_RX           = 0x13,
+    VIDEO_RX          = 0x14,
+    TBS_CORE_PNP_PRO  = 0x80,
+    ESC_1             = 0x90,
+    ESC_2             = 0x91,
+    ESC_3             = 0x92,
+    ESC_4             = 0x93,
+    ESC_5             = 0x94,
+    ESC_6             = 0x95,
+    ESC_7             = 0x96,
+    ESC_8             = 0x97,
+    RESERVED_1        = 0x8A,
+    CRSF_RESERVED_1   = 0xB0,
+    CRSF_RESERVED_2   = 0xB2,
+    CURRENT_SENSOR    = 0xC0,
+    GPS               = 0xC2,
+    TBS_BLACKBOX      = 0xC4,
+    FLIGHT_CONTROLLER = 0xC8,
+    RESERVED_2        = 0xCA,
+    RACE_TAG          = 0xCC,
+    VTX               = 0xCE,
+    REMOTE_CTRL       = 0xEA,
+    CRSF_RECEIVER     = 0xEC,
+    CRSF_TRANSMITTER  = 0xEE,
+    RESERVED_3        = 0xF0,
+    RESERVED_4        = 0xF2,
 };
 
-typedef enum {
-    CRSF_FRAMETYPE_GPS                = 0x02,
-    CRSF_FRAMETYPE_BATTERY_SENSOR     = 0x08,
-    CRSF_FRAMETYPE_LINK_STATISTICS    = 0x14,
-    CRSF_FRAMETYPE_OPENTX_SYNC        = 0x10,
-    CRSF_FRAMETYPE_RADIO_ID           = 0x3A,
-    CRSF_FRAMETYPE_RC_CHANNELS_PACKED = 0x16,
-    CRSF_FRAMETYPE_ATTITUDE           = 0x1E,
-    CRSF_FRAMETYPE_FLIGHT_MODE        = 0x21,
+enum class eCRSF_frameType : uint8_t {
+    GPS                = 0x02,
+    GPS_TIME           = 0x02,
+    BATTERY_SENSOR     = 0x08,
+    LINK_STATISTICS    = 0x14,
+    OPENTX_SYNC        = 0x10,
+    RADIO_ID           = 0x3A,
+    RC_CHANNELS_PACKED = 0x16,
+    ATTITUDE           = 0x1E,
+    FLIGHT_MODE        = 0x21,
     // Extended Header Frames, range: 0x28 to 0x96
-    CRSF_FRAMETYPE_DEVICE_PING              = 0x28,
-    CRSF_FRAMETYPE_DEVICE_INFO              = 0x29,
-    CRSF_FRAMETYPE_PARAMETER_SETTINGS_ENTRY = 0x2B,
-    CRSF_FRAMETYPE_PARAMETER_READ           = 0x2C,
-    CRSF_FRAMETYPE_PARAMETER_WRITE          = 0x2D,
-    CRSF_FRAMETYPE_COMMAND                  = 0x32,
+    DEVICE_PING              = 0x28,
+    DEVICE_INFO              = 0x29,
+    PARAMETER_SETTINGS_ENTRY = 0x2B,
+    PARAMETER_READ           = 0x2C,
+    PARAMETER_WRITE          = 0x2D,
+    COMMAND                  = 0x32,
     // MSP commands
-    CRSF_FRAMETYPE_MSP_REQ  = 0x7A, // response request using msp sequence as command
-    CRSF_FRAMETYPE_MSP_RESP = 0x7B, // reply with 58 byte chunked binary
-    CRSF_FRAMETYPE_MSP_WRITE =
+    MSP_REQ  = 0x7A, // response request using msp sequence as command
+    MSP_RESP = 0x7B, // reply with 58 byte chunked binary
+    MSP_WRITE =
         0x7C, // write with 8 byte chunked binary (OpenTX outbound telemetry buffer limit)
-} crsf_frame_type_e;
+};
 
 typedef struct crsf_header_s {
     uint8_t sync_byte;  // CRSF_SYNC_BYTE
