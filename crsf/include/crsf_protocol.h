@@ -12,10 +12,6 @@
 
 #include <stdint.h>
 
-#if !defined(PACKED)
-#define PACKED __attribute__((packed))
-#endif
-
 #define CRSF_BAUDRATE           420000 // for receiver only
 #define CRSF_NUM_CHANNELS       16
 #define CRSF_CHANNEL_VALUE_MIN  172 // 987us - actual CRSF min is 0 with E.Limits on
@@ -33,22 +29,21 @@
 #define CRSF_SYNC_BYTE 0XC8
 
 enum class eCRSF_frame_len : uint8_t {
-    ADDRESS      = 1, // length of ADDRESS field
-    FRAMELENGTH  = 1, // length of FRAMELENGTH field
-    TYPE         = 1, // length of TYPE field
-    CRC          = 1, // length of CRC field
+    ADDRESS      = 1,
+    FRAMELENGTH  = 1,
+    TYPE         = 1, 
+    CRC          = 1, 
     TYPE_CRC     = 2, // length of TYPE and CRC fields combined
-    EXT_TYPE_CRC = 4, // length of Extended Dest/Origin,
-                      //   TYPE & CRC fields combined
-    NON_PAYLOAD = 4,  // combined length of all fields except payload
+    EXT_TYPE_CRC = 4, // length of Extended Dest/Origin, TYPE & CRC fields combined
+    NON_PAYLOAD  = 4, // combined length of all fields except payload
 };
 
-enum class eCRSF_frame_size : uint8_t {
-    GPS_PAYLOAD             = 15,
-    BATTERY_SENSOR_PAYLOAD  = 8,
-    LINK_STATISTICS_PAYLOAD = 10,
-    RC_CHANNELS_PAYLOAD     = 22, // 11 bits per channel * 16 channels = 22 bytes.
-    ATTITUDE_PAYLOAD        = 6,
+enum class eCRSF_frame_payload_size : size_t {
+    GPS             = 15,
+    BATTERY_SENSOR  = 8,
+    LINK_STATISTICS = 10,
+    RC_CHANNELS     = 22, // 11 bits per channel * 16 channels = 22 bytes.
+    ATTITUDE        = 6,
 };
 
 enum class eCRSF_devAddr : uint8_t {
@@ -126,15 +121,16 @@ enum class eCRSF_frameType_ext : uint8_t {
     MAVLINK_SYS_SENSOR_STATUS = 0xAC,
 };
 
-typedef struct crsf_header_s {
+#pragma pack(push, 1)
+struct crsf_header_s {
     uint8_t sync_byte;  // CRSF_SYNC_BYTE
     uint8_t frame_size; // counts size after this byte, so it must be the payload size + 2
                         // (type and crc)
     uint8_t type;       // from crsf_frame_type_e
     uint8_t data[0];
-} PACKED crsf_header_t;
+};
 
-typedef struct crsf_channels_s {
+struct crsf_channels_s {
     unsigned ch0 : 11;
     unsigned ch1 : 11;
     unsigned ch2 : 11;
@@ -151,36 +147,37 @@ typedef struct crsf_channels_s {
     unsigned ch13 : 11;
     unsigned ch14 : 11;
     unsigned ch15 : 11;
-} PACKED crsf_channels_t;
+};
 
-typedef struct crsfPayloadLinkstatistics_s {
-    int8_t uplink_RSSI_1;
-    int8_t uplink_RSSI_2;
+struct crsf_payloadLinkStatistics_s {
+    uint8_t uplink_RSSI_1;
+    uint8_t uplink_RSSI_2;
     uint8_t uplink_Link_quality;
     int8_t uplink_SNR;
     uint8_t active_antenna;
     uint8_t rf_Mode;
     uint8_t uplink_TX_Power;
-    int8_t downlink_RSSI;
+    uint8_t downlink_RSSI;
     uint8_t downlink_Link_quality;
     int8_t downlink_SNR;
-} crsfLinkStatistics_t;
+};
 
-typedef struct crsf_sensor_battery_s {
+struct crsf_sensor_battery_s {
     uint32_t voltage : 16;  // V * 10 big endian
     uint32_t current : 16;  // A * 10 big endian
     uint32_t capacity : 24; // mah big endian
     uint32_t remaining : 8; // %
-} PACKED crsf_sensor_battery_t;
+};
 
-typedef struct crsf_sensor_gps_s {
+struct crsf_sensor_gps_s {
     int32_t latitude;     // degree / 10,000,000 big endian
     int32_t longitude;    // degree / 10,000,000 big endian
     uint16_t groundspeed; // km/h / 10 big endian
     uint16_t heading;     // GPS heading, degree/100 big endian
     uint16_t altitude;    // meters, +1000m big endian
     uint8_t satellites;   // satellites
-} PACKED crsf_sensor_gps_t;
+};
+#pragma pack(pop)
 
 // crsf = (us - 1500) * 8/5 + 992
 #define US_to_CRSF(us) ((us) * 8 / 5 + (CRSF_CHANNEL_VALUE_MID - 2400))
