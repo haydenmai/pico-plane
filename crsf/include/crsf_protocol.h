@@ -163,10 +163,10 @@ struct crsf_payloadLinkStatistics_s {
 };
 
 struct crsf_sensor_battery_s {
-    uint32_t voltage : 16;  // V * 10 big endian
-    uint32_t current : 16;  // A * 10 big endian
+    uint16_t voltage;       // V * 10 big endian
+    uint16_t current;       // A * 10 big endian
     uint32_t capacity : 24; // mah big endian
-    uint32_t remaining : 8; // %
+    uint8_t remaining;      // %
 };
 
 struct crsf_sensor_gps_s {
