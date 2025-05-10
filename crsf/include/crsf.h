@@ -1,9 +1,21 @@
 /**
- * @file crsf_protocol.h
- * @brief Constants associated with frame types
+ * @file crsf.h
+ * @brief A class to decode CRSF protocol from a ELRS receiver.
  * @author Hayden Mai
- * @date May-07-2025
+ * @date May-09-2025
  *
  * @link https://github.com/tbs-fpv/tbs-crsf-spec/blob/main/crsf.md
- * @link https://github.com/CapnBry/CRServoF/blob/main/lib/CrsfSerial/crsf_protocol.h
  */
+
+#ifndef CRSF_H_
+#define CRSF_H_
+
+#include "crsf_protocol.h"
+
+class Crsf {
+	public:
+
+	private:
+};
+
+#endif

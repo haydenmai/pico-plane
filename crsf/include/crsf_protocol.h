@@ -1,14 +1,17 @@
 /**
  * @file crsf_protocol.h
  * @brief Constants & structs associated with frame types
+ * 
+ * This code is taken from CapnBry's crsf_protocol.h and is modified to better fit C++'s design.
  * @author Hayden Mai
- * @date May-07-2025
+ * @date May-09-2025
  *
  * @link https://github.com/tbs-fpv/tbs-crsf-spec/blob/main/crsf.md
  * @link https://github.com/CapnBry/CRServoF/blob/main/lib/CrsfSerial/crsf_protocol.h
  */
 
-#pragma once
+#ifndef CRSF_PROTOCOL_H_
+#define CRSF_PROTOCOL_H_
 
 #include <stdint.h>
 
@@ -223,3 +226,5 @@ inline static uint32_t be32toh(uint32_t val)
 #endif
 
 } // Namespace crsf
+
+#endif

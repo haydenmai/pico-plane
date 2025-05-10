@@ -17,7 +17,7 @@ pico_set_program_version(${APP_TARGET} "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 # Debug output with USB uses +6K memory
-pico_enable_stdio_uart(${APP_TARGET} 1)
+pico_enable_stdio_uart(${APP_TARGET} 0)
 pico_enable_stdio_usb(${APP_TARGET}  0)
 
 pico_set_float_implementation(${APP_TARGET} pico) 	# Default, but explicit declaration
