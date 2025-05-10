@@ -48,4 +48,5 @@ add_compile_options(
 
 # Folders to build 
 add_subdirectory(hal)
+add_subdirectory(crsf)
 add_subdirectory(app)

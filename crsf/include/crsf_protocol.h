@@ -1,8 +1,9 @@
 /**
  * @file crsf_protocol.h
  * @brief Constants & structs associated with frame types
- * 
- * This code is taken from CapnBry's crsf_protocol.h and is modified to better fit C++'s design.
+ *
+ * This code is taken from CapnBry's crsf_protocol.h and is modified to better fit C++'s
+ * design.
  * @author Hayden Mai
  * @date May-09-2025
  *
@@ -126,30 +127,30 @@ enum class eFrameType : uint8_t {
 };
 
 struct [[gnu::packed]] Header {
-    uint8_t sync_byte;  // SYNC_BYTE
-    uint8_t frame_size; // counts size after this byte, so it must be the payload size + 2
-                        // (type and crc)
+    uint8_t sync_byte;
+    uint8_t frame_len; // counts size after this byte, so it must be the payload size + 2
+                       // (type and crc)
     eFrameType type;
     uint8_t data[MAX_PAYLOAD_LEN];
 };
 
 struct [[gnu::packed]] Channels {
-    uint16_t ch0 : 11;
-    uint16_t ch1 : 11;
-    uint16_t ch2 : 11;
-    uint16_t ch3 : 11;
-    uint16_t ch4 : 11;
-    uint16_t ch5 : 11;
-    uint16_t ch6 : 11;
-    uint16_t ch7 : 11;
-    uint16_t ch8 : 11;
-    uint16_t ch9 : 11;
-    uint16_t ch10 : 11;
-    uint16_t ch11 : 11;
-    uint16_t ch12 : 11;
-    uint16_t ch13 : 11;
-    uint16_t ch14 : 11;
-    uint16_t ch15 : 11;
+    uint16_t ch1 : 11;  // Bit 00 - 10
+    uint16_t ch2 : 11;  // Bit 11 - 21
+    uint16_t ch3 : 11;  // Bit 22 - 32
+    uint16_t ch4 : 11;  // Bit 33 - 43
+    uint16_t ch5 : 11;  // Bit 44 - 54
+    uint16_t ch6 : 11;  // Bit 55 - 65
+    uint16_t ch7 : 11;  // Bit 66 - 76
+    uint16_t ch8 : 11;  // Bit 77 - 87
+    uint16_t ch9 : 11;  // Bit 88 - 98
+    uint16_t ch10 : 11;  // Bit 99 - 109
+    uint16_t ch11 : 11; // Bit 110 - 120
+    uint16_t ch12 : 11; // Bit 121 - 131
+    uint16_t ch13 : 11; // Bit 132 - 142
+    uint16_t ch14 : 11; // Bit 143 - 153
+    uint16_t ch15 : 11; // Bit 154 - 164
+    uint16_t ch16 : 11; // Bit 165 - 175
 };
 
 struct [[gnu::packed]] Payload_linkStatistics {
@@ -166,20 +167,20 @@ struct [[gnu::packed]] Payload_linkStatistics {
     int8_t down_snr;           // Downlink SNR (dB)
 };
 
-struct [[gnu::packed]] Sensor_battery {     // big endian
-    uint16_t voltage;       // V * 10
-    uint16_t current;       // A * 10
-    uint32_t capacity : 24; // mah
-    uint8_t remaining;      // %
+struct [[gnu::packed]] Sensor_battery { // big endian
+    uint16_t voltage;                   // V * 10
+    uint16_t current;                   // A * 10
+    uint32_t capacity : 24;             // mah
+    uint8_t remaining;                  // %
 };
 
-struct [[gnu::packed]] Sensor_gps {       // big endian
-    int32_t latitude;     // degree / 10,000,000
-    int32_t longitude;    // degree / 10,000,000
-    uint16_t groundspeed; // km/h / 10
-    uint16_t heading;     // GPS heading, degree/100
-    uint16_t altitude;    // meters, +1000m
-    uint8_t satellites;   // satellites
+struct [[gnu::packed]] Sensor_gps { // big endian
+    int32_t latitude;               // degree / 10,000,000
+    int32_t longitude;              // degree / 10,000,000
+    uint16_t groundspeed;           // km/h / 10
+    uint16_t heading;               // GPS heading, degree/100
+    uint16_t altitude;              // meters, +1000m
+    uint8_t satellites;             // satellites
 };
 
 // crsf = (us - 1500) * 8/5 + 992

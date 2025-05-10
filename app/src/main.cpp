@@ -16,6 +16,7 @@
 
 #include <iostream>
 
+
 int main()
 {
     stdio_init_all();
@@ -25,7 +26,7 @@ int main()
     // 1) Init UART0 @ 115200 baud for our “print” port
     uart_init(uart0, 115200);
     gpio_set_function(0, GPIO_FUNC_UART); // UART0 TX → GP0
-    gpio_set_function(1, GPIO_FUNC_UART); // UART0 RX → GP1  (not used here)
+    gpio_set_function(1, GPIO_FUNC_UART); // UART0 RX → GP1
 
     // UART Setup
     uart_init(uart1, 420000);
@@ -39,15 +40,17 @@ int main()
 
     while (true) {
         if (uart_is_readable(uart1)) {
-            uint8_t b = uart_getc(uart1);
-            uart_putc(uart0, b);
+            uint8_t sync_byte = uart_getc(uart1);
+            uart_putc(uart0, sync_byte);
         }
+
         /*
-            onboard_led.on();
-sleep_ms(100);
-onboard_led.off();
-sleep_ms(2000);
-        */
+                // TODO: LED using interrupts
+                onboard_led.on();
+                sleep_ms(100);
+                onboard_led.off();
+                sleep_ms(2000);
+                */
     }
 
     stdio_deinit_all();
