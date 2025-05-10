@@ -12,33 +12,35 @@
 
 #include <stdint.h>
 
-#define CRSF_BAUDRATE           420000 // for receiver only
-#define CRSF_NUM_CHANNELS       16
-#define CRSF_CHANNEL_VALUE_MIN  172 // 987us - actual CRSF min is 0 with E.Limits on
-#define CRSF_CHANNEL_VALUE_1000 191
-#define CRSF_CHANNEL_VALUE_MID  992
-#define CRSF_CHANNEL_VALUE_2000 1792
-#define CRSF_CHANNEL_VALUE_MAX  1811 // 2012us - actual CRSF max is 1984 with E.Limits on
-#define CRSF_CHANNEL_VALUE_SPAN (CRSF_CHANNEL_VALUE_MAX - CRSF_CHANNEL_VALUE_MIN)
-#define CRSF_ELIMIT_US_MIN      891  // microseconds for CRSF=0 (E.Limits=ON)
-#define CRSF_ELIMIT_US_MAX      2119 // microseconds for CRSF=1984
-#define CRSF_MAX_PACKET_SIZE    64 // max declared len is 62+DEST+LEN on top of that = 64
-#define CRSF_MAX_PAYLOAD_LEN    (CRSF_MAX_PACKET_SIZE - 4) // [dest|len|type|payload|crc8]
-#define CRSF_BITS_PER_CHANNEL   11
+namespace crsf {
 
-#define CRSF_SYNC_BYTE 0XC8
+#define BAUDRATE           420000 // for receiver only
+#define NUM_CHANNELS       16
+#define CHANNEL_VALUE_MIN  172 // 987us - actual CRSF min is 0 with E.Limits on
+#define CHANNEL_VALUE_1000 191
+#define CHANNEL_VALUE_MID  992
+#define CHANNEL_VALUE_2000 1792
+#define CHANNEL_VALUE_MAX  1811 // 2012us - actual CRSF max is 1984 with E.Limits on
+#define CHANNEL_VALUE_SPAN (CHANNEL_VALUE_MAX - CHANNEL_VALUE_MIN)
+#define ELIMIT_US_MIN      891  // microseconds for CRSF=0 (E.Limits=ON)
+#define ELIMIT_US_MAX      2119 // microseconds for CRSF=1984
+#define MAX_PACKET_SIZE    64   // max declared len is 62+DEST+LEN on top of that = 64
+#define MAX_PAYLOAD_LEN    (MAX_PACKET_SIZE - 4) // [dest|len|type|payload|crc8]
+#define BITS_PER_CHANNEL   11
 
-enum class eCRSF_frame_len : uint8_t {
+#define SYNC_BYTE 0XC8
+
+enum class eFrame_len : uint8_t {
     ADDRESS      = 1,
     FRAMELENGTH  = 1,
-    TYPE         = 1, 
-    CRC          = 1, 
+    TYPE         = 1,
+    CRC          = 1,
     TYPE_CRC     = 2, // length of TYPE and CRC fields combined
     EXT_TYPE_CRC = 4, // length of Extended Dest/Origin, TYPE & CRC fields combined
     NON_PAYLOAD  = 4, // combined length of all fields except payload
 };
 
-enum class eCRSF_frame_payload_size : size_t {
+enum class eFramePayload_size : size_t {
     GPS             = 15,
     BATTERY_SENSOR  = 8,
     LINK_STATISTICS = 10,
@@ -46,7 +48,7 @@ enum class eCRSF_frame_payload_size : size_t {
     ATTITUDE        = 6,
 };
 
-enum class eCRSF_devAddr : uint8_t {
+enum class eDevice_addr : uint8_t {
     BROADCAST         = 0x00,
     CLOUD             = 0x0E,
     USB               = 0x10,
@@ -79,7 +81,7 @@ enum class eCRSF_devAddr : uint8_t {
     RESERVED_4        = 0xF2,
 };
 
-enum class eCRSF_frameType : uint8_t {
+enum class eFrameType : uint8_t {
     GPS                     = 0x02,
     GPS_TIME                = 0x03,
     GPS_EXTENDED            = 0x06,
@@ -102,9 +104,8 @@ enum class eCRSF_frameType : uint8_t {
     MAVLINK_FC              = 0x1F,
     FLIGHT_MODE             = 0x21,
     ESP_NOW_MSGS            = 0x22,
-};
 
-enum class eCRSF_frameType_ext : uint8_t {
+    // Extended Frame Types
     DEVICE_PING               = 0x28,
     DEVICE_INFO               = 0x29,
     PARAM_SETTINGS_ENTRY      = 0x2B,
@@ -122,65 +123,66 @@ enum class eCRSF_frameType_ext : uint8_t {
 };
 
 #pragma pack(push, 1)
-struct crsf_header_s {
-    uint8_t sync_byte;  // CRSF_SYNC_BYTE
+struct Header {
+    uint8_t sync_byte;  // SYNC_BYTE
     uint8_t frame_size; // counts size after this byte, so it must be the payload size + 2
                         // (type and crc)
-    uint8_t type;       // from crsf_frame_type_e
-    uint8_t data[0];
+    eFrameType type;
+    uint8_t data[MAX_PAYLOAD_LEN];
 };
 
-struct crsf_channels_s {
-    unsigned ch0 : 11;
-    unsigned ch1 : 11;
-    unsigned ch2 : 11;
-    unsigned ch3 : 11;
-    unsigned ch4 : 11;
-    unsigned ch5 : 11;
-    unsigned ch6 : 11;
-    unsigned ch7 : 11;
-    unsigned ch8 : 11;
-    unsigned ch9 : 11;
-    unsigned ch10 : 11;
-    unsigned ch11 : 11;
-    unsigned ch12 : 11;
-    unsigned ch13 : 11;
-    unsigned ch14 : 11;
-    unsigned ch15 : 11;
+struct Channels {
+    uint16_t ch0 : 11;
+    uint16_t ch1 : 11;
+    uint16_t ch2 : 11;
+    uint16_t ch3 : 11;
+    uint16_t ch4 : 11;
+    uint16_t ch5 : 11;
+    uint16_t ch6 : 11;
+    uint16_t ch7 : 11;
+    uint16_t ch8 : 11;
+    uint16_t ch9 : 11;
+    uint16_t ch10 : 11;
+    uint16_t ch11 : 11;
+    uint16_t ch12 : 11;
+    uint16_t ch13 : 11;
+    uint16_t ch14 : 11;
+    uint16_t ch15 : 11;
 };
 
-struct crsf_payloadLinkStatistics_s {
-    uint8_t uplink_RSSI_1;
-    uint8_t uplink_RSSI_2;
-    uint8_t uplink_Link_quality;
-    int8_t uplink_SNR;
-    uint8_t active_antenna;
-    uint8_t rf_Mode;
-    uint8_t uplink_TX_Power;
-    uint8_t downlink_RSSI;
-    uint8_t downlink_Link_quality;
-    int8_t downlink_SNR;
+struct Payload_linkStatistics {
+    uint8_t up_rssi_ant1;    // Uplink RSSI Antenna 1 (dBm * -1)
+    uint8_t up_rssi_ant2;    // Uplink RSSI Antenna 2 (dBm * -1)
+    uint8_t up_link_quality; // Uplink Package success rate / Link quality (%)
+    int8_t up_snr;           // Uplink SNR (dB)
+    uint8_t active_antenna;  // number of currently best antenna
+    uint8_t rf_profile;      // RF Mode - enum {4fps = 0 , 50fps, 150fps}
+    uint8_t up_rf_power;     // Uplink TX Power - enum {0mW = 0, 10mW, 25mW, 100mW, 500mW,
+                             // 1000mW, 2000mW, 250mW, 50mW}
+    uint8_t down_rssi;       // Downlink RSSI (dBm * -1)
+    uint8_t down_link_quality; // Downlink Package success rate / Link quality (%)
+    int8_t down_snr;           // Downlink SNR (dB)
 };
 
-struct crsf_sensor_battery_s {
-    uint16_t voltage;       // V * 10 big endian
-    uint16_t current;       // A * 10 big endian
-    uint32_t capacity : 24; // mah big endian
+struct Sensor_battery {     // big endian
+    uint16_t voltage;       // V * 10
+    uint16_t current;       // A * 10
+    uint32_t capacity : 24; // mah
     uint8_t remaining;      // %
 };
 
-struct crsf_sensor_gps_s {
-    int32_t latitude;     // degree / 10,000,000 big endian
-    int32_t longitude;    // degree / 10,000,000 big endian
-    uint16_t groundspeed; // km/h / 10 big endian
-    uint16_t heading;     // GPS heading, degree/100 big endian
-    uint16_t altitude;    // meters, +1000m big endian
+struct Sensor_gps {       // big endian
+    int32_t latitude;     // degree / 10,000,000
+    int32_t longitude;    // degree / 10,000,000
+    uint16_t groundspeed; // km/h / 10
+    uint16_t heading;     // GPS heading, degree/100
+    uint16_t altitude;    // meters, +1000m
     uint8_t satellites;   // satellites
 };
 #pragma pack(pop)
 
 // crsf = (us - 1500) * 8/5 + 992
-#define US_to_CRSF(us) ((us) * 8 / 5 + (CRSF_CHANNEL_VALUE_MID - 2400))
+#define US_to_CRSF(us) ((us) * 8 / 5 + (CHANNEL_VALUE_MID - 2400))
 // us = (crsf - 992) * 5/8 + 1500
 #define CRSF_to_US(crsf) ((crsf) * 5 / 8 + (1500 - 620))
 
@@ -221,3 +223,5 @@ inline static uint32_t be32toh(uint32_t val)
 #endif
 }
 #endif
+
+} // Namespace crsf
