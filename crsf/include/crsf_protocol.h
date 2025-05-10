@@ -1,12 +1,13 @@
 /**
  * @file crsf_protocol.h
+ * @author Hayden Mai
+ * @date May-09-2025
  * @brief Constants & structs associated with frame types
  *
  * This code is taken from CapnBry's crsf_protocol.h and is modified to better fit C++'s
  * design.
- * @author Hayden Mai
- * @date May-09-2025
  *
+ * @note: Data received is big endian
  * @link https://github.com/tbs-fpv/tbs-crsf-spec/blob/main/crsf.md
  * @link https://github.com/CapnBry/CRServoF/blob/main/lib/CrsfSerial/crsf_protocol.h
  */
@@ -18,19 +19,28 @@
 
 namespace crsf {
 
-#define BAUDRATE           420000 // for receiver only
-#define NUM_CHANNELS       16
+#define BAUDRATE 420000 // for receiver
+
+// Channel properties
+#define NUM_CHANNELS     16
+#define BITS_PER_CHANNEL 11
+
+// The values are CRSF channel values (0-1984). CRSF 172 represents 988us, CRSF 992
+// 	represents 1500us, and CRSF 1811 represents 2012us.
 #define CHANNEL_VALUE_MIN  172 // 987us - actual CRSF min is 0 with E.Limits on
 #define CHANNEL_VALUE_1000 191
 #define CHANNEL_VALUE_MID  992
 #define CHANNEL_VALUE_2000 1792
 #define CHANNEL_VALUE_MAX  1811 // 2012us - actual CRSF max is 1984 with E.Limits on
 #define CHANNEL_VALUE_SPAN (CHANNEL_VALUE_MAX - CHANNEL_VALUE_MIN)
-#define ELIMIT_US_MIN      891  // microseconds for CRSF=0 (E.Limits=ON)
-#define ELIMIT_US_MAX      2119 // microseconds for CRSF=1984
-#define MAX_PACKET_SIZE    64   // max declared len is 62+DEST+LEN on top of that = 64
-#define MAX_PAYLOAD_LEN    (MAX_PACKET_SIZE - 4) // [dest|len|type|payload|crc8]
-#define BITS_PER_CHANNEL   11
+#define TICKS_TO_US(ticks) ((ticks - 992) * 5 / 8 + 1500)
+#define US_TO_TICKS(us)    ((us - 1500) * 8 / 5 + 992)
+
+#define ELIMIT_US_MIN 891  // microseconds for CRSF=0 (E.Limits=ON)
+#define ELIMIT_US_MAX 2119 // microseconds for CRSF=1984
+
+#define MAX_PACKET_SIZE 64 // max declared len is 62+DEST+LEN on top of that = 64
+#define MAX_PAYLOAD_LEN (MAX_PACKET_SIZE - 4) // [dest|len|type|payload|crc8]
 
 #define SYNC_BYTE 0XC8
 
@@ -144,7 +154,7 @@ struct [[gnu::packed]] Channels {
     uint16_t ch7 : 11;  // Bit 66 - 76
     uint16_t ch8 : 11;  // Bit 77 - 87
     uint16_t ch9 : 11;  // Bit 88 - 98
-    uint16_t ch10 : 11;  // Bit 99 - 109
+    uint16_t ch10 : 11; // Bit 99 - 109
     uint16_t ch11 : 11; // Bit 110 - 120
     uint16_t ch12 : 11; // Bit 121 - 131
     uint16_t ch13 : 11; // Bit 132 - 142
@@ -167,26 +177,21 @@ struct [[gnu::packed]] Payload_linkStatistics {
     int8_t down_snr;           // Downlink SNR (dB)
 };
 
-struct [[gnu::packed]] Sensor_battery { // big endian
-    uint16_t voltage;                   // V * 10
-    uint16_t current;                   // A * 10
-    uint32_t capacity : 24;             // mah
-    uint8_t remaining;                  // %
+struct [[gnu::packed]] Sensor_battery {
+    uint16_t voltage;       // V * 10
+    uint16_t current;       // A * 10
+    uint32_t capacity : 24; // mah
+    uint8_t remaining;      // %
 };
 
-struct [[gnu::packed]] Sensor_gps { // big endian
-    int32_t latitude;               // degree / 10,000,000
-    int32_t longitude;              // degree / 10,000,000
-    uint16_t groundspeed;           // km/h / 10
-    uint16_t heading;               // GPS heading, degree/100
-    uint16_t altitude;              // meters, +1000m
-    uint8_t satellites;             // satellites
+struct [[gnu::packed]] Sensor_gps {
+    int32_t latitude;     // degree / 10,000,000
+    int32_t longitude;    // degree / 10,000,000
+    uint16_t groundspeed; // km/h / 10
+    uint16_t heading;     // GPS heading, degree/100
+    uint16_t altitude;    // meters, +1000m
+    uint8_t satellites;   // satellites
 };
-
-// crsf = (us - 1500) * 8/5 + 992
-#define US_to_CRSF(us) ((us) * 8 / 5 + (CHANNEL_VALUE_MID - 2400))
-// us = (crsf - 992) * 5/8 + 1500
-#define CRSF_to_US(crsf) ((crsf) * 5 / 8 + (1500 - 620))
 
 #if !defined(__linux__)
 static inline uint16_t htobe16(uint16_t val)
