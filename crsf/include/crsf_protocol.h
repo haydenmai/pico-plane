@@ -1,6 +1,6 @@
 /**
  * @file crsf_protocol.h
- * @brief Constants associated with frame types
+ * @brief Constants & structs associated with frame types
  * @author Hayden Mai
  * @date May-07-2025
  *
@@ -122,8 +122,7 @@ enum class eFrameType : uint8_t {
     MAVLINK_SYS_SENSOR_STATUS = 0xAC,
 };
 
-#pragma pack(push, 1)
-struct Header {
+struct [[gnu::packed]] Header {
     uint8_t sync_byte;  // SYNC_BYTE
     uint8_t frame_size; // counts size after this byte, so it must be the payload size + 2
                         // (type and crc)
@@ -131,7 +130,7 @@ struct Header {
     uint8_t data[MAX_PAYLOAD_LEN];
 };
 
-struct Channels {
+struct [[gnu::packed]] Channels {
     uint16_t ch0 : 11;
     uint16_t ch1 : 11;
     uint16_t ch2 : 11;
@@ -150,7 +149,7 @@ struct Channels {
     uint16_t ch15 : 11;
 };
 
-struct Payload_linkStatistics {
+struct [[gnu::packed]] Payload_linkStatistics {
     uint8_t up_rssi_ant1;    // Uplink RSSI Antenna 1 (dBm * -1)
     uint8_t up_rssi_ant2;    // Uplink RSSI Antenna 2 (dBm * -1)
     uint8_t up_link_quality; // Uplink Package success rate / Link quality (%)
@@ -164,14 +163,14 @@ struct Payload_linkStatistics {
     int8_t down_snr;           // Downlink SNR (dB)
 };
 
-struct Sensor_battery {     // big endian
+struct [[gnu::packed]] Sensor_battery {     // big endian
     uint16_t voltage;       // V * 10
     uint16_t current;       // A * 10
     uint32_t capacity : 24; // mah
     uint8_t remaining;      // %
 };
 
-struct Sensor_gps {       // big endian
+struct [[gnu::packed]] Sensor_gps {       // big endian
     int32_t latitude;     // degree / 10,000,000
     int32_t longitude;    // degree / 10,000,000
     uint16_t groundspeed; // km/h / 10
@@ -179,7 +178,6 @@ struct Sensor_gps {       // big endian
     uint16_t altitude;    // meters, +1000m
     uint8_t satellites;   // satellites
 };
-#pragma pack(pop)
 
 // crsf = (us - 1500) * 8/5 + 992
 #define US_to_CRSF(us) ((us) * 8 / 5 + (CHANNEL_VALUE_MID - 2400))
