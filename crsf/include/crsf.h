@@ -11,12 +11,9 @@
 
 #include "crsf_protocol.h"
 
-// TODO: Implement CRC in a different file
-// TODO: 
 class Crsf {
-	public:
-
-	private:
+  public:
+  private:
 };
 
 #endif
