@@ -1,7 +1,7 @@
 /**
  * @file crsf.h
  * @author Hayden Mai
- * @date May-09-2025
+ * @date May-10-2025
  * @brief A class to decode CRSF protocol from a ELRS receiver.
  * @link https://github.com/tbs-fpv/tbs-crsf-spec/blob/main/crsf.md
  */
@@ -11,8 +11,10 @@
 
 #include "crsf/crsf_info.h"
 
-#include <cstdint>
 #include <pico/stdlib.h>
+
+#include <cstdint>
+#include <array>
 
 class CRSF {
   public:
@@ -21,14 +23,15 @@ class CRSF {
 
     // TODO: Configuration settings
 
-    // Telemetry Setters (?)
+    // TODO: Telemetry Setters (?)
 
     void processFrames() noexcept;
 
   private:
-    uart_inst_t *uart;
-    void init(uint8_t tx_pin, uint8_t rx_pin) noexcept;
-    void deinit();
+    uart_inst_t *uart; // UART number on the Pico
+	std::array<uint8_t, MAX_CRSF_FRAME_SIZE> buffer{}; // Buffer to store frames
+
+
 };
 
 #endif

@@ -20,9 +20,9 @@
 class ServoMG90S {
   public:
     /** @brief Minimum valid angle in degrees. */
-    static constexpr int MIN_DEG {0};
+    static constexpr int MIN_DEG{0};
     /** @brief Maximum valid angle in degrees. */
-    static constexpr int MAX_DEG {180};
+    static constexpr int MAX_DEG{180};
 
 
     explicit ServoMG90S(int pinNum);
@@ -44,14 +44,14 @@ class ServoMG90S {
 
   private:
     /** @brief PWM counter wrap value for a 20ms frame at 1MHz tick. */
-    static constexpr int WRAP_COUNT {20000};
+    static constexpr int WRAP_COUNT{20000};
     /** @brief PWM clock divider to derive 1MHz from the 125MHz system clock. */
-    static constexpr float DIVIDER {125.0f};
+    static constexpr float DIVIDER{125.0f};
 
     const int pinNum; ///< GPIO pin
     int sliceNum;     ///< PWM slice index
     int channelNum;   ///< PWM channel (A/B)
-    int cur_angle {}; ///< last commanded angle
+    int cur_angle{};  ///< last commanded angle
 
 
     /**
