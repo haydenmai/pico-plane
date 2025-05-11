@@ -19,7 +19,8 @@
 
 namespace crsf {
 
-#define BAUDRATE 420000 // for receiver
+// Receiver's Baudrate
+#define BAUDRATE 420000
 
 // Channel properties
 #define NUM_CHANNELS     16
@@ -39,8 +40,10 @@ namespace crsf {
 #define ELIMIT_US_MIN 891  // microseconds for CRSF=0 (E.Limits=ON)
 #define ELIMIT_US_MAX 2119 // microseconds for CRSF=1984
 
-#define MAX_PACKET_SIZE 64 // max declared len is 62+DEST+LEN on top of that = 64
-#define MAX_PAYLOAD_LEN (MAX_PACKET_SIZE - 4) // [dest|len|type|payload|crc8]
+// CRSF Frame information
+#define MAX_CRSF_FRAME_SIZE 64                       // [SYNC|LEN|TYPE|PAYLOAD|CRC8]
+#define MAX_FRAME_LEN       (MAX_CRSF_FRAME_LEN - 2) // No sync byte & frame length
+#define MAX_PAYLOAD_LEN     (MAX_FRAME_LEN - 2)      // No Type & CRC8
 
 #define SYNC_BYTE 0XC8
 
