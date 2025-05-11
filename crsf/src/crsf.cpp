@@ -14,7 +14,7 @@
 #include "crsf/crsf_info.h"
 
 
-explicit CRSF::CRSF(uart_inst_t *uart, uint8_t tx_pin, uint8_t rx_pin) : uart(uart)
+explicit CRSF::CRSF(uart_inst_t *uart, uint8_t tx_pin, uint8_t rx_pin) : uart_(uart)
 {
     uart_init(uart, BAUDRATE);
     gpio_set_function(tx_pin, UART_FUNCSEL_NUM(uart, tx_pin));
@@ -22,7 +22,7 @@ explicit CRSF::CRSF(uart_inst_t *uart, uint8_t tx_pin, uint8_t rx_pin) : uart(ua
 }
 
 
-CRSF::~CRSF() { uart_deinit(uart); }
+CRSF::~CRSF() { uart_deinit(uart_); }
 
 
 void CRSF::processFrames() noexcept
@@ -34,20 +34,20 @@ void CRSF::processFrames() noexcept
     constexpr int US_PER_FRAME {BITS_PER_FRAME / (BAUDRATE / SEC_TO_US)
                                 + 1}; // Time between UART Frames + 1 for rounding down
 
-    while (uart_is_readable_within_us(uart, US_PER_FRAME)) {
-        buffer[idx] = uart_getc(uart); 
+    while (uart_is_readable_within_us(uart_, US_PER_FRAME)) {
+        buffer_[idx] = uart_getc(uart_);
 
         // Handle the sync byte, frame length, and type
         if (idx == 0) { // Sync byte
             // Should be the sync byte (0xC8)
             // TODO: Process different sync bytes
-            if (rx_byte == SYNC_BYTE) {
+            if (buffer_[idx] == SYNC_BYTE) {
                 idx++;
             }
 
         } else if (idx == 1) { // Frame length
-            frameLen    = rx_byte;
-            crc_idx     = rx_byte + 1; // CRC8 should be the last byte in the frame
+            frameLen = buffer_[idx];
+            crc_idx  = buffer_[idx] + 1; // CRC8 should be the last byte in the frame
 
             idx++;
 
@@ -57,6 +57,9 @@ void CRSF::processFrames() noexcept
             }
         } else if (idx == crc_idx) { // Perform Cyclic Redudancy Check (CRC)
                                      // TODO: CRC8 check here
+									 // TODO: Once checked, handle the frame based on type
         }
     }
+
+	// Once done, 
 }

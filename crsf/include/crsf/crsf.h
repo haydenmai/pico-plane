@@ -13,8 +13,8 @@
 
 #include <pico/stdlib.h>
 
-#include <cstdint>
 #include <array>
+#include <cstdint>
 
 class CRSF {
   public:
@@ -28,10 +28,8 @@ class CRSF {
     void processFrames() noexcept;
 
   private:
-    uart_inst_t *uart; // UART number on the Pico
-	std::array<uint8_t, MAX_CRSF_FRAME_SIZE> buffer{}; // Buffer to store frames
-
-
+    uart_inst_t *uart_;                                  // UART number on the Pico
+    std::array<uint8_t, MAX_CRSF_FRAME_SIZE> buffer_ {}; // Buffer to store frames
 };
 
 #endif
