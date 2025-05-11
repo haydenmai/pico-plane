@@ -1,8 +1,8 @@
 /**
  * @file crsf_protocol.h
  * @author Hayden Mai
- * @date May-09-2025
- * @brief Constants & structs associated with frame types
+ * @date May-10-2025
+ * @brief Constants & structs associated with CRSF frame
  *
  * This code is taken from CapnBry's crsf_protocol.h and is modified to better fit C++'s
  * design.
@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 
-namespace crsf {
+namespace crsf_info {
 
 // Receiver's Baudrate
 #define BAUDRATE 420000
@@ -42,7 +42,7 @@ namespace crsf {
 
 // CRSF Frame information
 #define MAX_CRSF_FRAME_SIZE 64                       // [SYNC|LEN|TYPE|PAYLOAD|CRC8]
-#define MAX_FRAME_LEN       (MAX_CRSF_FRAME_LEN - 2) // No sync byte & frame length
+#define MAX_FRAME_LEN       (MAX_CRSF_FRAME_SIZE - 2) // No sync byte & frame length
 #define MAX_PAYLOAD_LEN     (MAX_FRAME_LEN - 2)      // No Type & CRC8
 
 #define SYNC_BYTE 0XC8

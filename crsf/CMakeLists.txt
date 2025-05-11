@@ -8,7 +8,7 @@ add_library(crsf STATIC ${MY_SOURCES})
 
 # Inherit include paths from SDK libraries
 target_link_libraries(crsf
-	PRIVATE hardware_pwm
+	PRIVATE pico_stdlib 
 )
 
 target_include_directories(crsf PUBLIC include)
