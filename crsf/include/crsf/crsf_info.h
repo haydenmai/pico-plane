@@ -1,5 +1,5 @@
 /**
- * @file crsf_protocol.h
+ * @file crsf_info.h
  * @author Hayden Mai
  * @date May-10-2025
  * @brief Constants & structs associated with CRSF frame
@@ -12,8 +12,8 @@
  * @link https://github.com/CapnBry/CRServoF/blob/main/lib/CrsfSerial/crsf_protocol.h
  */
 
-#ifndef CRSF_PROTOCOL_H_
-#define CRSF_PROTOCOL_H_
+#ifndef CRSF_INFO_H_
+#define CRSF_INFO_H_
 
 #include <stdint.h>
 
@@ -41,9 +41,9 @@ namespace crsf_info {
 #define ELIMIT_US_MAX 2119 // microseconds for CRSF=1984
 
 // CRSF Frame information
-#define MAX_CRSF_FRAME_SIZE 64                       // [SYNC|LEN|TYPE|PAYLOAD|CRC8]
+#define MAX_CRSF_FRAME_SIZE 64                        // [SYNC|LEN|TYPE|PAYLOAD|CRC8]
 #define MAX_FRAME_LEN       (MAX_CRSF_FRAME_SIZE - 2) // No sync byte & frame length
-#define MAX_PAYLOAD_LEN     (MAX_FRAME_LEN - 2)      // No Type & CRC8
+#define MAX_PAYLOAD_LEN     (MAX_FRAME_LEN - 2)       // No Type & CRC8
 
 #define SYNC_BYTE 0XC8
 
@@ -234,6 +234,6 @@ inline static uint32_t be32toh(uint32_t val)
 }
 #endif
 
-} // Namespace crsf
+} // namespace crsf_info
 
 #endif

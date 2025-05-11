@@ -32,7 +32,7 @@ void ServoMG90S::setAngle(int degrees) noexcept
 {
     // If degrees are out of bounds, do nothing
     if (degrees >= MIN_DEG && degrees <= MAX_DEG) {
-        int pulse_us{angleToPulse_us(degrees)};
+        int pulse_us {angleToPulse_us(degrees)};
         pwm_set_chan_level(sliceNum, channelNum, pulse_us);
         cur_angle = degrees;
     }
@@ -50,8 +50,8 @@ void ServoMG90S::setAngle(int degrees) noexcept
      * 90 degrees	-> 1.5ms pulse
      * 180 degress	-> 2.5ms pulse
      */
-    constexpr uint16_t MIN_US{500};              // Starting offset for pulse
-    constexpr uint16_t DELTA_US{2000 / MAX_DEG}; // Per degree pulse difference
+    constexpr uint16_t MIN_US {500};              // Starting offset for pulse
+    constexpr uint16_t DELTA_US {2000 / MAX_DEG}; // Per degree pulse difference
 
     return MIN_US + (angle * DELTA_US);
 }

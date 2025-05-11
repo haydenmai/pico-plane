@@ -9,26 +9,26 @@
 #ifndef CRSF_H_
 #define CRSF_H_
 
-#include "crsf/crsf_protocol.h"
+#include "crsf/crsf_info.h"
 
-#include <pico/stdlib.h>
 #include <cstdint>
+#include <pico/stdlib.h>
 
 class CRSF {
   public:
     explicit CRSF(uart_inst_t *uart, uint8_t tx_pin, uint8_t rx_pin);
     ~CRSF();
 
-	// TODO: Configuration settings
+    // TODO: Configuration settings
 
-	// Telemetry Setters (?)
+    // Telemetry Setters (?)
 
-	void processFrames() noexcept;
+    void processFrames() noexcept;
 
   private:
-  uart_inst_t *uart;
-	void init(uint8_t tx_pin, uint8_t rx_pin) noexcept;
-	void deinit();
+    uart_inst_t *uart;
+    void init(uint8_t tx_pin, uint8_t rx_pin) noexcept;
+    void deinit();
 };
 
 #endif
