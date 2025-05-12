@@ -8,14 +8,31 @@
 
 #include "crsf/crc8.h"
 
+
 CRC8::CRC8(uint8_t polynomial) { init(polynomial); }
 
-uint8_t CRC8::calculate(const uint8_t *data, size_t len) const noexcept
+
+uint8_t CRC8::calculate(std::span<const uint8_t> data) const noexcept
 {
     uint8_t crc_result {};
-    for (int i {}; i < len; i++) {
-        crc_result = table_[crc_result ^ data[i]];
+    for (uint8_t byte : data) {
+        crc_result = table_[crc_result ^ byte];
     }
 
     return crc_result;
+}
+
+
+void CRC8::init(uint8_t polynomial) noexcept
+{
+    constexpr int BITS_PER_BYTE {8};
+    for (size_t i {}; i < table_.size(); i++) {
+        uint8_t crc = static_cast<uint8_t>(i);
+
+        for (int bit {}; bit < BITS_PER_BYTE; bit++) {
+            crc = (crc << 1) ^ ((crc & 0x80) ? polynomial : 0);
+        }
+
+        table_[i] = crc & 0xFF;
+    }
 }

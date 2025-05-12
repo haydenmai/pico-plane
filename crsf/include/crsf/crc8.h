@@ -11,7 +11,7 @@
 
 #include <array>
 #include <cstdint>
-#include <stdlib.h>
+#include <span>
 
 
 class CRC8 {
@@ -19,7 +19,7 @@ class CRC8 {
     CRC8(uint8_t polynomial);
     ~CRC8() = default;
 
-    uint8_t calculate(const uint8_t *data, size_t len) const noexcept;
+    uint8_t calculate(std::span<const uint8_t> data) const noexcept;
 
   protected:
     std::array<uint8_t, 256> table_ {};

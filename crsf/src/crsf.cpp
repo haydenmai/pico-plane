@@ -57,9 +57,7 @@ void CRSF::processFrames() noexcept
             }
         } else if (idx == crc_idx) { // Perform Cyclic Redudancy Check (CRC)
                                      // TODO: CRC8 check here
-									 // TODO: Once checked, handle the frame based on type
+                                     // TODO: Once checked, handle the frame based on type
         }
     }
-
-	// Once done, 
 }
