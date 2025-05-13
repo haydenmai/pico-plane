@@ -30,6 +30,9 @@ void CRC8::init(uint8_t polynomial) noexcept
         uint8_t crc = static_cast<uint8_t>(i);
 
         for (int bit {}; bit < BITS_PER_BYTE; bit++) {
+            // 1) Shift the currect CRC value left by one bit
+            // 2) XOR with the polynomial or zero, dependent on whether the highest bit
+            // 	was set to high
             crc = (crc << 1) ^ ((crc & 0x80) ? polynomial : 0);
         }
 
