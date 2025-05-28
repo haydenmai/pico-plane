@@ -6,3 +6,7 @@
  */
 
 #include "hal/mpu6050.h"
+
+#include "hardware/i2c.h"
+#include "pico/binary_info.h"
+#include "pico/stdlib.h"

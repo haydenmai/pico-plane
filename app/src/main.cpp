@@ -11,6 +11,7 @@
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
 
+#include "hal/mpu6050.h"
 #include "hal/pico_led.h"
 #include "hal/servo_mg90s.h"
 

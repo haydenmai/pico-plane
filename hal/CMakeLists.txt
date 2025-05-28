@@ -14,6 +14,7 @@ target_link_libraries(hal
 	PRIVATE hardware_adc
 	PRIVATE hardware_gpio
 	PRIVATE hardware_pwm
+	PRIVATE hardware_i2c
 )
 
 target_include_directories(hal PUBLIC include)
