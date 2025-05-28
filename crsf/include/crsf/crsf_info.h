@@ -22,6 +22,8 @@ namespace crsf_info {
 // Receiver's Baudrate
 #define BAUDRATE 420000
 
+#define CRC8_POLY 0xD5
+
 // Channel properties
 #define NUM_CHANNELS     16
 #define BITS_PER_CHANNEL 11

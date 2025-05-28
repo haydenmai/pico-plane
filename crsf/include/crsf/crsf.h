@@ -9,12 +9,15 @@
 #ifndef CRSF_H_
 #define CRSF_H_
 
+#include "crsf/crc8.h"
 #include "crsf/crsf_info.h"
 
 #include <pico/stdlib.h>
 
 #include <array>
 #include <cstdint>
+
+// TODO: Merge crsf_info.h with crsf.h (if needed)
 
 class CRSF {
   public:
@@ -28,6 +31,7 @@ class CRSF {
     void processFrames() noexcept;
 
   private:
+    CRC8 crc8_;
     uart_inst_t *uart_;                                  // UART number on the Pico
     std::array<uint8_t, MAX_CRSF_FRAME_SIZE> buffer_ {}; // Buffer to store frames
 };
