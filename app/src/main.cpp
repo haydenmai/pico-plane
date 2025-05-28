@@ -6,54 +6,52 @@
  * @date May-07-2025
  */
 
-
-#include "hardware/adc.h"
-#include "pico/cyw43_arch.h"
+#include "crsf/crsf.h"
 #include "pico/stdlib.h"
+#include <stdio.h>
 
-#include "hal/pico_led.h"
-#include "hal/servo_mg90s.h"
+void on_rc_channels(const uint16_t channels[16])
+{
+    printf("Channel 1: %f\n", TICKS_TO_US(channels[0]));
+    printf("Channel 2: %f\n", TICKS_TO_US(channels[1]));
+    printf("Channel 3: %f\n", TICKS_TO_US(channels[2]));
+    printf("Channel 4: %f\n", TICKS_TO_US(channels[3]));
+    printf("Channel 5: %f\n", TICKS_TO_US(channels[4]));
+    printf("Channel 6: %f\n", TICKS_TO_US(channels[5]));
+    printf("Channel 7: %f\n", TICKS_TO_US(channels[6]));
+    printf("Channel 8: %f\n", TICKS_TO_US(channels[7]));
+    printf("Channel 9: %f\n", TICKS_TO_US(channels[8]));
+    printf("Channel 10: %f\n", TICKS_TO_US(channels[9]));
+    printf("Channel 11: %f\n", TICKS_TO_US(channels[10]));
+    printf("Channel 12: %f\n", TICKS_TO_US(channels[11]));
 
-#include <iostream>
 
+}
+
+void on_link_stats(const link_statistics_t link_stats)
+{
+    printf("RSSI: %d\n", link_stats.rssi);
+    printf("Link Quality: %d\n", link_stats.link_quality);
+    printf("SNR: %d\n", link_stats.snr);
+    printf("TX Power: %d\n", link_stats.tx_power);
+}
+
+void on_failsafe(const bool failsafe) { printf("Failsafe: %d\n", failsafe); }
 
 int main()
 {
     stdio_init_all();
-    cyw43_arch_init();
-    adc_init();
 
-    // 1) Init UART0 @ 115200 baud for our “print” port
-    uart_init(uart0, 115200);
-    gpio_set_function(0, GPIO_FUNC_UART); // UART0 TX → GP0
-    gpio_set_function(1, GPIO_FUNC_UART); // UART0 RX → GP1
+    crsf_set_link_quality_threshold(70);
+    crsf_set_rssi_threshold(105);
 
-    // UART Setup
-    uart_init(uart1, 420000);
-    gpio_set_function(8, UART_FUNCSEL_NUM(uart1, 8));
-    gpio_set_function(9, UART_FUNCSEL_NUM(uart1, 9));
+    crsf_set_on_rc_channels(on_rc_channels);
+    crsf_set_on_link_statistics(on_link_stats);
+    crsf_set_on_failsafe(on_failsafe);
 
-    // auto &onboard_led = PicoLED::get();
-    auto servo_16 = ServoMG90S(16);
-    auto servo_17 = ServoMG90S(17);
-
-
-    while (true) {
-        if (uart_is_readable(uart1)) {
-            uint8_t sync_byte = uart_getc(uart1);
-            uart_putc(uart0, sync_byte);
-        }
-
-        /*
-                // TODO: LED using interrupts
-                onboard_led.on();
-                sleep_ms(100);
-                onboard_led.off();
-                sleep_ms(2000);
-                */
-    }
-
-    stdio_deinit_all();
-    cyw43_arch_deinit();
-    return 0;
+    crsf_begin(uart1, 9, 8);
+    for (;;)
+        crsf_process_frames();
 }
+
+void set_battery() { crsf_telem_set_battery_data(0, 0, 0, 0); }
