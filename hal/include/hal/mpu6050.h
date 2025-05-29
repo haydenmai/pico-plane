@@ -54,8 +54,18 @@ class MPU6050 {
     [[nodiscard]] AccelVal getAccelValues();
 
   private:
-    GyroVal gyroVal_;
-    AccelVal accelVal_;
+    GyroVal gyroVals_;
+    AccelVal accelVals_;
+
+    /**
+     *
+     */
+    void readGyroValues();
+
+    /**
+     *
+     */
+    void readAccelValues();
 };
 
 #endif

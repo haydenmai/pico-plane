@@ -22,16 +22,26 @@ MPU6050::~MPU6050()
     // TODO: Deinitialize i2c
 }
 
-MPU6050::GyroVal MPU6050::getGyroValues()
+[[nodiscard]] MPU6050::GyroVal MPU6050::getGyroValues()
 {
-    //
+    readGyroValues();
 
-    return;
+    return gyroVals_;
 }
 
-MPU6050::AccelVal MPU6050::getAccelValues()
+[[nodiscard]] MPU6050::AccelVal MPU6050::getAccelValues()
 {
-    //
+    readAccelValues();
 
-    return;
+    return accelVals_;
+}
+
+void readGyroValues()
+{
+    // TODO
+}
+
+void readAccelValues()
+{
+    // TODO
 }
