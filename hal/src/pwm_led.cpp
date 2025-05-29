@@ -8,6 +8,7 @@
 #include "hal/pwm_led.h"
 
 #include "hardware/pwm.h"
+#include "pico/stdlib.h"
 
 pwmLED::pwmLED(int pinNum) : pinNum_(pinNum)
 {
