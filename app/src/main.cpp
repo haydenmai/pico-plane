@@ -7,8 +7,17 @@
  */
 
 #include "crsf/crsf.h"
+#include "hal/pwm_led.h"
+#include "hardware/pwm.h"
 #include "pico/stdlib.h"
+
 #include <stdio.h>
+
+auto led16 = pwmLED(16);
+auto led17 = pwmLED(17);
+auto led18 = pwmLED(18);
+auto led19 = pwmLED(19);
+auto led20 = pwmLED(20);
 
 void on_rc_channels(const uint16_t channels[16])
 {
@@ -25,7 +34,11 @@ void on_rc_channels(const uint16_t channels[16])
     printf("Channel 11: %f\n", TICKS_TO_US(channels[10]));
     printf("Channel 12: %f\n", TICKS_TO_US(channels[11]));
 
-
+    led16.setBrightness(TICKS_TO_US(channels[0]));
+    led17.setBrightness(TICKS_TO_US(channels[1]));
+    led18.setBrightness(TICKS_TO_US(channels[2]));
+    led19.setBrightness(TICKS_TO_US(channels[3]));
+    led20.setBrightness(TICKS_TO_US(channels[4]));
 }
 
 void on_link_stats(const link_statistics_t link_stats)
