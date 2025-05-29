@@ -10,3 +10,28 @@
 #include "hardware/i2c.h"
 #include "pico/binary_info.h"
 #include "pico/stdlib.h"
+
+
+MPU6050::MPU6050()
+{
+    // TODO: Initialize i2c
+}
+
+MPU6050::~MPU6050()
+{
+    // TODO: Deinitialize i2c
+}
+
+MPU6050::GyroVal MPU6050::getGyroValues()
+{
+    //
+
+    return;
+}
+
+MPU6050::AccelVal MPU6050::getAccelValues()
+{
+    //
+
+    return;
+}

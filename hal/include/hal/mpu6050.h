@@ -11,7 +11,8 @@
 #include <cstdint>
 
 /**
- *
+ * @class MPU6050
+ * @brief
  */
 class MPU6050 {
     // Note to self: Private members' names will have an underscore at the end,
@@ -24,35 +25,37 @@ class MPU6050 {
      * @struct GyroVal
      * @brief Holds gyroscope readings for the x, y, and z axes.
      */
-    struct GyroVal {
+    typedef struct {
         uint16_t x;
         uint16_t y;
         uint16_t z;
-    };
+    } GyroVal;
 
     /**
      * @struct AccelVal
      * @brief Holds accelerometer readings for the x, y, and z directions.
      */
-    struct AccelVal {
+    typedef struct {
         uint16_t x;
         uint16_t y;
         uint16_t z;
-    };
+    } AccelVal;
 
     /**
      * @brief Samples the gyroscope values.
      * @return GyroVal struct containing XYZ readings from the gyroscope.
      */
-    GyroVal getGyroValues();
+    [[nodiscard]] GyroVal getGyroValues();
 
     /**
      * @brief Samples the accelerometer values.
      * @return AccelVal struct containing XYZ readings from the accelerometer.
      */
-    AccelVal getAccelValues();
+    [[nodiscard]] AccelVal getAccelValues();
 
   private:
+    GyroVal gyroVal_;
+    AccelVal accelVal_;
 };
 
 #endif
