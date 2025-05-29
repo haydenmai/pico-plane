@@ -129,7 +129,6 @@ extern "C"
 	void crsf_send_telem();
 	bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcIndex, uint8_t currentByte);
 
-
 #ifdef __cplusplus
 }
 #endif
