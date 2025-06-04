@@ -401,7 +401,9 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
         // Should be the length byte
         _incoming_frame[(*frameIndex)++] = currentByte;
         *frameLength                     = currentByte;
-        *crcIndex                        = *frameLength + 1;
+        DEBUG_WARN("Frame Length: %d", *frameLength);
+
+        *crcIndex = *frameLength + 1;
         if (*frameLength < 2 || *frameLength > 62) {
             // Invalid frame length
             *frameIndex = 0;

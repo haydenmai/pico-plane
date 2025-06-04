@@ -18,6 +18,11 @@ auto led17 = pwmLED(17);
 auto led18 = pwmLED(18);
 auto led19 = pwmLED(19);
 auto led20 = pwmLED(20);
+auto led21 = pwmLED(21);
+auto led22 = pwmLED(22);
+auto led23 = pwmLED(23);
+auto led24 = pwmLED(24);
+auto led25 = pwmLED(25);
 
 void on_rc_channels(const uint16_t channels[16])
 {
@@ -42,7 +47,12 @@ void on_rc_channels(const uint16_t channels[16])
     led17.setBrightness(TICKS_TO_US(channels[1]));
     led18.setBrightness(TICKS_TO_US(channels[2]));
     led19.setBrightness(TICKS_TO_US(channels[3]));
-    led20.setBrightness(TICKS_TO_US(channels[11]));
+    led20.setBrightness(TICKS_TO_US(channels[4]));
+    led21.setBrightness(TICKS_TO_US(channels[5]));
+    led22.setBrightness(TICKS_TO_US(channels[6]));
+    led23.setBrightness(TICKS_TO_US(channels[7]));
+    led24.setBrightness(TICKS_TO_US(channels[8]));
+    led25.setBrightness(TICKS_TO_US(channels[9]));
 }
 
 void on_link_stats(const link_statistics_t link_stats)
