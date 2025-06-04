@@ -13,6 +13,10 @@
 
 #define ADDRESS_SIZE 7
 
+// Power Management Registers
+#define PWR_MANAGE_1 0x6B
+#define PWR_MANAGE_2 0x6C
+
 // Configuration Registers
 #define CONFIG       0x1A
 #define GYRO_CONFIG  0x1B
