@@ -18,7 +18,6 @@
 #define PWR_MANAGE_2 0x6C
 
 // Configuration Registers
-#define CONFIG       0x1A
 #define GYRO_CONFIG  0x1B
 #define ACCEL_CONFIG 0x1C
 
