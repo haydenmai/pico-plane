@@ -14,7 +14,6 @@ target_link_libraries(hal
 	PRIVATE hardware_adc
 	PRIVATE hardware_gpio
 	PRIVATE hardware_pwm
-	PRIVATE pico_bootsel_via_double_reset # Boot to MSD on double click
 )
 
 target_include_directories(hal PUBLIC include)
