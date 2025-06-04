@@ -34,8 +34,6 @@ int main()
 
     sleep_ms(10000);
 
-    // Test
-
 #if !defined(i2c_default) || !defined(PICO_DEFAULT_I2C_SDA_PIN)                          \
     || !defined(PICO_DEFAULT_I2C_SCL_PIN)
 #warning i2c/bus_scan example requires a board with I2C pins
@@ -83,8 +81,6 @@ int main()
         sleep_ms(2000);
         onboard_led.off();
         sleep_ms(5000);
-
-        // Test
     }
 
     stdio_deinit_all();
