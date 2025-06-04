@@ -397,13 +397,17 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
         }
         _incoming_frame[(*frameIndex)++] = currentByte;
         return true;
+
     } else if (*frameIndex == 1) {
         // Should be the length byte
         _incoming_frame[(*frameIndex)++] = currentByte;
         *frameLength                     = currentByte;
         DEBUG_WARN("Frame Length: %d", *frameLength);
 
+        // CRC should be the last byte of payload
+        // lastByte = frameIndex + frameLength;
         *crcIndex = *frameLength + 1;
+
         if (*frameLength < 2 || *frameLength > 62) {
             // Invalid frame length
             *frameIndex = 0;
@@ -411,6 +415,7 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
             return false;
         }
         return true;
+
     } else if (*frameIndex == *crcIndex) {
         // We have read the entire frame
         // Check the CRC
@@ -431,23 +436,27 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
                     }
                 }
                 break;
+
             case CRSF_FRAMETYPE_RC_CHANNELS_PACKED:
                 _process_rc_channels();
                 if (rc_channels_callback != NULL) {
                     rc_channels_callback(_rc_channels);
                 }
                 break;
+
             default:
                 DEBUG_WARN("Unknown frame type: %02x", frameType);
                 break;
             }
             return true;
+
         } else {
             DEBUG_WARN("CRC check failed.");
         }
         // Reset the frame index
         *frameIndex = 0;
         return false;
+
     } else {
         _incoming_frame[(*frameIndex)++] = currentByte;
         return true;
