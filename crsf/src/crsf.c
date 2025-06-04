@@ -402,7 +402,7 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
         // Should be the length byte
         _incoming_frame[(*frameIndex)++] = currentByte;
         *frameLength                     = currentByte;
-        DEBUG_WARN("Frame Length: %d", *frameLength);
+        DEBUG_WARN("Frame Length: %d\n", *frameLength);
 
         // CRC should be the last byte of payload
         // lastByte = frameIndex + frameLength;
@@ -448,6 +448,8 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
                 DEBUG_WARN("Unknown frame type: %02x", frameType);
                 break;
             }
+
+            *frameIndex = 0;
             return true;
 
         } else {
@@ -458,10 +460,11 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
         return false;
 
     } else {
+        //DEBUG_WARN("frameIndex: %d\n", *frameIndex);
         _incoming_frame[(*frameIndex)++] = currentByte;
         return true;
     }
-    DEBUG_WARN("frameIndex: %d\n", *frameIndex);
+
 
     return false;
 }
