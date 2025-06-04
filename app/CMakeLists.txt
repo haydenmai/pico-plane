@@ -9,6 +9,7 @@ target_link_libraries(${APP_TARGET}
     PRIVATE pico_stdlib				# Add the standard library to the build
     PRIVATE pico_cyw43_arch_none
 	PRIVATE hardware_adc
+	PRIVATE pico_bootsel_via_double_reset # Boot to MSD on double click
 )
 
 # Set program name and version (used by tools like picotool)
