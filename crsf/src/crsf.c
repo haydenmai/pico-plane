@@ -13,7 +13,7 @@
  *
  */
 
-// TODO: Buggy, new packet being read into the same payload, frame length may be incorrect
+// TODO: CRC8 failing quite often for some reason
 
 #include "crsf/crsf.h"
 #include <hardware/gpio.h>
@@ -402,7 +402,7 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
         // Should be the length byte
         _incoming_frame[(*frameIndex)++] = currentByte;
         *frameLength                     = currentByte;
-        DEBUG_WARN("Frame Length: %d\n", *frameLength);
+        DEBUG_WARN("\nFrame Length: %d\n", *frameLength);
 
         // CRC should be the last byte of payload
         // lastByte = frameIndex + frameLength;
@@ -453,14 +453,20 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
             return true;
 
         } else {
-            DEBUG_WARN("CRC check failed.");
+			_incoming_frame[*crcIndex] = currentByte;
+            DEBUG_WARN("CRC check failed.\n");
+            DEBUG_WARN("Failed Frame: ");
+            for (int i = 0; i <= *crcIndex; i++) {
+                DEBUG_WARN("%02X ", _incoming_frame[i]);
+            }
+            DEBUG_WARN("\n\n");
         }
         // Reset the frame index
         *frameIndex = 0;
         return false;
 
     } else {
-        //DEBUG_WARN("frameIndex: %d\n", *frameIndex);
+        // DEBUG_WARN("frameIndex: %d\n", *frameIndex);
         _incoming_frame[(*frameIndex)++] = currentByte;
         return true;
     }

@@ -36,10 +36,11 @@ void on_rc_channels(const uint16_t channels[16])
     printf("Channel 10: %f\n", TICKS_TO_US(channels[9]));
     printf("Channel 11: %f\n", TICKS_TO_US(channels[10]));
     printf("Channel 12: %f\n", TICKS_TO_US(channels[11]));
-    //printf("Channel 13: %f\n", TICKS_TO_US(channels[12]));
-    //printf("Channel 14: %f\n", TICKS_TO_US(channels[13]));
-    //printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
-    //printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
+    printf("\n");
+    // printf("Channel 13: %f\n", TICKS_TO_US(channels[12]));
+    // printf("Channel 14: %f\n", TICKS_TO_US(channels[13]));
+    // printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
+    // printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
 
     led16.setBrightness(TICKS_TO_US(channels[0]));
     led17.setBrightness(TICKS_TO_US(channels[1]));
