@@ -11,36 +11,6 @@
 #include "pico/binary_info.h"
 #include "pico/stdlib.h"
 
-#define ADDRESS_SIZE 7
-
-// Power Management Registers
-#define PWR_MANAGE_1 0x6B
-#define PWR_MANAGE_2 0x6C
-
-// Configuration Registers
-#define GYRO_CONFIG  0x1B
-#define ACCEL_CONFIG 0x1C
-
-// Slave 0 Control Registers
-#define I2C_SLV0_ADDR 0x25
-#define I2C_SLV0_REG  0x26
-#define I2C_SLV0_CTRL 0x27
-
-// Accelerometer Measurement Registers
-#define ACCEL_X_HIGH 0x3B
-#define ACCEL_X_LOW  0x3C
-#define ACCEL_Y_HIGH 0x3D
-#define ACCEL_Y_LOW  0x3E
-#define ACCEL_Z_HIGH 0x3F
-#define ACCEL_Z_LOW  0x40
-
-// Gyroscope Measurement Registers
-#define GYRO_X_HIGH 0x43
-#define GYRO_X_LOW  0x44
-#define GYRO_Y_HIGH 0x45
-#define GYRO_Y_LOW  0x46
-#define GYRO_Z_HIGH 0x47
-#define GYRO_Z_LOW  0x48
 
 /**
  *
