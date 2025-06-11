@@ -2,7 +2,7 @@
  * @file mpu6050.cpp
  * @brief Controls the MPU 6050 accelerometer and gyroscope.
  * @author Benley Hsiang
- * @date Jun-10-2025
+ * @date Jun-11-2025
  */
 
 #include "hal/mpu6050.h"
@@ -26,31 +26,18 @@
 #define I2C_SLV0_REG  0x26
 #define I2C_SLV0_CTRL 0x27
 
-
 // I2C Writing and Reading
-#define MPU6050_ADDR  0x68
-#define NUM_REGISTERS 6
-
-// Accelerometer Measurement Registers
-#define ACCEL_X_HIGH 0x3B
-#define ACCEL_X_LOW  0x3C
-#define ACCEL_Y_HIGH 0x3D
-#define ACCEL_Y_LOW  0x3E
-#define ACCEL_Z_HIGH 0x3F
-#define ACCEL_Z_LOW  0x40
-
-// Gyroscope Measurement Registers
-#define GYRO_X_HIGH 0x43
-#define GYRO_X_LOW  0x44
-#define GYRO_Y_HIGH 0x45
-#define GYRO_Y_LOW  0x46
-#define GYRO_Z_HIGH 0x47
-#define GYRO_Z_LOW  0x48
-
-// Full Scale Ranges
-#define ACCEL_RANGE    /* +- */ 2   /* g */
-#define GYRO_RANGE     /* +- */ 250 /* degrees per sec */
+#define MPU6050_ADDR   0x68
+#define NUM_REGISTERS  6
 #define BIT_RESOLUTION 16
+
+// Measurement Registers
+#define ACCEL_X_HIGH 0x3B
+#define GYRO_X_HIGH  0x43
+
+// Full Scale Range/LSB Sensitivity
+#define ACCEL_RANGE /* +- */ 2 /* g */
+#define GYRO_SENS   131.0      /* LSB/ degree/second */
 
 /**
  *
@@ -103,17 +90,14 @@ void MPU6050::readGyroValues()
     uint8_t readings[NUM_REGISTERS];
     i2c_read_blocking(i2c_default, MPU6050_ADDR, readings, NUM_REGISTERS, false);
 
-    // Combining high and low bits
     const int BIT_OFFSET = 8;
-    int16_t gyro_raw_x   = ((int16_t)readings[0] << BIT_OFFSET) | readings[1];
-    int16_t gyro_raw_y   = ((int16_t)readings[2] << BIT_OFFSET) | readings[3];
-    int16_t gyro_raw_z   = ((int16_t)readings[4] << BIT_OFFSET) | readings[5];
+    int16_t gyro_raw_x   = combineBits(readings, 0, 1, BIT_OFFSET);
+    int16_t gyro_raw_y   = combineBits(readings, 2, 3, BIT_OFFSET);
+    int16_t gyro_raw_z   = combineBits(readings, 4, 5, BIT_OFFSET);
 
-    // TODO: Figure out if the readings need to be converted
-
-    this->gyroVals_.x = gyro_raw_x;
-    this->gyroVals_.y = gyro_raw_y;
-    this->gyroVals_.z = gyro_raw_z;
+    gyroVals_.x = convertGyroReading(gyro_raw_x, GYRO_SENS);
+    gyroVals_.y = convertGyroReading(gyro_raw_y, GYRO_SENS);
+    gyroVals_.z = convertGyroReading(gyro_raw_z, GYRO_SENS);
 }
 
 void MPU6050::readAccelValues()
@@ -124,25 +108,32 @@ void MPU6050::readAccelValues()
     uint8_t readings[NUM_REGISTERS];
     i2c_read_blocking(i2c_default, MPU6050_ADDR, readings, NUM_REGISTERS, false);
 
-    // Combining high and low bits
     const int BIT_OFFSET = 8;
-    int16_t accel_raw_x  = ((int16_t)readings[0] << BIT_OFFSET) | readings[1];
-    int16_t accel_raw_y  = ((int16_t)readings[2] << BIT_OFFSET) | readings[3];
-    int16_t accel_raw_z  = ((int16_t)readings[4] << BIT_OFFSET) | readings[5];
+    int16_t accel_raw_x  = combineBits(readings, 0, 1, BIT_OFFSET);
+    int16_t accel_raw_y  = combineBits(readings, 2, 3, BIT_OFFSET);
+    int16_t accel_raw_z  = combineBits(readings, 4, 5, BIT_OFFSET);
 
-    double g_value_x = MPU6050::convertAccelReadings(accel_raw_x);
-    double g_value_y = MPU6050::convertAccelReadings(accel_raw_y);
-    double g_value_z = MPU6050::convertAccelReadings(accel_raw_z);
-
-    this->accelVals_.x = g_value_x;
-    this->accelVals_.y = g_value_y;
-    this->accelVals_.z = g_value_z;
+    accelVals_.x = convertAccelReading(accel_raw_x, ACCEL_RANGE);
+    accelVals_.y = convertAccelReading(accel_raw_y, ACCEL_RANGE);
+    accelVals_.z = convertAccelReading(accel_raw_z, ACCEL_RANGE);
 }
 
-double MPU6050::convertAccelReadings(int16_t reading)
+int16_t MPU6050::combineBits(uint8_t bitsArr[], int highBits, int lowBits,
+                             const int offset)
 {
-    double g_value
-        = reading * ((double)(ACCEL_RANGE * 2) / (double)(1 << BIT_RESOLUTION));
+    int16_t combined = ((int16_t)bitsArr[highBits] << offset) | bitsArr[lowBits];
 
-    return g_value;
+    return combined;
+}
+
+double MPU6050::convertAccelReading(int16_t reading, int range)
+{
+    double g_val = reading * ((double)(range * 2) / (double)(1 << BIT_RESOLUTION));
+
+    return g_val;
+}
+
+double MPU6050::convertGyroReading(int16_t reading, double lsb_sens)
+{
+    return (double)reading / lsb_sens;
 }

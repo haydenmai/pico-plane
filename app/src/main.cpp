@@ -16,10 +16,6 @@
 
 #include <cstdint>
 
-// I2C reserves some addresses for special purposes. We exclude these from the scan.
-// These are any addresses of the form 000 0xxx or 111 1xxx
-bool reserved_addr(uint8_t addr) { return (addr & 0x78) == 0 || (addr & 0x78) == 0x78; }
-
 int main()
 {
     stdio_init_all();
@@ -39,18 +35,14 @@ int main()
         MPU6050::AccelVal joemama = joe.getAccelValues();
         MPU6050::GyroVal amogus   = joe.getGyroValues();
 
-        printf("\n\nx: %.3fg\n", joemama.x);
-        printf("y: %.3fg\n", joemama.y);
-        printf("z: %.3fg\n", joemama.z);
-
-        printf("\nx: %d\n", amogus.x);
-        printf("y: %d\n", amogus.y);
-        printf("z: %d\n\n", amogus.z);
+        printf("\nx: %.3fg, y: %.3fg, z: %.3fg\n", joemama.x, joemama.y, joemama.z);
+        printf("\nx: %.3f deg/sec, y: %.3f deg/sec, z: %.3f deg/sec,\n", amogus.x,
+               amogus.y, amogus.z);
 
         onboard_led.on();
-        sleep_ms(2000);
+        sleep_ms(50);
         onboard_led.off();
-        sleep_ms(5000);
+        sleep_ms(50);
     }
 
     stdio_deinit_all();

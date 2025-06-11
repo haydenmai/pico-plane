@@ -2,7 +2,7 @@
  * @file mpu6050.h
  * @brief Controls the MPU 6050 accelerometer and gyroscope.
  * @author Benley Hsiang
- * @date Jun-10-2025
+ * @date Jun-11-2025
  */
 
 #ifndef MPU_6050_H_
@@ -26,9 +26,9 @@ class MPU6050 {
      * @brief Holds gyroscope readings for the x, y, and z axes.
      */
     typedef struct {
-        int16_t x; // Note: This will probably not stay as int16_t, revisit this
-        int16_t y;
-        int16_t z;
+        double x;
+        double y;
+        double z;
     } GyroVal;
 
     /**
@@ -70,12 +70,17 @@ class MPU6050 {
     /**
      *
      */
-    double convertAccelReadings(int16_t reading);
+    int16_t combineBits(uint8_t bitsArr[], int highBits, int lowBits, const int offset);
 
     /**
      *
      */
-    // double convertGyroReadings(int16_t reading);
+    double convertAccelReading(int16_t reading, int range);
+
+    /**
+     *
+     */
+    double convertGyroReading(int16_t reading, double lsb_sens);
 };
 
 #endif
