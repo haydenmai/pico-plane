@@ -22,16 +22,6 @@ class MPU6050 {
     ~MPU6050();
 
     /**
-     * @struct GyroVal
-     * @brief Holds gyroscope readings for the x, y, and z axes.
-     */
-    typedef struct {
-        double x;
-        double y;
-        double z;
-    } GyroVal;
-
-    /**
      * @struct AccelVal
      * @brief Holds accelerometer readings for the x, y, and z directions.
      */
@@ -42,10 +32,14 @@ class MPU6050 {
     } AccelVal;
 
     /**
-     * @brief Samples the gyroscope values.
-     * @return GyroVal struct containing XYZ readings from the gyroscope.
+     * @struct GyroVal
+     * @brief Holds gyroscope readings for the x, y, and z axes.
      */
-    [[nodiscard]] GyroVal getGyroValues();
+    typedef struct {
+        double x;
+        double y;
+        double z;
+    } GyroVal;
 
     /**
      * @brief Samples the accelerometer values.
@@ -53,9 +47,15 @@ class MPU6050 {
      */
     [[nodiscard]] AccelVal getAccelValues();
 
+    /**
+     * @brief Samples the gyroscope values.
+     * @return GyroVal struct containing XYZ readings from the gyroscope.
+     */
+    [[nodiscard]] GyroVal getGyroValues();
+
   private:
-    GyroVal gyroVals_;
     AccelVal accelVals_;
+    GyroVal gyroVals_;
 
     // Power Management Registers
     static constexpr uint8_t PWR_MANAGE_1 = 0x6B;
@@ -86,12 +86,12 @@ class MPU6050 {
     /**
      *
      */
-    void readGyroValues();
+    void readAccelValues();
 
     /**
      *
      */
-    void readAccelValues();
+    void readGyroValues();
 
     /**
      *

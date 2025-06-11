@@ -14,8 +14,6 @@
 #include <cstdint>
 
 /**
- *
- *
  * Taken from:
  * https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#group_hardware_i2c
  *
@@ -43,13 +41,6 @@ MPU6050::MPU6050()
 
 MPU6050::~MPU6050() { i2c_deinit(i2c_default); }
 
-[[nodiscard]] MPU6050::GyroVal MPU6050::getGyroValues()
-{
-    readGyroValues();
-
-    return gyroVals_;
-}
-
 [[nodiscard]] MPU6050::AccelVal MPU6050::getAccelValues()
 {
     readAccelValues();
@@ -57,22 +48,11 @@ MPU6050::~MPU6050() { i2c_deinit(i2c_default); }
     return accelVals_;
 }
 
-void MPU6050::readGyroValues()
+[[nodiscard]] MPU6050::GyroVal MPU6050::getGyroValues()
 {
-    uint8_t reg = GYRO_X_HIGH;
-    i2c_write_blocking(i2c_default, MPU6050_ADDR, &reg, 1, true);
+    readGyroValues();
 
-    uint8_t readings[NUM_REGISTERS];
-    i2c_read_blocking(i2c_default, MPU6050_ADDR, readings, NUM_REGISTERS, false);
-
-    const int BIT_OFFSET = 8;
-    int16_t gyro_raw_x   = combineBits(readings, 0, 1, BIT_OFFSET);
-    int16_t gyro_raw_y   = combineBits(readings, 2, 3, BIT_OFFSET);
-    int16_t gyro_raw_z   = combineBits(readings, 4, 5, BIT_OFFSET);
-
-    gyroVals_.x = convertGyroReading(gyro_raw_x, GYRO_SENS);
-    gyroVals_.y = convertGyroReading(gyro_raw_y, GYRO_SENS);
-    gyroVals_.z = convertGyroReading(gyro_raw_z, GYRO_SENS);
+    return gyroVals_;
 }
 
 void MPU6050::readAccelValues()
@@ -91,6 +71,24 @@ void MPU6050::readAccelValues()
     accelVals_.x = convertAccelReading(accel_raw_x, ACCEL_RANGE);
     accelVals_.y = convertAccelReading(accel_raw_y, ACCEL_RANGE);
     accelVals_.z = convertAccelReading(accel_raw_z, ACCEL_RANGE);
+}
+
+void MPU6050::readGyroValues()
+{
+    uint8_t reg = GYRO_X_HIGH;
+    i2c_write_blocking(i2c_default, MPU6050_ADDR, &reg, 1, true);
+
+    uint8_t readings[NUM_REGISTERS];
+    i2c_read_blocking(i2c_default, MPU6050_ADDR, readings, NUM_REGISTERS, false);
+
+    const int BIT_OFFSET = 8;
+    int16_t gyro_raw_x   = combineBits(readings, 0, 1, BIT_OFFSET);
+    int16_t gyro_raw_y   = combineBits(readings, 2, 3, BIT_OFFSET);
+    int16_t gyro_raw_z   = combineBits(readings, 4, 5, BIT_OFFSET);
+
+    gyroVals_.x = convertGyroReading(gyro_raw_x, GYRO_SENS);
+    gyroVals_.y = convertGyroReading(gyro_raw_y, GYRO_SENS);
+    gyroVals_.z = convertGyroReading(gyro_raw_z, GYRO_SENS);
 }
 
 int16_t MPU6050::combineBits(uint8_t bitsArr[], int highBits, int lowBits,
