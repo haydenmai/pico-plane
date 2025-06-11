@@ -68,9 +68,9 @@ void MPU6050::readAccelValues(void)
     int16_t accel_raw_y  = combineBits(readings, 2, 3, BIT_OFFSET);
     int16_t accel_raw_z  = combineBits(readings, 4, 5, BIT_OFFSET);
 
-    accelVals_.x = convertAccelReading(accel_raw_x, ACCEL_RANGE);
-    accelVals_.y = convertAccelReading(accel_raw_y, ACCEL_RANGE);
-    accelVals_.z = convertAccelReading(accel_raw_z, ACCEL_RANGE);
+    accelVals_.x = convertAccelReading(accel_raw_x, ACCEL_RANGE) + 0.012; // Calibrating
+    accelVals_.y = convertAccelReading(accel_raw_y, ACCEL_RANGE) - 0.005; // the values
+    accelVals_.z = convertAccelReading(accel_raw_z, ACCEL_RANGE) - 0.12; // so 0/1 at rest
 }
 
 void MPU6050::readGyroValues(void)
@@ -86,9 +86,9 @@ void MPU6050::readGyroValues(void)
     int16_t gyro_raw_y   = combineBits(readings, 2, 3, BIT_OFFSET);
     int16_t gyro_raw_z   = combineBits(readings, 4, 5, BIT_OFFSET);
 
-    gyroVals_.x = convertGyroReading(gyro_raw_x, GYRO_SENS);
-    gyroVals_.y = convertGyroReading(gyro_raw_y, GYRO_SENS);
-    gyroVals_.z = convertGyroReading(gyro_raw_z, GYRO_SENS);
+    gyroVals_.x = convertGyroReading(gyro_raw_x, GYRO_SENS) - 0.5; // Calibrating the
+    gyroVals_.y = convertGyroReading(gyro_raw_y, GYRO_SENS) - 4.1; // values so they're
+    gyroVals_.z = convertGyroReading(gyro_raw_z, GYRO_SENS) + 0.2; // 0 at rest
 }
 
 int16_t MPU6050::combineBits(uint8_t bitsArr[], int highBits, int lowBits,
