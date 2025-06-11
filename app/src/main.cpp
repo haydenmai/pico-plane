@@ -14,13 +14,22 @@
 
 #include <stdio.h>
 
-auto led14 = pwmLED(14);
-auto led15 = pwmLED(15);
+auto srv14 = ServoMG90S(14);
+auto srv15 = ServoMG90S(15);
+auto srv16 = ServoMG90S(16);
+
+auto led17 = pwmLED(17);
+auto led18 = pwmLED(18);
 auto led19 = pwmLED(19);
 
-auto srv16 = ServoMG90S(16);
-auto srv17 = ServoMG90S(17);
-auto srv18 = ServoMG90S(18);
+int map_to_range2(int range1_val, int range1_min, int range1_max, int range2_min,
+                  int range2_max)
+{
+    return (range2_max - range2_min) * static_cast<double>(range1_val - range1_min)
+             / static_cast<double>(range1_max - range1_min)
+         + range2_min;
+}
+
 
 void on_rc_channels(const uint16_t channels[16])
 {
@@ -42,15 +51,18 @@ void on_rc_channels(const uint16_t channels[16])
     // printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
     // printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
 
-	srv16.setAngle(TICKS_TO_US(channels[0]));
-	srv17.setAngle(TICKS_TO_US(channels[1]));
-	srv18.setAngle(TICKS_TO_US(channels[3]));
+    int deg1 {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 0, 180)};
+    int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
+    int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
+    srv14.setAngle(deg1);
+    srv15.setAngle(deg2);
+    srv16.setAngle(deg3);
 
-    led14.setBrightness(TICKS_TO_US(channels[2]));
-    led15.setBrightness(TICKS_TO_US(channels[4]));
-    led19.setBrightness(TICKS_TO_US(channels[5]));
+	led17.setBrightness(TICKS_TO_US(channels[2]));
+	led18.setBrightness(TICKS_TO_US(channels[4]));
+	led19.setBrightness(TICKS_TO_US(channels[5]));
+
 }
-
 
 void on_link_stats(const link_statistics_t link_stats)
 {

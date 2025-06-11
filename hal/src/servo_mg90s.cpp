@@ -50,14 +50,8 @@ void ServoMG90S::setAngle(int degrees) noexcept
      * 90 degrees	-> 1.5ms pulse
      * 180 degress	-> 2.5ms pulse
      */
-    angle = angle - 1000;
-    return static_cast<double>(WRAP_COUNT) * static_cast<double>(angle)
-         / static_cast<double>(1000);
+    constexpr uint16_t MIN_US {500};              // Starting offset for pulse
+    constexpr uint16_t DELTA_US {2000 / MAX_DEG}; // Per degree pulse difference
 
-    /**
-        constexpr uint16_t MIN_US {500};              // Starting offset for pulse
-        constexpr uint16_t DELTA_US {2000 / MAX_DEG}; // Per degree pulse difference
-
-        return MIN_US + (angle * DELTA_US);
-            */
+    return MIN_US + (angle * DELTA_US);
 }
