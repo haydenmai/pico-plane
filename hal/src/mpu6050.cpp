@@ -41,21 +41,21 @@ MPU6050::MPU6050()
 
 MPU6050::~MPU6050() { i2c_deinit(i2c_default); }
 
-[[nodiscard]] MPU6050::AccelVal MPU6050::getAccelValues()
+[[nodiscard]] MPU6050::AccelVal MPU6050::getAccelValues(void)
 {
     readAccelValues();
 
     return accelVals_;
 }
 
-[[nodiscard]] MPU6050::GyroVal MPU6050::getGyroValues()
+[[nodiscard]] MPU6050::GyroVal MPU6050::getGyroValues(void)
 {
     readGyroValues();
 
     return gyroVals_;
 }
 
-void MPU6050::readAccelValues()
+void MPU6050::readAccelValues(void)
 {
     uint8_t reg = ACCEL_X_HIGH;
     i2c_write_blocking(i2c_default, MPU6050_ADDR, &reg, 1, true);
@@ -73,7 +73,7 @@ void MPU6050::readAccelValues()
     accelVals_.z = convertAccelReading(accel_raw_z, ACCEL_RANGE);
 }
 
-void MPU6050::readGyroValues()
+void MPU6050::readGyroValues(void)
 {
     uint8_t reg = GYRO_X_HIGH;
     i2c_write_blocking(i2c_default, MPU6050_ADDR, &reg, 1, true);
