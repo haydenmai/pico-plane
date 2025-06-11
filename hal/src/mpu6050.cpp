@@ -13,39 +13,14 @@
 
 #include <cstdint>
 
-// Power Management Registers
-#define PWR_MANAGE_1 0x6B
-#define PWR_MANAGE_2 0x6C
-
-// Configuration Registers
-#define GYRO_CONFIG  0x1B
-#define ACCEL_CONFIG 0x1C
-
-// Slave 0 Control Registers
-#define I2C_SLV0_ADDR 0x25
-#define I2C_SLV0_REG  0x26
-#define I2C_SLV0_CTRL 0x27
-
-// I2C Writing and Reading
-#define MPU6050_ADDR   0x68
-#define NUM_REGISTERS  6
-#define BIT_RESOLUTION 16
-
-// Measurement Registers
-#define ACCEL_X_HIGH 0x3B
-#define GYRO_X_HIGH  0x43
-
-// Full Scale Range/LSB Sensitivity
-#define ACCEL_RANGE /* +- */ 2 /* g */
-#define GYRO_SENS   131.0      /* LSB/ degree/second */
-
 /**
  *
  *
  * Taken from:
  * https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#group_hardware_i2c
  *
- * Note: I have a feeling this probably doesn't work for multiple instances of the object
+ * Note: I have a feeling this probably doesn't work for multiple instances of the
+ * object
  */
 MPU6050::MPU6050()
 {
@@ -126,9 +101,9 @@ int16_t MPU6050::combineBits(uint8_t bitsArr[], int highBits, int lowBits,
     return combined;
 }
 
-double MPU6050::convertAccelReading(int16_t reading, int range)
+double MPU6050::convertAccelReading(int16_t reading, double range)
 {
-    double g_val = reading * ((double)(range * 2) / (double)(1 << BIT_RESOLUTION));
+    double g_val = reading * ((range * 2) / (double)(1 << BIT_RESOLUTION));
 
     return g_val;
 }
