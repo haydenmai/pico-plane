@@ -26,7 +26,7 @@
 #define BAUD_RATE           420000
 #define CRSF_MAX_CHANNELS   16
 #define CRSF_MAX_FRAME_SIZE 64
-#define CRSF_DEBUG          1
+#define CRSF_DEBUG          0
 #if CRSF_DEBUG
 #include <stdio.h>
 #define DEBUG_WARN(...) fprintf(stderr, __VA_ARGS__)
@@ -451,6 +451,7 @@ bool crsf_process_frame(uint8_t *frameIndex, uint8_t *frameLength, uint8_t *crcI
                 break;
             }
 
+			// TODO: Double check whether this is correct
             *frameIndex = 0;
             return true;
 

@@ -8,19 +8,19 @@
 
 #include "crsf/crsf.h"
 #include "hal/pwm_led.h"
+#include "hal/servo_mg90s.h"
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
 #include <stdio.h>
 
-auto led16 = pwmLED(16);
-auto led17 = pwmLED(17);
-auto led18 = pwmLED(18);
+auto led14 = pwmLED(14);
+auto led15 = pwmLED(15);
 auto led19 = pwmLED(19);
-auto led20 = pwmLED(20);
-auto led21 = pwmLED(21);
-auto led22 = pwmLED(22);
-auto led23 = pwmLED(23);
+
+auto srv16 = ServoMG90S(16);
+auto srv17 = ServoMG90S(17);
+auto srv18 = ServoMG90S(18);
 
 void on_rc_channels(const uint16_t channels[16])
 {
@@ -42,15 +42,15 @@ void on_rc_channels(const uint16_t channels[16])
     // printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
     // printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
 
-    led16.setBrightness(TICKS_TO_US(channels[0]));
-    led17.setBrightness(TICKS_TO_US(channels[1]));
-    led18.setBrightness(TICKS_TO_US(channels[2]));
-    led19.setBrightness(TICKS_TO_US(channels[3]));
-    led20.setBrightness(TICKS_TO_US(channels[4]));
-    led21.setBrightness(TICKS_TO_US(channels[5]));
-    led22.setBrightness(TICKS_TO_US(channels[6]));
-    led23.setBrightness(TICKS_TO_US(channels[7]));
+	srv16.setAngle(TICKS_TO_US(channels[0]));
+	srv17.setAngle(TICKS_TO_US(channels[1]));
+	srv18.setAngle(TICKS_TO_US(channels[3]));
+
+    led14.setBrightness(TICKS_TO_US(channels[2]));
+    led15.setBrightness(TICKS_TO_US(channels[4]));
+    led19.setBrightness(TICKS_TO_US(channels[5]));
 }
+
 
 void on_link_stats(const link_statistics_t link_stats)
 {
