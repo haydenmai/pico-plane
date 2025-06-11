@@ -53,34 +53,34 @@ class MPU6050 {
     [[nodiscard]] GyroVal getGyroValues(void);
 
   private:
-    AccelVal accelVals_;
-    GyroVal gyroVals_;
-
     // Power Management Registers
-    static constexpr uint8_t PWR_MANAGE_1 = 0x6B;
-    static constexpr uint8_t PWR_MANAGE_2 = 0x6C;
+    static constexpr uint8_t PWR_MANAGE_1 {0x6B};
+    static constexpr uint8_t PWR_MANAGE_2 {0x6C};
 
     // Configuration Registers
-    static constexpr uint8_t GYRO_CONFIG  = 0x1B;
-    static constexpr uint8_t ACCEL_CONFIG = 0x1C;
+    static constexpr uint8_t GYRO_CONFIG {0x1B};
+    static constexpr uint8_t ACCEL_CONFIG {0x1C};
 
     // Slave 0 Control Registers
-    static constexpr uint8_t I2C_SLV0_ADDR = 0x25;
-    static constexpr uint8_t I2C_SLV0_REG  = 0x26;
-    static constexpr uint8_t I2C_SLV0_CTRL = 0x27;
+    static constexpr uint8_t I2C_SLV0_ADDR {0x25};
+    static constexpr uint8_t I2C_SLV0_REG {0x26};
+    static constexpr uint8_t I2C_SLV0_CTRL {0x27};
 
     // I2C Writing and Reading
-    static constexpr uint8_t MPU6050_ADDR = 0x68;
-    static constexpr int NUM_REGISTERS    = 6;
-    static constexpr int BIT_RESOLUTION   = 16;
+    static constexpr uint8_t MPU6050_ADDR {0x68};
+    static constexpr int NUM_REGISTERS {6};
+    static constexpr int BIT_RESOLUTION {16};
 
     // Measurement Registers
-    static constexpr uint8_t ACCEL_X_HIGH = 0x3B;
-    static constexpr uint8_t GYRO_X_HIGH  = 0x43;
+    static constexpr uint8_t ACCEL_X_HIGH {0x3B};
+    static constexpr uint8_t GYRO_X_HIGH {0x43};
 
     // Full Scale Range/LSB Sensitivity
-    static constexpr double ACCEL_RANGE = /* +- */ 2.0 /* g */;
-    static constexpr double GYRO_SENS   = 131.0 /* LSB/ degree/second */;
+    static constexpr double ACCEL_RANGE {/* +- */ 2.0f /* g */};
+    static constexpr double GYRO_SENS {131.0f} /* LSB/ degree/second */;
+
+    AccelVal accelVals_;
+    GyroVal gyroVals_;
 
     /**
      * @brief Reads from the accelerometer and stores the values in accelVals_ private
