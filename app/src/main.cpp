@@ -8,7 +8,6 @@
 
 #include "crsf/crsf.h"
 #include "hal/pwm_led.h"
-#include "hal/servo_mg90s.h"
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
@@ -17,9 +16,9 @@
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
-auto srv14 = ServoMG90S(14);
-auto srv15 = ServoMG90S(15);
-auto srv16 = ServoMG90S(16);
+auto srv14 = ServoDSM005(14);
+auto srv15 = ServoDSM005(15);
+auto srv16 = ServoDSM005(16);
 
 auto led17 = pwmLED(17);
 auto led18 = pwmLED(18);
