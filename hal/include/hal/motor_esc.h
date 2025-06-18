@@ -1,18 +1,18 @@
 /**
- * @file esc.h
+ * @file motor_esc.h
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
  * @date Jun-18-2025
  */
 
-#ifndef ESC_H_
-#define ESC_H_
+#ifndef MOTOR_ESC_H_
+#define MOTOR_ESC_H_
 
 /**
  * @class
  * @brief
  */
-class Esc {
+class MotorEsc {
   public:
     //
   private:
