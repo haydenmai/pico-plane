@@ -3,20 +3,22 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date May-07-2025
+ * @date Jun-18-2025
  */
 
 #include "crsf/crsf.h"
 #include "hal/pwm_led.h"
-#include "hal/servo_mg90s.h"
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
+#include "hal/mpu6050.h"
+#include "hal/pico_led.h"
+#include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
-auto srv14 = ServoMG90S(14);
-auto srv15 = ServoMG90S(15);
-auto srv16 = ServoMG90S(16);
+auto srv14 = ServoDSM005(14);
+auto srv15 = ServoDSM005(15);
+auto srv16 = ServoDSM005(16);
 
 auto led17 = pwmLED(17);
 auto led18 = pwmLED(18);
@@ -58,10 +60,9 @@ void on_rc_channels(const uint16_t channels[16])
     srv15.setAngle(deg2);
     srv16.setAngle(deg3);
 
-	led17.setBrightness(TICKS_TO_US(channels[2]));
-	led18.setBrightness(TICKS_TO_US(channels[4]));
-	led19.setBrightness(TICKS_TO_US(channels[5]));
-
+    led17.setBrightness(TICKS_TO_US(channels[2]));
+    led18.setBrightness(TICKS_TO_US(channels[4]));
+    led19.setBrightness(TICKS_TO_US(channels[5]));
 }
 
 void on_link_stats(const link_statistics_t link_stats)
@@ -89,29 +90,30 @@ int main()
 
     for (;;)
         crsf_process_frames();
-/**
-    sleep_ms(10000);
+    /**
+        sleep_ms(10000);
 
-    MPU6050 joe = MPU6050();
+        servo.setAngle(0);
 
-    while (true) {
+        MPU6050 joe = MPU6050();
 
-        MPU6050::AccelVal joemama = joe.getAccelValues();
-        MPU6050::GyroVal amogus   = joe.getGyroValues();
+        while (true) {
 
-        printf("\nx: %.3fg, y: %.3fg, z: %.3fg\n", joemama.x, joemama.y, joemama.z);
-        printf("\nx: %.3f deg/sec, y: %.3f deg/sec, z: %.3f deg/sec,\n", amogus.x,
-               amogus.y, amogus.z);
+            MPU6050::AccelVal joemama = joe.getAccelValues();
+            MPU6050::GyroVal amogus   = joe.getGyroValues();
 
-        onboard_led.on();
-        sleep_ms(50);
-        onboard_led.off();
-        sleep_ms(50);
-    }
-    **/
+            printf("\nx: %.3fg, y: %.3fg, z: %.3fg\n", joemama.x, joemama.y, joemama.z);
+            printf("\nx: %.3f deg/sec, y: %.3f deg/sec, z: %.3f deg/sec,\n", amogus.x,
+                   amogus.y, amogus.z);
+
+            onboard_led.on();
+            sleep_ms(50);
+            onboard_led.off();
+            sleep_ms(50);
+        }
+        **/
 
     stdio_deinit_all();
-    cyw43_arch_deinit();
 
     return 0;
 }

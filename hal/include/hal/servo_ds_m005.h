@@ -1,33 +1,28 @@
 /**
- * @file servo_mg90s.h
- * @brief Controls an MG90S servo via PWM on a Pi Pico W.
- * @author Hayden Mai
- * @date May-01-2025
+ * @file servo_ds_m005.h
+ * @brief Controls a DS-M005 servo via PWM on a Raspberry Pi Pico W.
+ * @author Hayden Mai, Benley Hsiang
+ * @date Jun-18-2025
  */
 
-#ifndef SERVO_MG90S_H_
-#define SERVO_MG90S_H_
+#ifndef SERVO_DS_M005_H_
+#define SERVO_DS_M005_H_
 
 #include <cstdint>
 
-// TODO: Only one instance per pin
-// TODO?: Use exceptions?
-// TODO: Find good divider and wrap value for more precision
-
 /**
- * @class ServoMG90S
- * @brief Class for driving a MG90S servo on Raspberry Pi Pico W using PWM.
+ * @class ServoDSM005
+ * @brief Class for driving a DS-M005 servo via PWM on a Raspberry Pi Pico W.
  */
-class ServoMG90S {
+class ServoDSM005 {
   public:
     /** @brief Minimum valid angle in degrees. */
     static constexpr int MIN_DEG {0};
     /** @brief Maximum valid angle in degrees. */
     static constexpr int MAX_DEG {180};
 
-
-    explicit ServoMG90S(int pinNum);
-    ~ServoMG90S();
+    explicit ServoDSM005(int pinNum);
+    ~ServoDSM005();
 
     /**
      * @brief Commands the servo to move to a specified angle.
@@ -52,7 +47,7 @@ class ServoMG90S {
     const int pinNum_; ///< GPIO pin
     int sliceNum_;     ///< PWM slice index
     int channelNum_;   ///< PWM channel (A/B)
-    int cur_angle_ {}; ///< last commanded angle
+    int curAngle_ {};  ///< last commanded angle
 
 
     /**
