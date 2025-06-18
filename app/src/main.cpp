@@ -114,7 +114,6 @@ int main()
         **/
 
     stdio_deinit_all();
-    cyw43_arch_deinit();
 
     return 0;
 }
