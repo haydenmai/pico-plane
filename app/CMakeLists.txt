@@ -6,9 +6,11 @@ add_executable(${APP_TARGET} ${MY_SOURCES})
 # Link required libraries
 target_link_libraries(${APP_TARGET}
     PRIVATE hal						# Make use of the HAL library
+	PRIVATE crsf
     PRIVATE pico_stdlib				# Add the standard library to the build
     PRIVATE pico_cyw43_arch_none
 	PRIVATE hardware_adc
+	PRIVATE hardware_pwm
 	PRIVATE pico_bootsel_via_double_reset # Boot to MSD on double click
     PRIVATE hardware_i2c
 )
@@ -19,8 +21,8 @@ pico_set_program_version(${APP_TARGET} "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 # Debug output with USB uses +6K memory
-pico_enable_stdio_uart(${APP_TARGET} 1)
-pico_enable_stdio_usb(${APP_TARGET}  1)
+pico_enable_stdio_uart(${APP_TARGET} 0)
+pico_enable_stdio_usb(${APP_TARGET}  0)
 
 pico_set_float_implementation(${APP_TARGET} pico) 	# Default, but explicit declaration
 #pico_set_binary_type(${APP_TARGET} no_flash) 		# Run from RAM

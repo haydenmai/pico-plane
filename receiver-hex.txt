@@ -1,0 +1,22 @@
+// Flipped up
+c8 18 16 e0 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9a 
+c8 18 16 df 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 18 
+c8 18 16 e0 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9a 
+c8 18 16 e0 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9a 
+c8 18 16 e0 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9a
+
+
+
+// Flipped down
+c8 18 16 df 23 df 2f c0 07 f0 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 5c 
+c8 18 16 e0 13 df 2f c0 07 f0 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 2d 
+c8 18 16 df 23 df 2f c4 07 f0 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 a4 
+c8 18 16 e0 23 df 2f c0 07 f0 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 de 
+c8 18 16 df 23 df 2f c0 07 f0 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 5c  
+
+// Flipped up
+c8 18 16 e0 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9a 
+c8 18 16 e0 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9a
+c8 18 16 dd 13 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9d 
+c8 18 16 e0 23 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 9a 
+c8 18 16 df 13 df 2f c0 f7 8b 5f fc e2 17 bf 28 5f f9 ca 07 00 00 4c 7c e2 eb 
