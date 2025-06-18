@@ -12,6 +12,7 @@ target_link_libraries(${APP_TARGET}
 	PRIVATE hardware_adc
 	PRIVATE hardware_pwm
 	PRIVATE pico_bootsel_via_double_reset # Boot to MSD on double click
+    PRIVATE hardware_i2c
 )
 
 # Set program name and version (used by tools like picotool)

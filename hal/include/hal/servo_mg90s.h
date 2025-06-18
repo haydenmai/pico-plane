@@ -12,6 +12,7 @@
 
 // TODO: Only one instance per pin
 // TODO?: Use exceptions?
+// TODO: Find good divider and wrap value for more precision
 
 /**
  * @class ServoMG90S
