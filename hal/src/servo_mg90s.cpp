@@ -34,12 +34,12 @@ void ServoMG90S::setAngle(int degrees) noexcept
     if (degrees >= MIN_DEG && degrees <= MAX_DEG) {
         int pulse_us {angleToPulse_us(degrees)};
         pwm_set_chan_level(sliceNum_, channelNum_, pulse_us);
-        cur_angle_ = degrees;
+        curAngle_ = degrees;
     }
 }
 
 
-[[nodiscard]] int ServoMG90S::getAngle() const noexcept { return cur_angle_; }
+[[nodiscard]] int ServoMG90S::getAngle() const noexcept { return curAngle_; }
 
 
 [[nodiscard]] uint16_t ServoMG90S::angleToPulse_us(int angle) const noexcept
