@@ -10,6 +10,7 @@ target_link_libraries(${APP_TARGET}
     PRIVATE pico_cyw43_arch_none
 	PRIVATE hardware_adc
 	PRIVATE pico_bootsel_via_double_reset # Boot to MSD on double click
+    PRIVATE hardware_i2c
 )
 
 # Set program name and version (used by tools like picotool)
@@ -19,7 +20,7 @@ pico_set_program_version(${APP_TARGET} "0.1")
 # Modify the below lines to enable/disable output over UART/USB
 # Debug output with USB uses +6K memory
 pico_enable_stdio_uart(${APP_TARGET} 1)
-pico_enable_stdio_usb(${APP_TARGET}  0)
+pico_enable_stdio_usb(${APP_TARGET}  1)
 
 pico_set_float_implementation(${APP_TARGET} pico) 	# Default, but explicit declaration
 #pico_set_binary_type(${APP_TARGET} no_flash) 		# Run from RAM
