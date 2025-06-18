@@ -10,32 +10,32 @@
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
-ServoDSM005::ServoDSM005(int pinNum) : pinNum(pinNum)
+ServoDSM005::ServoDSM005(int pinNum) : pinNum_(pinNum)
 {
     // Route pin to the PWM block
     gpio_set_function(pinNum, GPIO_FUNC_PWM);
-    sliceNum   = pwm_gpio_to_slice_num(pinNum);
-    channelNum = pwm_gpio_to_channel(pinNum);
+    sliceNum_   = pwm_gpio_to_slice_num(pinNum);
+    channelNum_ = pwm_gpio_to_channel(pinNum);
 
     pwm_config cfg = pwm_get_default_config();
     pwm_config_set_clkdiv(&cfg, DIVIDER);  // 125 MHz / 125 = 1MHz
     pwm_config_set_wrap(&cfg, WRAP_COUNT); // 20,000 ticks = 20ms (50hz)
-    pwm_init(sliceNum, &cfg, true);
+    pwm_init(sliceNum_, &cfg, true);
 }
 
-ServoDSM005::~ServoDSM005() { pwm_set_enabled(sliceNum, false); }
+ServoDSM005::~ServoDSM005() { pwm_set_enabled(sliceNum_, false); }
 
 void ServoDSM005::setAngle(int degrees) noexcept
 {
     // If degrees are out of bounds, do nothing
     if (degrees >= MIN_DEG && degrees <= MAX_DEG) {
         int pulse_us {angleToPulse_us(degrees)};
-        pwm_set_chan_level(sliceNum, channelNum, pulse_us);
-        curAngle = degrees;
+        pwm_set_chan_level(sliceNum_, channelNum_, pulse_us);
+        curAngle_ = degrees;
     }
 }
 
-[[nodiscard]] int ServoDSM005::getAngle() const noexcept { return curAngle; }
+[[nodiscard]] int ServoDSM005::getAngle() const noexcept { return curAngle_; }
 
 [[nodiscard]] uint16_t ServoDSM005::angleToPulse_us(int angle) const noexcept
 {
