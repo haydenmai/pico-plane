@@ -7,14 +7,17 @@
  */
 
 #include "crsf/crsf.h"
-#include "hal/pwm_led.h"
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
+#include "hal/motor_esc.h"
 #include "hal/mpu6050.h"
 #include "hal/pico_led.h"
+#include "hal/pwm_led.h"
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
+
+auto esc18 = MotorEsc(18);
 
 auto srv14 = ServoDSM005(14);
 auto srv15 = ServoDSM005(15);
@@ -56,6 +59,12 @@ void on_rc_channels(const uint16_t channels[16])
     int deg1 {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 0, 180)};
     int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
     int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
+
+    // WARNING: Setting range2_max to 50 caused the ESC to fry itself
+    int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 1)};
+
+    esc18.setSpeed(throttle);
+
     srv14.setAngle(deg1);
     srv15.setAngle(deg2);
     srv16.setAngle(deg3);

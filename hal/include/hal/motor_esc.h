@@ -40,8 +40,8 @@ class MotorEsc {
     [[nodiscard]] int getSpeed() const noexcept;
 
   private:
-    /** @brief PWM counter wrap value for a 10ms frame at 1MHz tick. */
-    static constexpr int WRAP_COUNT {10000};
+    /** @brief PWM counter wrap value for a 20ms frame at 1MHz tick. */
+    static constexpr int WRAP_COUNT {20000};
     /** @brief PWM clock divider to derive 1MHz from the 125MHz system clock. */
     static constexpr float DIVIDER {125.0f};
 
