@@ -2,7 +2,7 @@
  * @file motor_esc.h
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
- * @date Jun-18-2025
+ * @date Jun-25-2025
  */
 
 #include "hal/motor_esc.h"
@@ -10,7 +10,9 @@
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
-MotorEsc::MotorEsc(int pinNum) : pinNum_(pinNum)
+#include <stdio.h> // Remove later if not needed
+
+MotorEsc::MotorEsc(int pinNum, int throttleLim) : pinNum_(pinNum)
 {
     // Route pin to the PWM block
     gpio_set_function(pinNum, GPIO_FUNC_PWM);
@@ -21,9 +23,30 @@ MotorEsc::MotorEsc(int pinNum) : pinNum_(pinNum)
     pwm_config_set_clkdiv(&cfg, DIVIDER);  // 125 MHz / 125 = 1MHz
     pwm_config_set_wrap(&cfg, WRAP_COUNT); // 20,000 ticks = 20ms (50hz)
     pwm_init(sliceNum_, &cfg, true);
+
+    if (throttleLim >= MIN_THROT && throttleLim <= MAX_THROT) {
+        throttleLim_ = throttleLim;
+
+    } else {
+        printf("Error: Illegal value for throttle limit.\n");
+        // TODO: Replace this with exception handling eventually.
+    }
 }
 
 MotorEsc::~MotorEsc() { pwm_set_enabled(sliceNum_, false); }
+
+void MotorEsc::setThrottleLim(int limit) noexcept
+{
+    if (limit >= MIN_THROT && limit <= MAX_THROT) {
+        throttleLim_ = limit;
+
+    } else {
+        printf("Error: Illegal value for throttle limit.\n");
+        // TODO: Replace this with exception handling eventually.
+    }
+}
+
+[[nodiscard]] int MotorEsc::getThrottleLim(void) const noexcept { return throttleLim_; }
 
 void MotorEsc::setSpeed(int percent) noexcept
 {
@@ -35,7 +58,7 @@ void MotorEsc::setSpeed(int percent) noexcept
     }
 }
 
-[[nodiscard]] int MotorEsc::getSpeed() const noexcept { return curSpeed_; }
+[[nodiscard]] int MotorEsc::getSpeed(void) const noexcept { return curSpeed_; }
 
 [[nodiscard]] uint16_t MotorEsc::percentToPulse_us(int percent) const noexcept
 {
@@ -47,5 +70,9 @@ void MotorEsc::setSpeed(int percent) noexcept
     constexpr uint16_t MIN_US {1000};
     // constexpr uint16_t MAX_US {2000};
 
-    return MIN_US + ((double)percent / 100) * MIN_US;
+    // Testing, remove temp variable later
+    uint16_t temp = MIN_US + (static_cast<double>(percent) / 100.0) * MIN_US;
+    printf("\nmotor_esc.cpp: percentToPulse_us(%u) == %d\n\n", percent, temp);
+    return temp;
+    // Testing, remove temp variable later
 }

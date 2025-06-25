@@ -3,7 +3,7 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Jun-18-2025
+ * @date Jun-25-2025
  */
 
 #include "crsf/crsf.h"
@@ -17,7 +17,7 @@
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
-auto esc18 = MotorEsc(18);
+auto esc18 = MotorEsc(18, 5); // Throttle limit 5% for now
 
 auto srv14 = ServoDSM005(14);
 auto srv15 = ServoDSM005(15);
@@ -60,8 +60,7 @@ void on_rc_channels(const uint16_t channels[16])
     int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
     int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
 
-    // WARNING: Setting range2_max to 50 caused the ESC to fry itself
-    int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 1)};
+    int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 100)};
 
     esc18.setSpeed(throttle);
 
