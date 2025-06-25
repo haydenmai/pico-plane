@@ -2,7 +2,7 @@
  * @file servo_ds_m005.cpp
  * @brief Controls a DS-M005 servo via PWM on a Raspberry Pi Pico W.
  * @author Hayden Mai, Benley Hsiang
- * @date Jun-18-2025
+ * @date Jun-25-2025
  */
 
 #include "hal/servo_ds_m005.h"
@@ -10,7 +10,9 @@
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
-ServoDSM005::ServoDSM005(int pinNum) : pinNum_(pinNum)
+#include <stdio.h> // Remove later if not needed
+
+ServoDSM005::ServoDSM005(int pinNum, int degLowerLim, int degUpperLim) : pinNum_(pinNum)
 {
     // Route pin to the PWM block
     gpio_set_function(pinNum, GPIO_FUNC_PWM);
@@ -21,9 +23,40 @@ ServoDSM005::ServoDSM005(int pinNum) : pinNum_(pinNum)
     pwm_config_set_clkdiv(&cfg, DIVIDER);  // 125 MHz / 125 = 1MHz
     pwm_config_set_wrap(&cfg, WRAP_COUNT); // 20,000 ticks = 20ms (50hz)
     pwm_init(sliceNum_, &cfg, true);
+
+    setDegRange(degLowerLim, degUpperLim);
 }
 
 ServoDSM005::~ServoDSM005() { pwm_set_enabled(sliceNum_, false); }
+
+void ServoDSM005::setDegRange(int lower, int upper) noexcept
+{
+    if (lower >= MIN_DEG && lower <= upper) {
+        degLowerLim_ = lower;
+
+    } else {
+        printf("Error: Illegal value for the servo's lower limit.\n");
+        // TODO: Replace this with exception handling eventually.
+    }
+
+    if (upper >= lower && upper <= MAX_DEG) {
+        degUpperLim_ = upper;
+
+    } else {
+        printf("Error: Illegal value for the servo's upper limit.\n");
+        // TODO: Replace this with exception handling eventually.
+    }
+}
+
+[[nodiscard]] int ServoDSM005::getDegLowerLim(void) const noexcept
+{
+    return degLowerLim_;
+}
+
+[[nodiscard]] int ServoDSM005::getDegUpperLim(void) const noexcept
+{
+    return degUpperLim_;
+}
 
 void ServoDSM005::setAngle(int degrees) noexcept
 {
