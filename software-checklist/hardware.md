@@ -4,7 +4,9 @@ There are many factors that may contribute to a piece of hardware failing. This 
 One factor we can attempt to remedy is unsafe code via robust handling and hard-limit input values, as well as ensuring hardware does not behave outside of its intended behaviour.
 
 ## Watchdog
-
+- If control link is lost for 1 second, disarm.
+- Send arming signal to dji air unit to get full vtx power
+- on screen display (battery voltage, link quality, rssi, etc)
 
 ## Electronic Speed Control
 - [ ] Was it correctly programmed? (50hz PWM signals, refer to source)
