@@ -2,7 +2,7 @@
  * @file servo_ds_m005.cpp
  * @brief Controls a DS-M005 servo via PWM on a Raspberry Pi Pico W.
  * @author Hayden Mai, Benley Hsiang
- * @date JuL-02-2025
+ * @date Jul-02-2025
  */
 
 #include "hal/servo_ds_m005.h"

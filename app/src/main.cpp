@@ -31,7 +31,6 @@ int map_to_range2(int range1_val, int range1_min, int range1_max, int range2_min
          + range2_min;
 }
 
-
 void on_rc_channels(const uint16_t channels[16])
 {
     printf("Channel 1: %f\n", TICKS_TO_US(channels[0]));
