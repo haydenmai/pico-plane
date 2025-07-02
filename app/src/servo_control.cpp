@@ -6,3 +6,8 @@
  */
 
 #include "servo_control.h"
+
+// static constexpr int SERVO_1_PIN = ;
+// static constexpr int SERVO_2_PIN = ;
+// static constexpr int SERVO_3_PIN = ;
+// static constexpr int SERVO_4_PIN = ;

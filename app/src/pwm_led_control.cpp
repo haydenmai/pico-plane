@@ -6,3 +6,8 @@
  */
 
 #include "pwm_led.h"
+
+// GPIO pin numbers
+static constexpr int PWM_LED_1_PIN = 17;
+static constexpr int PWM_LED_2_PIN = 18;
+static constexpr int PWM_LED_3_PIN = 19;

@@ -6,3 +6,6 @@
  */
 
 #include "esc_control.h"
+
+// GPIO pin numbers
+static constexpr int ESC_1_PIN = 18;

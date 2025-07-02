@@ -10,6 +10,11 @@
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
+#include "esc_control.h"
+#include "mpu_control.h"
+#include "pwm_led_control.h"
+#include "servo_control.h"
+
 #include "hal/motor_esc.h"
 #include "hal/mpu6050.h"
 #include "hal/pico_led.h"
