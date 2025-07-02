@@ -49,7 +49,6 @@ class ServoDSM005 {
     int channelNum_;   ///< PWM channel (A/B)
     int curAngle_ {};  ///< last commanded angle
 
-
     /**
      * @brief Converts an angle in degrees to a pulse width in microseconds.
      * @param angle Angle in degrees to convert.
