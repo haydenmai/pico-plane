@@ -3,7 +3,7 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Jun-25-2025
+ * @date Jul-02-2025
  */
 
 #include "crsf/crsf.h"
@@ -17,15 +17,11 @@
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
-auto esc18 = MotorEsc(18, 5); // Throttle limit 5% for now
+auto esc18 = MotorEsc(18, 100); // Throttle limit 5% for now
 
-auto srv14 = ServoDSM005(14);
-auto srv15 = ServoDSM005(15);
-auto srv16 = ServoDSM005(16);
-
-auto led17 = pwmLED(17);
-auto led18 = pwmLED(18);
-auto led19 = pwmLED(19);
+// auto led17 = pwmLED(17);
+// auto led18 = pwmLED(18);
+// auto led19 = pwmLED(19);
 
 int map_to_range2(int range1_val, int range1_min, int range1_max, int range2_min,
                   int range2_max)
@@ -56,21 +52,21 @@ void on_rc_channels(const uint16_t channels[16])
     // printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
     // printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
 
-    int deg1 {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 0, 180)};
-    int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
-    int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
+    // int deg1 {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 0, 180)};
+    // int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
+    // int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
 
     int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 100)};
 
     esc18.setSpeed(throttle);
 
-    srv14.setAngle(deg1);
-    srv15.setAngle(deg2);
-    srv16.setAngle(deg3);
+    // srv14.setAngle(deg1);
+    // srv15.setAngle(deg2);
+    // srv16.setAngle(deg3);
 
-    led17.setBrightness(TICKS_TO_US(channels[2]));
-    led18.setBrightness(TICKS_TO_US(channels[4]));
-    led19.setBrightness(TICKS_TO_US(channels[5]));
+    // led17.setBrightness(TICKS_TO_US(channels[2]));
+    // led18.setBrightness(TICKS_TO_US(channels[4]));
+    // led19.setBrightness(TICKS_TO_US(channels[5]));
 }
 
 void on_link_stats(const link_statistics_t link_stats)
