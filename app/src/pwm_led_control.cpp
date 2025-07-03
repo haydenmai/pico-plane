@@ -5,7 +5,7 @@
  * @date Jul-02-2025
  */
 
-#include "pwm_led.h"
+#include "pwm_led_control.h"
 
 // GPIO pin numbers
 static constexpr int PWM_LED_1_PIN = 17;

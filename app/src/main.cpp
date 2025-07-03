@@ -38,6 +38,7 @@ int map_to_range2(int range1_val, int range1_min, int range1_max, int range2_min
 
 void on_rc_channels(const uint16_t channels[16])
 {
+	/*
     printf("Channel 1: %f\n", TICKS_TO_US(channels[0]));
     printf("Channel 2: %f\n", TICKS_TO_US(channels[1]));
     printf("Channel 3: %f\n", TICKS_TO_US(channels[2]));
@@ -55,6 +56,7 @@ void on_rc_channels(const uint16_t channels[16])
     // printf("Channel 14: %f\n", TICKS_TO_US(channels[13]));
     // printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
     // printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
+	*/
 
     // int deg1 {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 0, 180)};
     // int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
