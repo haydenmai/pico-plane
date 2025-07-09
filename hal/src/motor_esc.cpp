@@ -69,11 +69,11 @@ void MotorEsc::setSpeed(int percent) noexcept
      */
     constexpr uint16_t MIN_US {1000};
     constexpr uint16_t MAX_US {2000};
-    constexpr double percentScale {100.0};
+    constexpr double PERCENT_SCALE {100.0};
 
     // Testing, remove temp variable later
     uint16_t temp
-        = (static_cast<double>(percent) * (MAX_US - MIN_US)) / percentScale + MIN_US;
+        = (static_cast<double>(percent) * (MAX_US - MIN_US)) / PERCENT_SCALE + MIN_US;
     printf("\nmotor_esc.cpp: percentToPulse_us(%u) == %d\n\n", percent, temp);
     return temp;
     // Testing, remove temp variable later
