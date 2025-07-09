@@ -2,7 +2,7 @@
  * @file motor_esc.h
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
- * @date Jun-25-2025
+ * @date Jul-09-2025
  */
 
 #ifndef MOTOR_ESC_H_
@@ -25,30 +25,15 @@ class MotorEsc {
     /**
      * @brief Constructor for the MotorEsc class.
      * @param pinNum The GPIO pin on the Pico W connecting to the ESC.
-     * @param throttleLim Limit for how fast the motor spins as a percentage.
-     *                    Percentage must be within [MIN_THROT, MAX_THROT].
      */
-    explicit MotorEsc(int pinNum, int throttleLim);
+    explicit MotorEsc(int pinNum);
     ~MotorEsc();
-
-    /**
-     * @brief Sets the limit for how fast the motor spins.
-     * @param limit The percentage of the motor's maximum throttle.
-     * @pre Percentage must be within [MIN_THROT, MAX_THROT].
-     */
-    void setThrottleLim(int limit) noexcept;
-
-    /**
-     * @brief Retrieves the most recent value of the throttle limit.
-     * @return Integer representing the throttle percentage limit.
-     */
-    [[nodiscard]] int getThrottleLim(void) const noexcept;
 
     /**
      * @brief Sets how fast the the motor spins.
      * @param percent The percentage of the motor's maximum throttle.
-     * @pre Percentage must be within [MIN_THROT, throttleLim_].
-     * @note Values outside of [MIN_THROT, throttleLim_] are ignored.
+     * @pre Percentage must be within [MIN_THROT, MAX_THROT].
+     * @note Values outside of [MIN_THROT, MAX_THROT] are ignored.
      */
     void setSpeed(int percent) noexcept;
 
@@ -64,11 +49,10 @@ class MotorEsc {
     /** @brief PWM clock divider to derive 1MHz from the 125MHz system clock. */
     static constexpr float DIVIDER {125.0f};
 
-    const int pinNum_;   ///< GPIO pin
-    int sliceNum_;       ///< PWM slice index
-    int channelNum_;     ///< PWM channel (A/B)
-    int curSpeed_ {};    ///< Last speed percentage set
-    int throttleLim_ {}; ///< User-set limit for the throttle, never exceeds MAX_THROT
+    const int pinNum_; ///< GPIO pin
+    int sliceNum_;     ///< PWM slice index
+    int channelNum_;   ///< PWM channel (A/B)
+    int curSpeed_ {};  ///< Last speed percentage set
 
     /**
      * @brief Converts a throttle percentage to a pulse width in microseconds (us).

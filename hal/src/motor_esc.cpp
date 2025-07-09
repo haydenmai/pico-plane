@@ -1,5 +1,5 @@
 /**
- * @file motor_esc.h
+ * @file motor_esc.cpp
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
  * @date Jul-09-2025
@@ -12,7 +12,7 @@
 
 #include <stdio.h> // Remove later if not needed
 
-MotorEsc::MotorEsc(int pinNum, int throttleLim) : pinNum_(pinNum)
+MotorEsc::MotorEsc(int pinNum) : pinNum_(pinNum)
 {
     // Route pin to the PWM block
     gpio_set_function(pinNum, GPIO_FUNC_PWM);
@@ -23,35 +23,14 @@ MotorEsc::MotorEsc(int pinNum, int throttleLim) : pinNum_(pinNum)
     pwm_config_set_clkdiv(&cfg, DIVIDER);  // 125 MHz / 125 = 1MHz
     pwm_config_set_wrap(&cfg, WRAP_COUNT); // 20,000 ticks = 20ms (50hz)
     pwm_init(sliceNum_, &cfg, true);
-
-    if (throttleLim >= MIN_THROT && throttleLim <= MAX_THROT) {
-        throttleLim_ = throttleLim;
-
-    } else {
-        printf("Error: Illegal value for throttle limit.\n");
-        // TODO: Replace this with exception handling eventually.
-    }
 }
 
 MotorEsc::~MotorEsc() { pwm_set_enabled(sliceNum_, false); }
 
-void MotorEsc::setThrottleLim(int limit) noexcept
-{
-    if (limit >= MIN_THROT && limit <= MAX_THROT) {
-        throttleLim_ = limit;
-
-    } else {
-        printf("Error: Illegal value for throttle limit.\n");
-        // TODO: Replace this with exception handling eventually.
-    }
-}
-
-[[nodiscard]] int MotorEsc::getThrottleLim(void) const noexcept { return throttleLim_; }
-
 void MotorEsc::setSpeed(int percent) noexcept
 {
     // If percent is out of bounds, do nothing
-    if (percent >= MIN_THROT && percent <= throttleLim_) {
+    if (percent >= MIN_THROT && percent <= MAX_THROT) {
         int pulse_us {percentToPulse_us(percent)};
         pwm_set_chan_level(sliceNum_, channelNum_, pulse_us);
         curSpeed_ = percent;
