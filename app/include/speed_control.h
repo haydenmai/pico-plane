@@ -34,7 +34,23 @@ class SpeedController {
      */
     [[nodiscard]] int getThrottleLim(void) const noexcept;
 
+    /**
+     * @brief Sets how fast the the motor spins.
+     * @param percent The percentage of the motor's maximum throttle.
+     * @pre Percentage must be within [MIN_THROT, throttleLim_].
+     * @note Values outside of [MIN_THROT, throttleLim_] are ignored.
+     */
+    void setSpeed(int percent) noexcept;
+
+    /**
+     * @brief Retrieves the value of the most recent setSpeed() call.
+     * @return Integer representing the throttle percentage.
+     */
+    [[nodiscard]] int getSpeed(void) const noexcept;
+
   private:
+    static constexpr int ESC_PIN = 18;
+    MotorEsc esc_ {ESC_PIN};
     int throttleLim_ {}; ///< User-set limit for the throttle, never exceeds MAX_THROT
 };
 

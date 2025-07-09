@@ -14,6 +14,7 @@
 class AngleController {
   public:
   private:
+    // TODO: Move degree limit functions from hal layer to here
 };
 
 #endif

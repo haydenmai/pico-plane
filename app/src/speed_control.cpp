@@ -11,16 +11,9 @@
 
 #include <stdio.h> // Remove later if not needed
 
-SpeedController::SpeedController(int throttleLim)
-{
-    if (throttleLim >= MotorEsc::MIN_THROT && throttleLim <= MotorEsc::MAX_THROT) {
-        throttleLim_ = throttleLim;
+SpeedController::SpeedController(int throttleLim) { setThrottleLim(throttleLim); }
 
-    } else {
-        printf("Error: Illegal value for throttle limit.\n");
-        // TODO: Replace this with exception handling eventually.
-    }
-}
+SpeedController::~SpeedController() {}
 
 void SpeedController::setThrottleLim(int limit) noexcept
 {
@@ -36,4 +29,17 @@ void SpeedController::setThrottleLim(int limit) noexcept
 [[nodiscard]] int SpeedController::getThrottleLim(void) const noexcept
 {
     return throttleLim_;
+}
+
+void SpeedController::setSpeed(int percent) noexcept
+{
+    // If percent is out of bounds, do nothing
+    if (percent >= MotorEsc::MIN_THROT && percent <= throttleLim_) {
+        esc_.setSpeed(percent);
+    }
+}
+
+[[nodiscard]] int SpeedController::getSpeed(void) const noexcept
+{
+    return esc_.getSpeed();
 }
