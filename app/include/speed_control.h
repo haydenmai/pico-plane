@@ -8,4 +8,13 @@
 #ifndef SPEED_CONTROL_H_
 #define SPEED_CONTROL_H_
 
+/**
+ * @class SpeedController
+ */
+class SpeedController {
+
+  public:
+  private:
+};
+
 #endif

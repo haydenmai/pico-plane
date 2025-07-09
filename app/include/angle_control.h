@@ -8,4 +8,12 @@
 #ifndef ANGLE_CONTROL_H_
 #define ANGLE_CONTROL_H_
 
+/**
+ * @class AngleController
+ */
+class AngleController {
+  public:
+  private:
+};
+
 #endif

@@ -8,4 +8,12 @@
 #ifndef FLIGHT_CONTROL_H_
 #define FLIGHT_CONTROL_H_
 
+/**
+ * @class FlightController
+ */
+class FlightController {
+  public:
+  private:
+};
+
 #endif
