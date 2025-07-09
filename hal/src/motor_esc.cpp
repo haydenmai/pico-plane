@@ -2,7 +2,7 @@
  * @file motor_esc.h
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
- * @date Jul-02-2025
+ * @date Jul-09-2025
  */
 
 #include "hal/motor_esc.h"

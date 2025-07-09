@@ -1,0 +1,11 @@
+/**
+ * @file angle_control.h
+ * @brief Controls the flight direction of the plane.
+ * @author Benley Hsiang
+ * @date Jul-09-2025
+ */
+
+#ifndef ANGLE_CONTROL_H_
+#define ANGLE_CONTROL_H_
+
+#endif

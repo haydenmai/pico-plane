@@ -3,17 +3,14 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Jul-02-2025
+ * @date Jul-09-2025
  */
 
 #include "crsf/crsf.h"
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
-#include "esc_control.h"
-#include "mpu_control.h"
-#include "pwm_led_control.h"
-#include "servo_control.h"
+#include "flight_control.h"
 
 #include "hal/motor_esc.h"
 #include "hal/mpu6050.h"
@@ -38,25 +35,25 @@ int map_to_range2(int range1_val, int range1_min, int range1_max, int range2_min
 
 void on_rc_channels(const uint16_t channels[16])
 {
-	/*
-    printf("Channel 1: %f\n", TICKS_TO_US(channels[0]));
-    printf("Channel 2: %f\n", TICKS_TO_US(channels[1]));
-    printf("Channel 3: %f\n", TICKS_TO_US(channels[2]));
-    printf("Channel 4: %f\n", TICKS_TO_US(channels[3]));
-    printf("Channel 5: %f\n", TICKS_TO_US(channels[4]));
-    printf("Channel 6: %f\n", TICKS_TO_US(channels[5]));
-    printf("Channel 7: %f\n", TICKS_TO_US(channels[6]));
-    printf("Channel 8: %f\n", TICKS_TO_US(channels[7]));
-    printf("Channel 9: %f\n", TICKS_TO_US(channels[8]));
-    printf("Channel 10: %f\n", TICKS_TO_US(channels[9]));
-    printf("Channel 11: %f\n", TICKS_TO_US(channels[10]));
-    printf("Channel 12: %f\n", TICKS_TO_US(channels[11]));
-    printf("\n");
-    // printf("Channel 13: %f\n", TICKS_TO_US(channels[12]));
-    // printf("Channel 14: %f\n", TICKS_TO_US(channels[13]));
-    // printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
-    // printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
-	*/
+    /*
+printf("Channel 1: %f\n", TICKS_TO_US(channels[0]));
+printf("Channel 2: %f\n", TICKS_TO_US(channels[1]));
+printf("Channel 3: %f\n", TICKS_TO_US(channels[2]));
+printf("Channel 4: %f\n", TICKS_TO_US(channels[3]));
+printf("Channel 5: %f\n", TICKS_TO_US(channels[4]));
+printf("Channel 6: %f\n", TICKS_TO_US(channels[5]));
+printf("Channel 7: %f\n", TICKS_TO_US(channels[6]));
+printf("Channel 8: %f\n", TICKS_TO_US(channels[7]));
+printf("Channel 9: %f\n", TICKS_TO_US(channels[8]));
+printf("Channel 10: %f\n", TICKS_TO_US(channels[9]));
+printf("Channel 11: %f\n", TICKS_TO_US(channels[10]));
+printf("Channel 12: %f\n", TICKS_TO_US(channels[11]));
+printf("\n");
+// printf("Channel 13: %f\n", TICKS_TO_US(channels[12]));
+// printf("Channel 14: %f\n", TICKS_TO_US(channels[13]));
+// printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
+// printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
+    */
 
     // int deg1 {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 0, 180)};
     // int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
