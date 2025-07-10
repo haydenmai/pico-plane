@@ -43,6 +43,7 @@ static const uint8_t BOXIDS[30] = {
     37  //  MSP_MODE_AUTOTRIM
 };
 
+constexpr size_t BOXIDS_COUNT = sizeof(BOXIDS) / sizeof(BOXIDS[0]);
 
 void MSP::begin(uart_inst_t *uart, uint32_t timeout)
 {
@@ -64,10 +65,12 @@ void MSP::send(uint8_t messageID, void *payload, uint8_t size)
     uart_putc(_uart, '<');
     uart_putc(_uart, size);
     uart_putc(_uart, messageID);
+
     uint8_t checksum    = size ^ messageID;
     uint8_t *payloadPtr = (uint8_t *)payload;
+
     for (uint8_t i = 0; i < size; ++i) {
-        uint8_t b = *(payloadPtr++);
+        uint8_t b = payloadPtr ? *(payloadPtr++) : 0;
         checksum ^= b;
         uart_putc(_uart, b);
     }
@@ -77,45 +80,65 @@ void MSP::send(uint8_t messageID, void *payload, uint8_t size)
 bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recvSize)
 {
     uint32_t start = to_ms_since_boot(get_absolute_time());
+    char header[3];
 
     while (true) {
-        while (!uart_is_readable(_uart)) {
-            if (to_ms_since_boot(get_absolute_time()) - start >= _timeout)
-                return false;
-        }
-
-        char header[3];
-        for (int i = 0; i < 3; i++)
-            header[i] = uart_getc(_uart);
-
-        if (header[0] == '$' && header[1] == 'M'
-            && (header[2] == '<' || header[2] == '>')) {
-            *recvSize  = uart_getc(_uart);
-            *messageID = uart_getc(_uart);
-
-            uint8_t checksum    = *recvSize ^ *messageID;
-            uint8_t *payloadPtr = (uint8_t *)payload;
-            uint8_t idx         = 0;
-            while (idx < *recvSize) {
+        // Read header (3 bytes), waiting with timeout
+        for (int i = 0; i < 3; i++) {
+            while (!uart_is_readable(_uart)) {
                 if (to_ms_since_boot(get_absolute_time()) - start >= _timeout)
                     return false;
-                if (uart_is_readable(_uart)) {
-                    uint8_t b = uart_getc(_uart);
-                    checksum ^= b;
-                    if (idx < maxSize)
-                        *(payloadPtr++) = b;
-                    ++idx;
-                }
             }
-            for (; idx < maxSize; ++idx)
-                *(payloadPtr++) = 0;
+            header[i] = uart_getc(_uart);
+        }
+
+        // Validate header
+        if (header[0] == '$' && header[1] == 'M' &&
+            (header[2] == '<' || header[2] == '>')) {
+
+            // Read payload size and messageID
+            while (!uart_is_readable(_uart)) {
+                if (to_ms_since_boot(get_absolute_time()) - start >= _timeout)
+                    return false;
+            }
+            *recvSize = uart_getc(_uart);
 
             while (!uart_is_readable(_uart)) {
                 if (to_ms_since_boot(get_absolute_time()) - start >= _timeout)
                     return false;
             }
+            *messageID = uart_getc(_uart);
+
+            uint8_t checksumCalc    = *recvSize ^ *messageID;
+            uint8_t *payloadPtr = (uint8_t *)payload;
+            uint8_t idx = 0;
+
+            // Read payload
+            while (idx < *recvSize) {
+                while (!uart_is_readable(_uart)) {
+                    if (to_ms_since_boot(get_absolute_time()) - start >= _timeout)
+                        return false;
+                }
+                uint8_t b = uart_getc(_uart);
+                checksumCalc ^= b;
+                if (idx < maxSize)
+                    *(payloadPtr++) = b;
+                idx++;
+            }
+
+            // Zero-pad if maxSize > payload size
+            for (; idx < maxSize; ++idx)
+                *(payloadPtr++) = 0;
+
+            // Read checksum
+            while (!uart_is_readable(_uart)) {
+                if (to_ms_since_boot(get_absolute_time()) - start >= _timeout)
+                    return false;
+            }
             uint8_t recvChecksum = uart_getc(_uart);
-            return recvChecksum == checksum;
+
+            // Validate checksum
+            return recvChecksum == checksumCalc;
         }
     }
 }
@@ -147,7 +170,7 @@ bool MSP::waitFor(uint8_t messageID, void *payload, uint8_t maxSize, uint8_t *re
 
 bool MSP::request(uint8_t messageID, void *payload, uint8_t maxSize, uint8_t *recvSize)
 {
-    send(messageID, NULL, 0);
+    send(messageID, nullptr, 0);
     return waitFor(messageID, payload, maxSize, recvSize);
 }
 
@@ -155,7 +178,7 @@ bool MSP::command(uint8_t messageID, void *payload, uint8_t size, bool waitACK)
 {
     send(messageID, payload, size);
     if (waitACK)
-        return waitFor(messageID, NULL, 0);
+        return waitFor(messageID, nullptr, 0);
     return true;
 }
 
@@ -169,7 +192,7 @@ bool MSP::getActiveModes(uint32_t *activeModes)
             *activeModes = 0;
             for (uint8_t i = 0; i < recvSize; ++i) {
                 if (status.flightModeFlags & (1 << i)) {
-                    for (uint8_t j = 0; j < sizeof(BOXIDS); ++j) {
+                    for (size_t j = 0; j < BOXIDS_COUNT; ++j) {
                         if (BOXIDS[j] == ids[i]) {
                             *activeModes |= 1 << j;
                             break;

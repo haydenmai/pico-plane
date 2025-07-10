@@ -1,125 +1,203 @@
-/**
- * @file main.cpp
- *
- * @author Hayden Mai, Benley Hsiang
- * @brief Controls an airplane and data
- * @date Jul-09-2025
- */
-
-#include "crsf/crsf.h"
-#include "msp_cam/MSP.h"
-#include "hardware/pwm.h"
+#include "hardware/adc.h"
+#include "hardware/uart.h"
 #include "pico/stdlib.h"
+#include <cstring>
+#include "pico/cyw43_arch.h"
 
-#include "flight_control.h"
+// Constants
+#define UART_ID     uart0
+#define UART_TX_PIN 17
+#define UART_RX_PIN 16
 
-#include "hal/motor_esc.h"
-#include "hal/mpu6050.h"
-#include "hal/pico_led.h"
-#include "hal/pwm_led.h"
-#include "hal/servo_ds_m005.h"
-#include <stdio.h>
+#define ANALOG_IN    26 // ADC0 on Pico GPIO26 corresponds to A0
+#define VOLT_DIVIDER 48
 
-// auto led17 = pwmLED(17);
-// auto led18 = pwmLED(18);
-// auto led19 = pwmLED(19);
+// Timing constants
+#define UNARMED_MILLIS  3000
+#define MSP_INTERVAL_MS 100
 
-int map_to_range2(int range1_val, int range1_min, int range1_max, int range2_min,
-                  int range2_max)
+#define MSP_SET_FLIGHT_MODE 214  // Replace with the actual ID used by DJI, if different
+
+// Globals for timing
+absolute_time_t previous_time;
+absolute_time_t activity_detected_time;
+bool activity_detected        = false;
+bool light_on                 = true;
+uint32_t flight_mode_flags    = 0x00000002;
+uint32_t custom_mode          = 0;
+uint32_t previous_flight_mode = 0;
+uint8_t vbat                  = 0;
+uint8_t battery_cell_count    = 3;
+uint32_t general_counter      = MSP_INTERVAL_MS;
+
+// Placeholder for MSP structures and methods
+// You will need to port MSP library calls yourself or adapt them
+void msp_send(const char *msg)
 {
-    return (range2_max - range2_min) * static_cast<double>(range1_val - range1_min)
-             / static_cast<double>(range1_max - range1_min)
-         + range2_min;
+    // Stub: Send MSP message over UART
 }
 
-void on_rc_channels(const uint16_t channels[16])
+bool msp_activity_detected()
 {
-    /*
-printf("Channel 1: %f\n", TICKS_TO_US(channels[0]));
-printf("Channel 2: %f\n", TICKS_TO_US(channels[1]));
-printf("Channel 3: %f\n", TICKS_TO_US(channels[2]));
-printf("Channel 4: %f\n", TICKS_TO_US(channels[3]));
-printf("Channel 5: %f\n", TICKS_TO_US(channels[4]));
-printf("Channel 6: %f\n", TICKS_TO_US(channels[5]));
-printf("Channel 7: %f\n", TICKS_TO_US(channels[6]));
-printf("Channel 8: %f\n", TICKS_TO_US(channels[7]));
-printf("Channel 9: %f\n", TICKS_TO_US(channels[8]));
-printf("Channel 10: %f\n", TICKS_TO_US(channels[9]));
-printf("Channel 11: %f\n", TICKS_TO_US(channels[10]));
-printf("Channel 12: %f\n", TICKS_TO_US(channels[11]));
-printf("\n");
-// printf("Channel 13: %f\n", TICKS_TO_US(channels[12]));
-// printf("Channel 14: %f\n", TICKS_TO_US(channels[13]));
-// printf("Channel 15: %f\n", TICKS_TO_US(channels[14]));
-// printf("Channel 16: %f\n", TICKS_TO_US(channels[15]));
-    */
-
-    // int deg1 {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 0, 180)};
-    // int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
-    // int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
-
-    // int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50)};
-
-    // srv14.setAngle(deg1);
-    // srv15.setAngle(deg2);
-    // srv16.setAngle(deg3);
-
-    // led17.setBrightness(TICKS_TO_US(channels[2]));
-    // led18.setBrightness(TICKS_TO_US(channels[4]));
-    // led19.setBrightness(TICKS_TO_US(channels[5]));
+    // Stub: Implement detecting activity on UART line
+    return true;
 }
 
-void on_link_stats(const link_statistics_t link_stats)
+void send_osd_config()
 {
-    printf("RSSI: %d\n", link_stats.rssi);
-    printf("Link Quality: %d\n", link_stats.link_quality);
-    printf("SNR: %d\n", link_stats.snr);
-    printf("TX Power: %d\n", link_stats.tx_power);
+    // Stub: send OSD config message
 }
 
-void on_failsafe(const bool failsafe) { printf("Failsafe: %d\n", failsafe); }
+void send_msp_to_airunit() {
+    const uint8_t command = MSP_SET_FLIGHT_MODE;
+
+    // Send 4 bytes for flight_mode_flags (little-endian)
+    uint8_t payload[4];
+    payload[0] = flight_mode_flags & 0xFF;
+    payload[1] = (flight_mode_flags >> 8) & 0xFF;
+    payload[2] = (flight_mode_flags >> 16) & 0xFF;
+    payload[3] = (flight_mode_flags >> 24) & 0xFF;
+
+    uint8_t payload_size = sizeof(payload);
+
+    // Build MSP frame
+    uint8_t frame[6 + payload_size];
+    uint8_t idx = 0;
+
+    frame[idx++] = '$';
+    frame[idx++] = 'M';
+    frame[idx++] = '>';
+
+    frame[idx++] = payload_size;
+    frame[idx++] = command;
+
+    // Add payload
+    for (int i = 0; i < payload_size; i++) {
+        frame[idx++] = payload[i];
+    }
+
+    // Calculate checksum
+    uint8_t checksum = payload_size ^ command;
+    for (int i = 0; i < payload_size; i++) {
+        checksum ^= payload[i];
+    }
+    frame[idx++] = checksum;
+
+    // Send frame via UART
+    for (int i = 0; i < idx; i++) {
+        uart_putc(UART_ID, frame[i]);
+    }
+}
+
+
+void set_flight_mode_flags(bool arm)
+{
+    if ((flight_mode_flags == 0x00000002) && arm) {
+        flight_mode_flags = 0x00000003; // arm
+    } else if ((flight_mode_flags == 0x00000003) && !arm) {
+        flight_mode_flags = 0x00000002; // disarm
+    }
+}
+
+void display_flight_mode()
+{
+    // Stub: Display flight mode text
+}
+
+void get_voltage_sample()
+{
+    uint16_t raw = adc_read(); // 12-bit value from ADC
+    vbat         = raw * 10 / VOLT_DIVIDER;
+}
+
+void set_battery_cells_number()
+{
+    if (vbat < 43)
+        battery_cell_count = 1;
+    else if (vbat < 85)
+        battery_cell_count = 2;
+    else if (vbat < 127)
+        battery_cell_count = 3;
+    else if (vbat < 169)
+        battery_cell_count = 4;
+    else if (vbat < 211)
+        battery_cell_count = 5;
+    else if (vbat < 255)
+        battery_cell_count = 6;
+}
 
 int main()
 {
     stdio_init_all();
+	cyw43_arch_init();
 
-    crsf_set_link_quality_threshold(70);
-    crsf_set_rssi_threshold(105);
+    // Init UART1 for MSP communication
+    uart_init(UART_ID, 115200);
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
-    crsf_set_on_rc_channels(on_rc_channels);
-    crsf_set_on_link_statistics(on_link_stats);
-    crsf_set_on_failsafe(on_failsafe);
+    // Init ADC on ANALOG_IN pin (GPIO26)
+    adc_init();
+    adc_gpio_init(ANALOG_IN);
+    adc_select_input(0);
 
-    crsf_begin(uart1, 9, 8);
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    for (;;)
-        crsf_process_frames();
-    /**
-        sleep_ms(10000);
+    // Delay to simulate Arduino delay(1000)
+    sleep_ms(1000);
 
-        servo.setAngle(0);
+    previous_time = get_absolute_time();
 
-        MPU6050 joe = MPU6050();
+    while (true) {
+        if (!activity_detected) {
+            cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
 
-        while (true) {
-
-            MPU6050::AccelVal joemama = joe.getAccelValues();
-            MPU6050::GyroVal amogus   = joe.getGyroValues();
-
-            printf("\nx: %.3fg, y: %.3fg, z: %.3fg\n", joemama.x, joemama.y, joemama.z);
-            printf("\nx: %.3f deg/sec, y: %.3f deg/sec, z: %.3f deg/sec,\n", amogus.x,
-                   amogus.y, amogus.z);
-
-            onboard_led.on();
-            sleep_ms(50);
-            onboard_led.off();
-            sleep_ms(50);
+            // Wait for Air Unit activity
+            while (!msp_activity_detected()) {
+                tight_loop_contents(); // busy wait
+            }
+            activity_detected      = true;
+            activity_detected_time = get_absolute_time();
         }
-        **/
 
-    stdio_deinit_all();
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    return 0;
+        absolute_time_t current_time = get_absolute_time();
+        int64_t elapsed_ms = absolute_time_diff_us(previous_time, current_time) / 1000;
+
+        if (elapsed_ms >= MSP_INTERVAL_MS) {
+            previous_time = current_time;
+
+            if (general_counter % 300 == 0) {
+                get_voltage_sample();
+            	cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, light_on ? 0 : 1);
+                light_on = !light_on;
+            }
+
+            int64_t time_since_activity
+                = absolute_time_diff_us(activity_detected_time, current_time) / 1000;
+
+            if (time_since_activity < UNARMED_MILLIS) {
+                set_flight_mode_flags(false);
+            } else {
+                set_flight_mode_flags(true);
+            }
+
+            send_msp_to_airunit();
+            general_counter += MSP_INTERVAL_MS;
+        }
+
+        if (custom_mode != previous_flight_mode) {
+            previous_flight_mode = custom_mode;
+            display_flight_mode();
+        }
+
+        if (battery_cell_count == 0 && vbat > 0) {
+            set_battery_cells_number();
+        }
+
+        if (general_counter % 10000 == 0) {
+            display_flight_mode();
+        }
+    }
 }
-
-void set_battery() { crsf_telem_set_battery_data(0, 0, 0, 0); }
