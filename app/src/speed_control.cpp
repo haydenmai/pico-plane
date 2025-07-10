@@ -7,8 +7,6 @@
 
 #include "speed_control.h"
 
-#include "hal/motor_esc.h"
-
 #include <stdio.h> // Remove later if not needed
 
 SpeedController::SpeedController(int throttleLim) { setThrottleLim(throttleLim); }

@@ -19,8 +19,6 @@
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
-auto esc18 = MotorEsc(18, 50); // Throttle limit 5% for now
-
 // auto led17 = pwmLED(17);
 // auto led18 = pwmLED(18);
 // auto led19 = pwmLED(19);
@@ -59,8 +57,7 @@ printf("\n");
     // int deg2 {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 0, 180)};
     // int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
 
-    int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50)};
-    esc18.setSpeed(throttle);
+    // int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50)};
 
     // srv14.setAngle(deg1);
     // srv15.setAngle(deg2);
