@@ -7,6 +7,7 @@ add_executable(${APP_TARGET} ${MY_SOURCES})
 target_link_libraries(${APP_TARGET}
     PRIVATE hal						# Make use of the HAL library
 	PRIVATE crsf
+	PRIVATE msp_cam
     PRIVATE pico_stdlib				# Add the standard library to the build
     PRIVATE pico_cyw43_arch_none
 	PRIVATE hardware_adc

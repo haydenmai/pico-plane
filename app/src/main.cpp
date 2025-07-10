@@ -7,6 +7,7 @@
  */
 
 #include "crsf/crsf.h"
+#include "msp_cam/MSP.h"
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 

@@ -2,7 +2,7 @@
 #   Build a library (`msp_cam`) which exposes the header files as "msp_cam/*.h"
 
 include_directories(msp_cam/include)
-file(GLOB MY_SOURCES "src/*.c")
+file(GLOB MY_SOURCES "src/*.cpp")
 
 add_library(msp_cam STATIC ${MY_SOURCES})
 

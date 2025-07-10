@@ -79,7 +79,7 @@ bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recv
     uint32_t start = to_ms_since_boot(get_absolute_time());
 
     while (true) {
-        while (uart_is_readable(_uart) < 6) {
+        while (!uart_is_readable(_uart)) {
             if (to_ms_since_boot(get_absolute_time()) - start >= _timeout)
                 return false;
         }
