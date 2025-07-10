@@ -8,6 +8,8 @@
 #ifndef SPEED_CONTROL_H_
 #define SPEED_CONTROL_H_
 
+#include "hal/motor_esc.h"
+
 /**
  * @class SpeedController
  */

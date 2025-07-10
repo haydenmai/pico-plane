@@ -8,6 +8,8 @@
 #ifndef ANGLE_CONTROL_H_
 #define ANGLE_CONTROL_H_
 
+#include "hal/servo_ds_m005.h"
+
 /**
  * @class AngleController
  */
@@ -24,9 +26,9 @@ class AngleController {
 
     /**
      * @brief Constructor for the AngleController class.
-     * @param aileronLims The range of angles (in degrees) that the ailerons can spin.
-     * @param rudderLims The range of angles (in degrees) that the rudder can spin.
-     * @param elevatorLims The range of angles (in degrees) that the elevator can spin.
+     * @param aileronRange The range of angles (in degrees) that the ailerons can spin.
+     * @param rudderRange The range of angles (in degrees) that the rudder can spin.
+     * @param elevatorRange The range of angles (in degrees) that the elevator can spin.
      * @pre Angles must be within [MIN_DEG, MAX_DEG].
      *      The lower limit must be less than the upper limit.
      */

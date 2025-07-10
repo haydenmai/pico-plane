@@ -7,13 +7,10 @@
 
 #include "angle_control.h"
 
-#include "hal/servo_ds_m005.h"
-
 #include <stdio.h> // Remove later if not needed
 
-explicit AngleController::AngleController(TurningRange aileronRange,
-                                          TurningRange rudderRange,
-                                          TurningRange elevatorRange)
+AngleController::AngleController(TurningRange aileronRange, TurningRange rudderRange,
+                                 TurningRange elevatorRange)
 {
     setRange(AILERON, aileronRange.lower, aileronRange.upper);
     setRange(RUDDER, rudderRange.lower, rudderRange.upper);
@@ -59,6 +56,8 @@ AngleController::getRange(ControlType servoType) const noexcept
     case ELEVATOR:
         return elevatorLims_;
     }
+
+    return {0, 0};
 }
 
 void AngleController::setAngle(ControlType servoType, int degrees) noexcept
@@ -84,7 +83,7 @@ void AngleController::setAngle(ControlType servoType, int degrees) noexcept
 }
 
 [[nodiscard]] int AngleController::getAngle(ControlType servoType,
-                                            Direction direction = LEFT) const noexcept
+                                            Direction direction) const noexcept
 {
     switch (servoType) {
     case AILERON:
@@ -96,6 +95,8 @@ void AngleController::setAngle(ControlType servoType, int degrees) noexcept
     case ELEVATOR:
         return elevator_.getAngle();
     }
+
+    return -1;
 }
 
 bool AngleController::rangeIsValid(int lower, int upper)
@@ -126,7 +127,7 @@ bool AngleController::rangeIsValid(int lower, int upper)
 
 bool AngleController::angleIsInRange(ControlType servoType, int angle)
 {
-    int lower, upper;
+    int lower {}, upper {};
 
     switch (servoType) {
     case AILERON:
@@ -158,4 +159,6 @@ bool AngleController::angleIsInRange(ControlType servoType, int angle)
 int AngleController::invertAngle(int angle)
 {
     // TODO
+
+    return -1;
 }

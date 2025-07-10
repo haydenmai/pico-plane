@@ -19,7 +19,7 @@
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
-auto esc18 = MotorEsc(18, 50); // Throttle limit 5% for now
+auto esc18 = MotorEsc(18);
 
 // auto led17 = pwmLED(17);
 // auto led18 = pwmLED(18);
