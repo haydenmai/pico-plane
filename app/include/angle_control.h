@@ -108,13 +108,14 @@ class AngleController {
      * @brief Checks that the given angle is within the limits for the servo.
      * @param servoType The desired servo(s) to check the angle for.
      * @param angle The proposed angle (in degrees) to set the servo to.
-     * @pre Angle must be within [lower, upper] for the corresponding servo.
+     * @pre Angle must be within the TurningRange limits for the corresponding servo.
      * @return True if the angle is within the limits, false if not.
      */
     bool angleIsInRange(ControlType servoType, int angle);
 
     /**
-     * @brief Takes the angle for an aileron and inverts it for the other aileron.
+     * @brief Takes the angle for an aileron and inverts it for the aileron on the
+     *        opposite plane wing.
      * @param angle The angle (in degrees) to be inverted.
      * @return Integer representing the inverted angle in degrees.
      */
