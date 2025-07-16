@@ -2,7 +2,7 @@
  * @file servo_ds_m005.h
  * @brief Controls a DS-M005 servo via PWM on a Raspberry Pi Pico W.
  * @author Hayden Mai, Benley Hsiang
- * @date Jul-09-2025
+ * @date Jul-16-2025
  */
 
 #ifndef SERVO_DS_M005_H_
@@ -33,14 +33,14 @@ class ServoDSM005 {
     /**
      * @brief Commands the servo to move to a specified angle.
      * @param degrees Target angle in degrees (0 to 180).
-     * @pre degrees must be within [MIN_DEG, MAX_DEG].
+     * @pre Angle must be within [MIN_DEG, MAX_DEG].
      * @note Values outside [MIN_DEG, MAX_DEG] are ignored; no movement occurs.
      */
     void setAngle(int degrees) noexcept;
 
     /**
-     * @brief Retrieves the last commanded servo angle.
-     * @return Last set angle in degrees.
+     * @brief Retrieves the value of the most recent setAngle() call.
+     * @return Integer representing the angle in degrees.
      */
     [[nodiscard]] int getAngle() const noexcept;
 
@@ -58,7 +58,7 @@ class ServoDSM005 {
     /**
      * @brief Converts an angle in degrees to a pulse width in microseconds.
      * @param angle Angle in degrees to convert.
-     * @pre angle must be within [MIN_DEG, MAX_DEG].
+     * @pre Angle must be within [MIN_DEG, MAX_DEG].
      * @return Pulse width in microseconds corresponding to the angle.
      */
     [[nodiscard]] uint16_t angleToPulse_us(int angle) const noexcept;
