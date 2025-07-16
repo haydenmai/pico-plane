@@ -2,7 +2,7 @@
  * @file speed_control.h
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Jul-09-2025
+ * @date Jul-16-2025
  */
 
 #ifndef SPEED_CONTROL_H_
@@ -25,10 +25,10 @@ class SpeedController {
 
     /**
      * @brief Sets the limit for how fast the motor spins.
-     * @param limit The percentage of the motor's maximum throttle.
+     * @param percent The percentage of the motor's maximum throttle.
      * @pre Percentage must be within [MIN_THROT, MAX_THROT].
      */
-    void setThrottleLim(int limit) noexcept;
+    void setThrottleLim(int percent) noexcept;
 
     /**
      * @brief Retrieves the most recent value of the throttle limit.

@@ -2,7 +2,7 @@
  * @file speed_control.cpp
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Jul-09-2025
+ * @date Jul-16-2025
  */
 
 #include "speed_control.h"
@@ -13,10 +13,10 @@ SpeedController::SpeedController(int throttleLim) { setThrottleLim(throttleLim);
 
 SpeedController::~SpeedController() {}
 
-void SpeedController::setThrottleLim(int limit) noexcept
+void SpeedController::setThrottleLim(int percent) noexcept
 {
-    if (limit >= MotorEsc::MIN_THROT && limit <= MotorEsc::MAX_THROT) {
-        throttleLim_ = limit;
+    if (percent >= MotorEsc::MIN_THROT && percent <= MotorEsc::MAX_THROT) {
+        throttleLim_ = percent;
 
     } else {
         printf("Error: Illegal value for throttle limit.\n");
