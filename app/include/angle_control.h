@@ -2,7 +2,7 @@
  * @file angle_control.h
  * @brief Controls the flight direction of the plane.
  * @author Benley Hsiang
- * @date Jul-09-2025
+ * @date Jul-16-2025
  */
 
 #ifndef ANGLE_CONTROL_H_
@@ -15,6 +15,11 @@
  */
 class AngleController {
   public:
+    /**
+     * @brief Contains the range of angles that a servo is allowed to spin within.
+     * @param lower The lower limit of the turning range, in degrees.
+     * @param upper The upper limit of the turning range, in degrees.
+     */
     struct TurningRange {
         int lower;
         int upper;
@@ -22,7 +27,7 @@ class AngleController {
 
     enum ControlType { AILERON, RUDDER, ELEVATOR };
 
-    enum Direction { LEFT, RIGHT };
+    enum PlaneWing { LEFT, RIGHT };
 
     /**
      * @brief Constructor for the AngleController class.
@@ -65,11 +70,12 @@ class AngleController {
     /**
      * @brief Retrieves the last commanded angle of the given servo.
      * @param servoType The desired servo(s) to get the angle of.
-     * @param direction The desired aileron (left/right) to get the angle of.
+     * @param wing Which plane wing's aileron (left/right) to get the angle of.
+     *             This parameter is optional and only used if servoType is AILERON.
      * @return Last set angle in degrees.
      */
     [[nodiscard]] int getAngle(ControlType servoType,
-                               Direction direction = LEFT) const noexcept;
+                               PlaneWing wing = LEFT) const noexcept;
 
   private:
     // TODO: Pin numbers are placeholders, change all these later
@@ -100,7 +106,7 @@ class AngleController {
 
     /**
      * @brief Checks that the given angle is within the limits for the servo.
-     * @param servoType The desired servo(s) to set the angle for.
+     * @param servoType The desired servo(s) to check the angle for.
      * @param angle The proposed angle (in degrees) to set the servo to.
      * @pre Angle must be within [lower, upper] for the corresponding servo.
      * @return True if the angle is within the limits, false if not.
@@ -110,7 +116,7 @@ class AngleController {
     /**
      * @brief Takes the angle for an aileron and inverts it for the other aileron.
      * @param angle The angle (in degrees) to be inverted.
-     * @return The inverted angle in degrees.
+     * @return Integer representing the inverted angle in degrees.
      */
     int invertAngle(int angle);
 };

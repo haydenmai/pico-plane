@@ -2,7 +2,7 @@
  * @file angle_control.cpp
  * @brief Controls the flight direction of the plane.
  * @author Benley Hsiang
- * @date Jul-09-2025
+ * @date Jul-16-2025
  */
 
 #include "angle_control.h"
@@ -83,11 +83,11 @@ void AngleController::setAngle(ControlType servoType, int degrees) noexcept
 }
 
 [[nodiscard]] int AngleController::getAngle(ControlType servoType,
-                                            Direction direction) const noexcept
+                                            PlaneWing wing) const noexcept
 {
     switch (servoType) {
     case AILERON:
-        return (direction == LEFT) ? aileronLeft_.getAngle() : aileronRight_.getAngle();
+        return (wing == LEFT) ? aileronLeft_.getAngle() : aileronRight_.getAngle();
 
     case RUDDER:
         return rudder_.getAngle();
