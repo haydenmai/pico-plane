@@ -160,9 +160,4 @@ bool AngleController::angleIsInRange(ControlType servoType, int angle)
     return false;
 }
 
-int AngleController::invertAngle(int angle)
-{
-    // TODO
-
-    return -1;
-}
+int AngleController::invertAngle(int angle) { return ServoDSM005::MAX_DEG - angle; }

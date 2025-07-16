@@ -116,6 +116,7 @@ class AngleController {
     /**
      * @brief Takes the angle for an aileron and inverts it for the aileron on the
      *        opposite plane wing.
+     * @note It is assumed that the default position of the servos is at 90 degrees.
      * @param angle The angle (in degrees) to be inverted.
      * @return Integer representing the inverted angle in degrees.
      */
