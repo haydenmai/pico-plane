@@ -57,6 +57,8 @@ AngleController::getRange(ControlType servoType) const noexcept
         return elevatorLims_;
     }
 
+    printf("Error: No recognized servo type was found in getRange().\n");
+
     return {0, 0};
 }
 
@@ -95,6 +97,8 @@ void AngleController::setAngle(ControlType servoType, int degrees) noexcept
     case ELEVATOR:
         return elevator_.getAngle();
     }
+
+    printf("Error: No recognized servo type was found in getAngle().\n");
 
     return -1;
 }
