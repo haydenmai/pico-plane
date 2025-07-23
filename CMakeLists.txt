@@ -49,5 +49,5 @@ add_compile_options(
 # Folders to build 
 add_subdirectory(hal)
 add_subdirectory(crsf)
-add_subdirectory(msp_cam)
+add_subdirectory(msp)
 add_subdirectory(app)
