@@ -1,8 +1,9 @@
 #include <stdint.h>
 
-#define MSP_OSD_CONFIG            84        //out message         Get osd settings - betaflight
-#define MSP_NAME                  10
-#define MSP_BATTERY_STATE         130       //out message         Connected/Disconnected, Voltage, Current Used
+#define MSP_OSD_CONFIG 84 // out message         Get osd settings - betaflight
+#define MSP_NAME       10
+#define MSP_BATTERY_STATE                                                                \
+    130 // out message         Connected/Disconnected, Voltage, Current Used
 
 struct msp_osd_config_t {
     uint8_t osdflags;
@@ -11,7 +12,7 @@ struct msp_osd_config_t {
     uint8_t rssi_alarm;
     uint16_t cap_alarm;
     uint8_t old_timer_alarm;
-    uint8_t osd_item_count;                     //56
+    uint8_t osd_item_count; // 56
     uint16_t alt_alarm;
     uint16_t osd_rssi_value_pos;
     uint16_t osd_main_batt_voltage_pos;
@@ -70,7 +71,7 @@ struct msp_osd_config_t {
     uint16_t osd_profile_name_pos;
     uint16_t osd_rssi_dbm_value_pos;
     uint16_t osd_rc_channels_pos;
-    uint8_t osd_stat_count;                     //24
+    uint8_t osd_stat_count; // 24
     uint8_t osd_stat_rtc_date_time;
     uint8_t osd_stat_timer_1;
     uint8_t osd_stat_timer_2;
@@ -99,37 +100,37 @@ struct msp_osd_config_t {
     uint16_t osd_timer_1;
     uint16_t osd_timer_2;
     uint16_t enabledwarnings;
-    uint8_t osd_warning_count;              // 16
+    uint8_t osd_warning_count; // 16
     uint32_t enabledwarnings_1_41_plus;
-    uint8_t osd_profile_count;              // 1
-    uint8_t osdprofileindex;                // 1
-    uint8_t overlay_radio_mode;             //  0
-} __attribute__ ((packed));
+    uint8_t osd_profile_count;  // 1
+    uint8_t osdprofileindex;    // 1
+    uint8_t overlay_radio_mode; //  0
+} __attribute__((packed));
 
 struct msp_name_t {
-    char craft_name[15];                    //15 characters max possible displayed in the goggles
-} __attribute__ ((packed));
+    char craft_name[15]; // 15 characters max possible displayed in the goggles
+} __attribute__((packed));
 
 struct msp_battery_state_t {
-  uint8_t batteryCellCount;
+    uint8_t batteryCellCount;
     uint16_t batteryCapacity;
     uint8_t legacyBatteryVoltage;
     uint16_t mAhDrawn;
     uint16_t amperage;
     uint8_t batteryState;
     uint16_t batteryVoltage;
-} __attribute__ ((packed));
+} __attribute__((packed));
 
 // MSP_STATUS_DJI reply
 struct msp_status_DJI_t {
-  uint16_t cycleTime;
-  uint16_t i2cErrorCounter;
-  uint16_t sensor;                    // MSP_STATUS_SENSOR_...
-  uint32_t flightModeFlags;           // see getActiveModes()
-  uint8_t  configProfileIndex;
-  uint16_t averageSystemLoadPercent;  // 0...100
-  uint16_t armingFlags;   //0x0103 or 0x0301
-  uint8_t  accCalibrationAxisFlags;  //0
-  uint8_t  DJI_ARMING_DISABLE_FLAGS_COUNT; //25
-  uint32_t djiPackArmingDisabledFlags; //(1 << 24)
-} __attribute__ ((packed));
+    uint16_t cycleTime;
+    uint16_t i2cErrorCounter;
+    uint16_t sensor;          // MSP_STATUS_SENSOR_...
+    uint32_t flightModeFlags; // see getActiveModes()
+    uint8_t configProfileIndex;
+    uint16_t averageSystemLoadPercent;      // 0...100
+    uint16_t armingFlags;                   // 0x0103 or 0x0301
+    uint8_t accCalibrationAxisFlags;        // 0
+    uint8_t DJI_ARMING_DISABLE_FLAGS_COUNT; // 25
+    uint32_t djiPackArmingDisabledFlags;    //(1 << 24)
+} __attribute__((packed));
