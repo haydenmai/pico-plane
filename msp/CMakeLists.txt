@@ -7,7 +7,7 @@ file(GLOB MY_SOURCES "src/*.cpp")
 add_library(msp STATIC ${MY_SOURCES})
 
 # Inherit include paths from SDK libraries
-target_link_libraries(msp_cam
+target_link_libraries(msp
 	PRIVATE pico_stdlib 
 	PRIVATE hardware_uart
 )

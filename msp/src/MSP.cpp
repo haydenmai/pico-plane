@@ -5,12 +5,13 @@
 
 #include "msp/MSP.h"
 #include "hardware/uart.h"
+#include "pico/stdlib.h"
 
 
-void MSP::begin(uart_inst_t *uart, uint32_t timeout)
+void MSP::begin(uart_inst_t *uart, uint32_t timeout_ms)
 {
-    uart_    = &uart;
-    timeout_ = timeout;
+    uart_       = uart;
+    timeout_ms_ = timeout_ms;
 }
 
 
@@ -24,18 +25,18 @@ void MSP::reset()
 
 void MSP::send(uint8_t messageID, void *payload, uint8_t size)
 {
-	// MSP Header
+    // MSP Header
     uart_putc(uart_, '$');
     uart_putc(uart_, 'M');
     uart_putc(uart_, '<');
 
-	// Size & messageID 
+    // Size & messageID
     uart_putc(uart_, size);
     uart_putc(uart_, messageID);
 
-	// Compute the XOR checksum
-    uint8_t checksum    = size ^ messageID;
-    uint8_t *msg = (uint8_t *)payload;
+    // Compute the XOR checksum
+    uint8_t checksum = size ^ messageID;
+    uint8_t *msg     = (uint8_t *)payload;
 
     for (uint8_t i = 0; i < size; ++i) {
         checksum ^= msg[i];
@@ -49,14 +50,19 @@ void MSP::send(uint8_t messageID, void *payload, uint8_t size)
 // timeout in milliseconds
 bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recvSize)
 {
-    uint32_t t0 = millis();
+    uint32_t time_start = get_absolute_time();
 
-    while (1) {
+    while (true) {
 
         // read header
-        while (_stream->available() < 6)
-            if (millis() - t0 >= _timeout)
+        while (uart_is_readable(uart_) < 6) {
+            if (absolute_time_diff_us(time_start, get_absolute_time()) / 1000
+                >= timeout_ms_) {
                 return false;
+            }
+        }
+
+        // TODO: Check if the first 3 character is a MSP message
         char header[3];
         _stream->readBytes((char *)header, 3);
 
@@ -74,7 +80,8 @@ bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recv
             uint8_t *payloadPtr = (uint8_t *)payload;
             uint8_t idx         = 0;
             while (idx < *recvSize) {
-                if (millis() - t0 >= _timeout)
+                if (absolute_time_diff_us(time_start, get_absolute_time()) / 1000
+                    >= timeout_ms_)
                     return false;
                 if (_stream->available() > 0) {
                     uint8_t b = _stream->read();
@@ -107,8 +114,8 @@ bool MSP::waitFor(uint8_t messageID, void *payload, uint8_t maxSize, uint8_t *re
 {
     uint8_t recvMessageID;
     uint8_t recvSizeValue;
-    uint32_t t0 = millis();
-    while (millis() - t0 < _timeout)
+    uint32_t time_start = get_absolute_time();
+    while (absolute_time_diff_us(time_start, get_absolute_time()) / 1000 < timeout_ms_)
         if (recv(&recvMessageID, payload, maxSize, (recvSize ? recvSize : &recvSizeValue))
             && messageID == recvMessageID)
             return true;

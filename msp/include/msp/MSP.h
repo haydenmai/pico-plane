@@ -649,5 +649,5 @@ class MSP {
 
   private:
     uart_inst_t *uart_;
-    uint32_t timeout_;
+    uint32_t timeout_ms_;
 };
