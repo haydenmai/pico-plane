@@ -3,9 +3,8 @@
   @link https://github.com/fdivitto/MSP
 */
 
-#include <Arduino.h>
-
-#include "MSP.h"
+#include "msp/MSP.h"
+#include "hardware/uart.h"
 
 
 void MSP::begin(uart_inst_t *uart, uint32_t timeout)
@@ -17,26 +16,33 @@ void MSP::begin(uart_inst_t *uart, uint32_t timeout)
 
 void MSP::reset()
 {
-    _stream->flush();
-    while (_stream->available() > 0)
-        _stream->read();
+    while (uart_is_readable(uart_)) {
+        uart_getc(uart_);
+    }
 }
+
 
 void MSP::send(uint8_t messageID, void *payload, uint8_t size)
 {
-    _stream->write('$');
-    _stream->write('M');
-    _stream->write('<');
-    _stream->write(size);
-    _stream->write(messageID);
+	// MSP Header
+    uart_putc(uart_, '$');
+    uart_putc(uart_, 'M');
+    uart_putc(uart_, '<');
+
+	// Size & messageID 
+    uart_putc(uart_, size);
+    uart_putc(uart_, messageID);
+
+	// Compute the XOR checksum
     uint8_t checksum    = size ^ messageID;
-    uint8_t *payloadPtr = (uint8_t *)payload;
+    uint8_t *msg = (uint8_t *)payload;
+
     for (uint8_t i = 0; i < size; ++i) {
-        uint8_t b = *(payloadPtr++);
-        checksum ^= b;
-        _stream->write(b);
+        checksum ^= msg[i];
+        uart_putc(uart_, msg[i]);
     }
-    _stream->write(checksum);
+
+    uart_putc(uart_, checksum);
 }
 
 

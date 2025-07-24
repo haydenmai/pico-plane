@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <cstdint>
 
 #define MSP_OSD_CONFIG 84 // out message         Get osd settings - betaflight
 #define MSP_NAME       10

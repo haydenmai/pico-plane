@@ -5,9 +5,6 @@
 
 #pragma once
 
-#include <Arduino.h>
-#include <Stream.h>
-
 // requests & replies
 #define MSP_API_VERSION          1
 #define MSP_FC_VARIANT           2
