@@ -1,6 +1,7 @@
 /*
   @file MSP.cpp
   @link https://github.com/fdivitto/MSP
+  https://github.com/ramiss/arduino_DJI_03_RC_ARM
 */
 
 #include "msp/MSP.h"
@@ -62,17 +63,20 @@ bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recv
             }
         }
 
-        // TODO: Check if the first 3 character is a MSP message
-        char header[3];
-        _stream->readBytes((char *)header, 3);
+        // Obtain the first 3 message
+        constexpr int MSG_START_SIZE {3};
+        char header[MSG_START_SIZE];
+        for (int i = 0; i < MSG_START_SIZE; i++) {
+            header[i] = uart_getc(uart_);
+        }
 
         // check header
         if (header[0] == '$' && header[1] == 'M' && header[2] == '>') {
             // header ok, read payload size
-            *recvSize = _stream->read();
+            *recvSize = uart_getc(uart_);
 
             // read message ID (type)
-            *messageID = _stream->read();
+            *messageID = uart_getc(uart_);
 
             uint8_t checksumCalc = *recvSize ^ *messageID;
 
@@ -81,10 +85,13 @@ bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recv
             uint8_t idx         = 0;
             while (idx < *recvSize) {
                 if (absolute_time_diff_us(time_start, get_absolute_time()) / 1000
-                    >= timeout_ms_)
+                    >= timeout_ms_) {
                     return false;
-                if (_stream->available() > 0) {
-                    uint8_t b = _stream->read();
+                }
+
+                if (uart_is_readable(uart_)) {
+                    uint8_t b = uart_getc(uart_);
+
                     checksumCalc ^= b;
                     if (idx < maxSize)
                         *(payloadPtr++) = b;
@@ -92,14 +99,19 @@ bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recv
                 }
             }
             // zero remaining bytes if *size < maxSize
-            for (; idx < maxSize; ++idx)
+            for (; idx < maxSize; ++idx) {
                 *(payloadPtr++) = 0;
+            }
 
             // read and check checksum
-            while (_stream->available() == 0)
-                if (millis() - t0 >= _timeout)
+            while (uart_is_readable(uart_) == 0) {
+                if (absolute_time_diff_us(time_start, get_absolute_time()) / 1000
+                    >= timeout_ms_) {
                     return false;
-            uint8_t checksum = _stream->read();
+                }
+            }
+
+            uint8_t checksum = uart_getc(uart_);
             if (checksumCalc == checksum) {
                 return true;
             }
@@ -115,10 +127,12 @@ bool MSP::waitFor(uint8_t messageID, void *payload, uint8_t maxSize, uint8_t *re
     uint8_t recvMessageID;
     uint8_t recvSizeValue;
     uint32_t time_start = get_absolute_time();
-    while (absolute_time_diff_us(time_start, get_absolute_time()) / 1000 < timeout_ms_)
+    while (absolute_time_diff_us(time_start, get_absolute_time()) / 1000 < timeout_ms_) {
         if (recv(&recvMessageID, payload, maxSize, (recvSize ? recvSize : &recvSizeValue))
-            && messageID == recvMessageID)
+            && messageID == recvMessageID) {
             return true;
+        }
+    }
 
     // timeout
     return false;
@@ -140,8 +154,9 @@ bool MSP::command(uint8_t messageID, void *payload, uint8_t size, bool waitACK)
     send(messageID, payload, size);
 
     // ack required
-    if (waitACK)
+    if (waitACK) {
         return waitFor(messageID, NULL, 0);
+    }
 
     return true;
 }
@@ -149,7 +164,7 @@ bool MSP::command(uint8_t messageID, void *payload, uint8_t size, bool waitACK)
 
 // map MSP_MODE_xxx to box ids
 // mixed values from cleanflight and inav
-static const uint8_t BOXIDS[30] PROGMEM = {
+static const uint8_t BOXIDS[30] = {
     0,  //  0: MSP_MODE_ARM
     1,  //  1: MSP_MODE_ANGLE
     2,  //  2: MSP_MODE_HORIZON
@@ -200,7 +215,7 @@ bool MSP::getActiveModes(uint32_t *activeModes)
             for (uint8_t i = 0; i < recvSize; ++i) {
                 if (status.flightModeFlags & (1 << i)) {
                     for (uint8_t j = 0; j < sizeof(BOXIDS); ++j) {
-                        if (pgm_read_byte(BOXIDS + j) == ids[i]) {
+                        if (BOXIDS[j] == ids[i]) {
                             *activeModes |= 1 << j;
                             break;
                         }

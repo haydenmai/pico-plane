@@ -638,9 +638,9 @@ class MSP {
     void send(uint8_t messageID, void *payload, uint8_t size);
     bool recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recvSize);
     bool waitFor(uint8_t messageID, void *payload, uint8_t maxSize,
-                 uint8_t *recvSize = NULL);
+                 uint8_t *recvSize = nullptr);
     bool request(uint8_t messageID, void *payload, uint8_t maxSize,
-                 uint8_t *recvSize = NULL);
+                 uint8_t *recvSize = nullptr);
     bool command(uint8_t messageID, void *payload, uint8_t size, bool waitACK = true);
     void reset();
 
