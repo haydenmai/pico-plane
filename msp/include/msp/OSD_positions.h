@@ -6,7 +6,7 @@
 #define SAMD21
 // #define DEBUG    // uncomment this line to debug in Serial Monitor
 
-#include <stdint.h>
+#include <cstdint>
 
 // currently working elements
 const uint16_t osd_avg_cell_voltage_pos  = 2273;

@@ -1,198 +1,197 @@
-#include "hardware/adc.h"
-#include "hardware/uart.h"
-#include "pico/stdlib.h"
+/************************************************************************************
+  @file       arduino_DJI_03_RC_ARM.ino
+  @brief      Send DJI Arm using XIAO Seeeduino over MSP to keep power level at full.
+  @author     Richard Amiss
+
+  Release Note:
+  Complete rework for XIAO Seeeduino and MSP libraries. RC input is no longer used in
+  this version.  The AU will simply arm a few seconds after being turned on, as long
+  as the goggles are on.
+
+  Code:        Richard Amiss
+  Version:     1.1.0
+  Date:        06/24/23
+
+  Credits:
+  This software is based on and uses software published by 2022 David Payne:
+  QLiteOSD, which is based on work by Paul Kurucz (pkuruz):opentelem_to_bst_bridge
+  as well as software from d3ngit : djihdfpv_mavlink_to_msp_V2 and
+  crashsalot : VOT_to_DJIFPV
+
+THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES, WHETHER EXPRESS,
+IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE
+COMPANY SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR
+CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+************************************************************************************/
+
 #include <cstring>
-#include "pico/cyw43_arch.h"
+#include <iomanip>
+#include <iostream>
 
-// Constants
-#define UART_ID     uart0
-#define UART_TX_PIN 17
-#define UART_RX_PIN 16
+#include <hardware/adc.h>
+#include <hardware/uart.h>
+#include <pico/cyw43_arch.h>
+#include <pico/stdlib.h>
 
-#define ANALOG_IN    26 // ADC0 on Pico GPIO26 corresponds to A0
-#define VOLT_DIVIDER 48
+#include "msp/MSP.h"
+#include "msp/MSP_OSD.h"
+#include "msp/OSD_positions.h"
 
-// Timing constants
-#define UNARMED_MILLIS  3000
-#define MSP_INTERVAL_MS 100
+// Define pins for UART1 on Pico (example GPIO4=TX, GPIO5=RX)
+#define UART_ID     uart1
+#define UART_TX_PIN 4
+#define UART_RX_PIN 5
 
-#define MSP_SET_FLIGHT_MODE 214  // Replace with the actual ID used by DJI, if different
+// LED_BUILTIN on Pico (usually GPIO25 for onboard LED)
+#define LED_BUILTIN 25
+#define DEBUG       // uncomment to see diagnostics from USB serial
 
-// Globals for timing
-absolute_time_t previous_time;
-absolute_time_t activity_detected_time;
-bool activity_detected        = false;
-bool light_on                 = true;
-uint32_t flight_mode_flags    = 0x00000002;
-uint32_t custom_mode          = 0;
-uint32_t previous_flight_mode = 0;
-uint8_t vbat                  = 0;
-uint8_t battery_cell_count    = 3;
-uint32_t general_counter      = MSP_INTERVAL_MS;
+#define FC_FIRMWARE_NAME       "Betaflight"
+#define FC_FIRMWARE_IDENTIFIER "BTFL"
 
-// Placeholder for MSP structures and methods
-// You will need to port MSP library calls yourself or adapt them
-void msp_send(const char *msg)
-{
-    // Stub: Send MSP message over UART
-}
+MSP msp;
 
-bool msp_activity_detected()
-{
-    // Stub: Implement detecting activity on UART line
-    return true;
-}
+// Arm Logic
+uint32_t unarmedMillis = 3000; // number of milliseconds to wait before arming, after AU
+                               // is initialized. Recommend at least 3000 (3 seconds).
 
-void send_osd_config()
-{
-    // Stub: send OSD config message
-}
+// Voltage and Battery Reading
+float averageVoltage   = 0;
+int sampleVoltageCount = 0;
+int lastCount          = 0;
 
-void send_msp_to_airunit() {
-    const uint8_t command = MSP_SET_FLIGHT_MODE;
+bool lightOn = true;
 
-    // Send 4 bytes for flight_mode_flags (little-endian)
-    uint8_t payload[4];
-    payload[0] = flight_mode_flags & 0xFF;
-    payload[1] = (flight_mode_flags >> 8) & 0xFF;
-    payload[2] = (flight_mode_flags >> 16) & 0xFF;
-    payload[3] = (flight_mode_flags >> 24) & 0xFF;
+uint8_t *messageID;
+void *payload;
+uint8_t maxSize;
+uint8_t *recvSize;
 
-    uint8_t payload_size = sizeof(payload);
+// Other
+char fcVariant[5]                   = "BTFL";
+char craftname[15]                  = "Craft";
+uint32_t previousMillis_MSP         = 0;
+uint32_t activityDetectedMillis_MSP = 0;
+bool activityDetected               = false;
+const uint32_t next_interval_MSP    = 100;
+uint32_t general_counter            = next_interval_MSP;
+uint32_t custom_mode                = 0; // flight mode
+uint8_t vbat                        = 0;
+uint32_t flightModeFlags            = 0x00000002;
+uint8_t batteryCellCount            = 3;
+uint32_t previousFlightMode         = custom_mode;
 
-    // Build MSP frame
-    uint8_t frame[6 + payload_size];
-    uint8_t idx = 0;
-
-    frame[idx++] = '$';
-    frame[idx++] = 'M';
-    frame[idx++] = '>';
-
-    frame[idx++] = payload_size;
-    frame[idx++] = command;
-
-    // Add payload
-    for (int i = 0; i < payload_size; i++) {
-        frame[idx++] = payload[i];
-    }
-
-    // Calculate checksum
-    uint8_t checksum = payload_size ^ command;
-    for (int i = 0; i < payload_size; i++) {
-        checksum ^= payload[i];
-    }
-    frame[idx++] = checksum;
-
-    // Send frame via UART
-    for (int i = 0; i < idx; i++) {
-        uart_putc(UART_ID, frame[i]);
-    }
-}
+msp_battery_state_t battery_state = {0};
+msp_name_t name                   = {0};
+msp_fc_version_t fc_version       = {0};
+msp_fc_variant_t fc_variant       = {0};
+// msp_status_BF_t status_BF = {0};
+msp_status_DJI_t status_DJI = {0};
+msp_analog_t analog         = {0};
 
 
-void set_flight_mode_flags(bool arm)
-{
-    if ((flight_mode_flags == 0x00000002) && arm) {
-        flight_mode_flags = 0x00000003; // arm
-    } else if ((flight_mode_flags == 0x00000003) && !arm) {
-        flight_mode_flags = 0x00000002; // disarm
-    }
-}
+uint32_t millis();
+void send_osd_config();
+void invert_pos(uint16_t *pos1, uint16_t *pos2);
+void set_flight_mode_flags(bool arm);
+void display_flight_mode();
+void send_msp_to_airunit();
+void show_text(char (*text)[15]);
+void set_battery_cells_number();
+void getVoltageSample();
+void debugPrint();
 
-void display_flight_mode()
-{
-    // Stub: Display flight mode text
-}
-
-void get_voltage_sample()
-{
-    uint16_t raw = adc_read(); // 12-bit value from ADC
-    vbat         = raw * 10 / VOLT_DIVIDER;
-}
-
-void set_battery_cells_number()
-{
-    if (vbat < 43)
-        battery_cell_count = 1;
-    else if (vbat < 85)
-        battery_cell_count = 2;
-    else if (vbat < 127)
-        battery_cell_count = 3;
-    else if (vbat < 169)
-        battery_cell_count = 4;
-    else if (vbat < 211)
-        battery_cell_count = 5;
-    else if (vbat < 255)
-        battery_cell_count = 6;
-}
 
 int main()
 {
-    stdio_init_all();
-	cyw43_arch_init();
+    // Initialization (previously setup)
+#ifdef DEBUG
+    stdio_usb_init();
+#endif
 
-    // Init UART1 for MSP communication
+    cyw43_arch_init();
     uart_init(UART_ID, 115200);
     gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
-    // Init ADC on ANALOG_IN pin (GPIO26)
-    adc_init();
-    adc_gpio_init(ANALOG_IN);
-    adc_select_input(0);
+    gpio_init(LED_BUILTIN);
+    gpio_set_dir(LED_BUILTIN, GPIO_OUT);
 
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+    msp.begin(UART_ID);
 
-    // Delay to simulate Arduino delay(1000)
-    sleep_ms(1000);
+    sleep_ms(7000);
 
-    previous_time = get_absolute_time();
+    status_DJI.cycleTime                      = 0x0080;
+    status_DJI.i2cErrorCounter                = 0;
+    status_DJI.sensor                         = 0x23;
+    status_DJI.configProfileIndex             = 0;
+    status_DJI.averageSystemLoadPercent       = 7;
+    status_DJI.accCalibrationAxisFlags        = 0;
+    status_DJI.DJI_ARMING_DISABLE_FLAGS_COUNT = 20;
+    status_DJI.djiPackArmingDisabledFlags     = (1 << 24);
 
+    flightModeFlags = 0x00000002;
+
+#ifdef DEBUG
+    printf("Initialized\n");
+#endif
+
+    // Main loop (previously loop)
     while (true) {
-        if (!activity_detected) {
+        if (!activityDetected) {
+#ifdef DEBUG
+            printf("Waiting for AU...\n");
+#endif
             cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
 
-            // Wait for Air Unit activity
-            while (!msp_activity_detected()) {
-                tight_loop_contents(); // busy wait
+            while (!msp.activityDetected()) {
+                tight_loop_contents();
             }
-            activity_detected      = true;
-            activity_detected_time = get_absolute_time();
+            activityDetected           = true;
+            activityDetectedMillis_MSP = millis();
+#ifdef DEBUG
+            printf("AU Detected, waiting (unarmedMillis) time till arm\n");
+#endif
         }
 
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-        absolute_time_t current_time = get_absolute_time();
-        int64_t elapsed_ms = absolute_time_diff_us(previous_time, current_time) / 1000;
+        uint32_t currentMillis_MSP = millis();
 
-        if (elapsed_ms >= MSP_INTERVAL_MS) {
-            previous_time = current_time;
+        if ((uint32_t)(currentMillis_MSP - previousMillis_MSP) >= next_interval_MSP) {
+            previousMillis_MSP = currentMillis_MSP;
 
             if (general_counter % 300 == 0) {
-                get_voltage_sample();
-            	cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, light_on ? 0 : 1);
-                light_on = !light_on;
+                getVoltageSample();
+
+                if (lightOn) {
+                    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+                } else {
+                    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+                }
+                lightOn = !lightOn;
             }
 
-            int64_t time_since_activity
-                = absolute_time_diff_us(activity_detected_time, current_time) / 1000;
-
-            if (time_since_activity < UNARMED_MILLIS) {
+            if (currentMillis_MSP < (activityDetectedMillis_MSP + unarmedMillis)) {
                 set_flight_mode_flags(false);
             } else {
                 set_flight_mode_flags(true);
             }
 
+#ifdef DEBUG
+            debugPrint();
+#endif
             send_msp_to_airunit();
-            general_counter += MSP_INTERVAL_MS;
+            general_counter += next_interval_MSP;
         }
 
-        if (custom_mode != previous_flight_mode) {
-            previous_flight_mode = custom_mode;
+        if (custom_mode != previousFlightMode) {
+            previousFlightMode = custom_mode;
             display_flight_mode();
         }
 
-        if (battery_cell_count == 0 && vbat > 0) {
+        if (batteryCellCount == 0 && vbat > 0) {
             set_battery_cells_number();
         }
 
@@ -200,4 +199,190 @@ int main()
             display_flight_mode();
         }
     }
+}
+
+// Returns milliseconds since boot as a 32-bit unsigned int
+uint32_t millis() { return to_ms_since_boot(get_absolute_time()); }
+
+msp_osd_config_t msp_osd_config = {0};
+
+void send_osd_config()
+{
+
+#ifdef IMPERIAL_UNITS
+    msp_osd_config.units = 0;
+#else
+    msp_osd_config.units = 1;
+#endif
+
+    msp_osd_config.osd_item_count     = 56;
+    msp_osd_config.osd_stat_count     = 24;
+    msp_osd_config.osd_timer_count    = 2;
+    msp_osd_config.osd_warning_count  = 16; // 16
+    msp_osd_config.osd_profile_count  = 1;  // 1
+    msp_osd_config.osdprofileindex    = 1;  // 1
+    msp_osd_config.overlay_radio_mode = 0;  //  0
+
+    msp_osd_config.osd_rssi_value_pos              = osd_rssi_value_pos;
+    msp_osd_config.osd_main_batt_voltage_pos       = osd_main_batt_voltage_pos;
+    msp_osd_config.osd_crosshairs_pos              = osd_crosshairs_pos;
+    msp_osd_config.osd_artificial_horizon_pos      = osd_artificial_horizon_pos;
+    msp_osd_config.osd_horizon_sidebars_pos        = osd_horizon_sidebars_pos;
+    msp_osd_config.osd_item_timer_1_pos            = osd_item_timer_1_pos;
+    msp_osd_config.osd_item_timer_2_pos            = osd_item_timer_2_pos;
+    msp_osd_config.osd_flymode_pos                 = osd_flymode_pos;
+    msp_osd_config.osd_craft_name_pos              = osd_craft_name_pos;
+    msp_osd_config.osd_throttle_pos_pos            = osd_throttle_pos_pos;
+    msp_osd_config.osd_vtx_channel_pos             = osd_vtx_channel_pos;
+    msp_osd_config.osd_current_draw_pos            = osd_current_draw_pos;
+    msp_osd_config.osd_mah_drawn_pos               = osd_mah_drawn_pos;
+    msp_osd_config.osd_gps_speed_pos               = osd_gps_speed_pos;
+    msp_osd_config.osd_gps_sats_pos                = osd_gps_sats_pos;
+    msp_osd_config.osd_altitude_pos                = osd_altitude_pos;
+    msp_osd_config.osd_roll_pids_pos               = osd_roll_pids_pos;
+    msp_osd_config.osd_pitch_pids_pos              = osd_pitch_pids_pos;
+    msp_osd_config.osd_yaw_pids_pos                = osd_yaw_pids_pos;
+    msp_osd_config.osd_power_pos                   = osd_power_pos;
+    msp_osd_config.osd_pidrate_profile_pos         = osd_pidrate_profile_pos;
+    msp_osd_config.osd_warnings_pos                = osd_warnings_pos;
+    msp_osd_config.osd_avg_cell_voltage_pos        = osd_avg_cell_voltage_pos;
+    msp_osd_config.osd_gps_lon_pos                 = osd_gps_lon_pos;
+    msp_osd_config.osd_gps_lat_pos                 = osd_gps_lat_pos;
+    msp_osd_config.osd_debug_pos                   = osd_debug_pos;
+    msp_osd_config.osd_pitch_angle_pos             = osd_pitch_angle_pos;
+    msp_osd_config.osd_roll_angle_pos              = osd_roll_angle_pos;
+    msp_osd_config.osd_main_batt_usage_pos         = osd_main_batt_usage_pos;
+    msp_osd_config.osd_disarmed_pos                = osd_disarmed_pos;
+    msp_osd_config.osd_home_dir_pos                = osd_home_dir_pos;
+    msp_osd_config.osd_home_dist_pos               = osd_home_dist_pos;
+    msp_osd_config.osd_numerical_heading_pos       = osd_numerical_heading_pos;
+    msp_osd_config.osd_numerical_vario_pos         = osd_numerical_vario_pos;
+    msp_osd_config.osd_compass_bar_pos             = osd_compass_bar_pos;
+    msp_osd_config.osd_esc_tmp_pos                 = osd_esc_tmp_pos;
+    msp_osd_config.osd_esc_rpm_pos                 = osd_esc_rpm_pos;
+    msp_osd_config.osd_remaining_time_estimate_pos = osd_remaining_time_estimate_pos;
+    msp_osd_config.osd_rtc_datetime_pos            = osd_rtc_datetime_pos;
+    msp_osd_config.osd_adjustment_range_pos        = osd_adjustment_range_pos;
+    msp_osd_config.osd_core_temperature_pos        = osd_core_temperature_pos;
+    msp_osd_config.osd_anti_gravity_pos            = osd_anti_gravity_pos;
+    msp_osd_config.osd_g_force_pos                 = osd_g_force_pos;
+    msp_osd_config.osd_motor_diag_pos              = osd_motor_diag_pos;
+    msp_osd_config.osd_log_status_pos              = osd_log_status_pos;
+    msp_osd_config.osd_flip_arrow_pos              = osd_flip_arrow_pos;
+    msp_osd_config.osd_link_quality_pos            = osd_link_quality_pos;
+    msp_osd_config.osd_flight_dist_pos             = osd_flight_dist_pos;
+    msp_osd_config.osd_stick_overlay_left_pos      = osd_stick_overlay_left_pos;
+    msp_osd_config.osd_stick_overlay_right_pos     = osd_stick_overlay_right_pos;
+    msp_osd_config.osd_display_name_pos            = osd_display_name_pos;
+    msp_osd_config.osd_esc_rpm_freq_pos            = osd_esc_rpm_freq_pos;
+    msp_osd_config.osd_rate_profile_name_pos       = osd_rate_profile_name_pos;
+    msp_osd_config.osd_pid_profile_name_pos        = osd_pid_profile_name_pos;
+    msp_osd_config.osd_profile_name_pos            = osd_profile_name_pos;
+    msp_osd_config.osd_rssi_dbm_value_pos          = osd_rssi_dbm_value_pos;
+    msp_osd_config.osd_rc_channels_pos             = osd_rc_channels_pos;
+
+    msp.send(MSP_OSD_CONFIG, &msp_osd_config, sizeof(msp_osd_config));
+}
+
+
+void invert_pos(uint16_t *pos1, uint16_t *pos2)
+{
+    uint16_t tmp_pos = *pos1;
+    *pos1            = *pos2;
+    *pos2            = tmp_pos;
+}
+
+
+void set_flight_mode_flags(bool arm)
+{
+    if ((flightModeFlags == 0x00000002) && arm) {
+        flightModeFlags = 0x00000003; // arm
+#ifdef DEBUG
+        std::cout << "ARMING" << std::endl;
+#endif
+    } else if ((flightModeFlags == 0x00000003) && !arm) {
+        flightModeFlags = 0x00000002; // disarm
+#ifdef DEBUG
+        std::cout << "DISARMING" << std::endl;
+#endif
+    }
+}
+
+void display_flight_mode() { show_text(&craftname); }
+
+void send_msp_to_airunit()
+{
+
+    // MSP_FC_VARIANT
+    memcpy(fc_variant.flightControlIdentifier, fcVariant,
+           sizeof(fc_variant.flightControlIdentifier));
+    msp.send(MSP_FC_VARIANT, &fc_variant, sizeof(fc_variant));
+
+    // MSP_FC_VERSION
+    fc_version.versionMajor      = 4;
+    fc_version.versionMinor      = 1;
+    fc_version.versionPatchLevel = 1;
+    msp.send(MSP_FC_VERSION, &fc_version, sizeof(fc_version));
+
+    // MSP_NAME
+    memcpy(name.craft_name, craftname, sizeof(craftname));
+    msp.send(MSP_NAME, &name, sizeof(name));
+
+    // MSP_STATUS
+    status_DJI.flightModeFlags = flightModeFlags;
+    status_DJI.armingFlags
+        = (flightModeFlags & 0x01) ? 0x0303 : 0x0000; // 0x0303 if armed, else 0x0000
+    msp.send(MSP_STATUS_EX, &status_DJI, sizeof(status_DJI));
+    msp.send(MSP_STATUS, &status_DJI, sizeof(status_DJI));
+
+
+    // MSP_BATTERY_STATE
+    battery_state.amperage             = 0;
+    battery_state.batteryVoltage       = vbat * 10;
+    battery_state.mAhDrawn             = 0;
+    battery_state.batteryCellCount     = batteryCellCount;
+    battery_state.batteryCapacity      = 0;
+    battery_state.batteryState         = 0;
+    battery_state.legacyBatteryVoltage = vbat;
+    msp.send(MSP_BATTERY_STATE, &battery_state, sizeof(battery_state));
+
+    // MSP_OSD_CONFIG
+    send_osd_config();
+}
+
+void show_text(char (*text)[15]) { memcpy(craftname, *text, sizeof(craftname)); }
+
+void set_battery_cells_number()
+{
+    if (vbat < 43)
+        batteryCellCount = 1;
+    else if (vbat < 85)
+        batteryCellCount = 2;
+    else if (vbat < 127)
+        batteryCellCount = 3;
+    else if (vbat < 169)
+        batteryCellCount = 4;
+    else if (vbat < 211)
+        batteryCellCount = 5;
+    else if (vbat < 255)
+        batteryCellCount = 6;
+}
+
+
+void getVoltageSample()
+{
+    constexpr int VOLT_DIVIDER {48};
+    uint16_t raw = adc_read();
+    vbat         = raw * 10 / VOLT_DIVIDER;
+}
+
+//*** USED ONLY FOR DEBUG ***
+void debugPrint()
+{
+    std::cout << "**********************************" << std::endl;
+    std::cout << "Flight Mode: " << flightModeFlags << std::endl;
+    std::cout << "Voltage: " << std::fixed << std::setprecision(1)
+              << static_cast<double>(vbat) / 10.0 << " V" << std::endl;
+    std::cout << "Sample Count / transmit: " << lastCount << std::endl;
+    std::cout << "Battery Cell Count: " << batteryCellCount << std::endl;
 }

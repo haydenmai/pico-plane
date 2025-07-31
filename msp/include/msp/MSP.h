@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include "hardware/uart.h"
+#include <cstdint>
+
 // requests & replies
 #define MSP_API_VERSION          1
 #define MSP_FC_VARIANT           2
@@ -201,17 +204,18 @@ struct msp_servo_configurations_t {
 #define MSP_MAX_SERVO_RULES (2 * MSP_MAX_SUPPORTED_SERVOS)
 
 // MSP_SERVO_MIX_RULES reply
-struct msp_servo_mix_rules_t {
-    __attribute__((packed)) struct {
-        uint8_t targetChannel;
-        uint8_t inputSource;
-        uint8_t rate;
-        uint8_t speed;
-        uint8_t min;
-        uint8_t max;
-    } mixRule[MSP_MAX_SERVO_RULES];
+struct servo_mix_rule_t {
+    uint8_t targetChannel;
+    uint8_t inputSource;
+    uint8_t rate;
+    uint8_t speed;
+    uint8_t min;
+    uint8_t max;
 } __attribute__((packed));
 
+struct msp_servo_mix_rules_t {
+    servo_mix_rule_t mixRule[MSP_MAX_SERVO_RULES];
+} __attribute__((packed));
 
 #define MSP_MAX_SUPPORTED_MOTORS 8
 
@@ -637,6 +641,9 @@ class MSP {
     // low level functions
     void send(uint8_t messageID, void *payload, uint8_t size);
     bool recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recvSize);
+
+    bool activityDetected();
+
     bool waitFor(uint8_t messageID, void *payload, uint8_t maxSize,
                  uint8_t *recvSize = nullptr);
     bool request(uint8_t messageID, void *payload, uint8_t maxSize,

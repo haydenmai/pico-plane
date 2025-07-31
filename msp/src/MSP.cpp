@@ -4,8 +4,10 @@
   https://github.com/ramiss/arduino_DJI_03_RC_ARM
 */
 
-#include "msp/MSP.h"
+#include <stdio.h>
+
 #include "hardware/uart.h"
+#include "msp/MSP.h"
 #include "pico/stdlib.h"
 
 
@@ -55,18 +57,16 @@ bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recv
 
     while (true) {
 
-        // read header
-        while (uart_is_readable(uart_) < 6) {
-            if (absolute_time_diff_us(time_start, get_absolute_time()) / 1000
-                >= timeout_ms_) {
-                return false;
-            }
-        }
-
         // Obtain the first 3 message
-        constexpr int MSG_START_SIZE {3};
-        char header[MSG_START_SIZE];
-        for (int i = 0; i < MSG_START_SIZE; i++) {
+        constexpr int HEADER_SIZE {3};
+        char header[HEADER_SIZE];
+        for (int i = 0; i < HEADER_SIZE; ++i) {
+            while (!uart_is_readable(uart_)) {
+                if (absolute_time_diff_us(time_start, get_absolute_time()) / 1000
+                    >= timeout_ms_) {
+                    return false;
+                }
+            }
             header[i] = uart_getc(uart_);
         }
 
@@ -119,6 +119,23 @@ bool MSP::recv(uint8_t *messageID, void *payload, uint8_t maxSize, uint8_t *recv
     }
 }
 
+bool MSP::activityDetected()
+{
+    uint32_t time_start = get_absolute_time();
+
+    while (1) {
+
+        // read header
+        while (uart_is_readable(uart_) < 6) {
+            if (absolute_time_diff_us(time_start, get_absolute_time()) / 1000
+                >= timeout_ms_) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
 
 // wait for messageID
 // recvSize can be NULL
