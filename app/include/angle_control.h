@@ -2,7 +2,7 @@
  * @file angle_control.h
  * @brief Controls the flight direction of the plane.
  * @author Benley Hsiang
- * @date Jul-16-2025
+ * @date Aug-22-2025
  */
 
 #ifndef ANGLE_CONTROL_H_
@@ -78,12 +78,12 @@ class AngleController {
                                PlaneWing wing = LEFT) const noexcept;
 
   private:
-    // TODO: Pin numbers are placeholders, change all these later
-    static constexpr int AILERON_LEFT_PIN  = 1;
-    static constexpr int AILERON_RIGHT_PIN = 2;
-    static constexpr int RUDDER_PIN        = 3;
-    static constexpr int ELEVATOR_PIN      = 4;
-    // TODO: Pin numbers are placeholders, change all these later
+    // NOTE: Pin numbers still subject to change
+    static constexpr int AILERON_LEFT_PIN  = 4;
+    static constexpr int AILERON_RIGHT_PIN = 5;
+    static constexpr int RUDDER_PIN        = 6;
+    static constexpr int ELEVATOR_PIN      = 7;
+    // NOTE: Pin numbers still subject to change
 
     ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
     ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};

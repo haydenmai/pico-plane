@@ -3,7 +3,7 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Jul-09-2025
+ * @date Aug-22-2025
  */
 
 #include "crsf/crsf.h"
@@ -19,7 +19,9 @@
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
-auto esc18 = MotorEsc(18);
+// auto esc18 = MotorEsc(18);
+
+auto flightController = FlightController();
 
 // auto led17 = pwmLED(17);
 // auto led18 = pwmLED(18);
@@ -60,7 +62,18 @@ printf("\n");
     // int deg3 {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 0, 180)};
 
     int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50)};
-    esc18.setSpeed(throttle);
+
+    int aileron {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 70, 110)};
+    int elevator {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 70, 110)};
+    int rudder {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 70, 110)};
+
+    flightController.changeSpeed(throttle);
+
+    flightController.changeAngle(AngleController::AILERON, aileron);
+    flightController.changeAngle(AngleController::RUDDER, rudder);
+    flightController.changeAngle(AngleController::ELEVATOR, elevator);
+
+    // esc18.setSpeed(throttle);
 
     // srv14.setAngle(deg1);
     // srv15.setAngle(deg2);
