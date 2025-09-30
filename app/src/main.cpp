@@ -41,6 +41,7 @@ void core1_entry(void)
     int rudder_curVal {};
     int elevator_curVal {};
 
+	// Process data
     while (1) {
         uint32_t saveState = spin_lock_blocking(spinLock);
 
@@ -79,6 +80,7 @@ int main()
     stdio_init_all();
     multicore_launch_core1(core1_entry);
 
+	// Handle receiving data
     while (1) {
         flightData.process_frames();
     }

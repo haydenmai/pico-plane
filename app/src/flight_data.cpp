@@ -31,13 +31,13 @@ FlightData::~FlightData() {}
 
 void FlightData::process_frames() noexcept { crsf_process_frames(); }
 
-int FlightData::get_throttle() noexcept { return throttle_curVal_; }
+int FlightData::get_throttle() noexcept { return throttle_val_; }
 
-int FlightData::get_aileron() noexcept { return aileron_curVal_; }
+int FlightData::get_aileron() noexcept { return aileron_val_; }
 
-int FlightData::get_elevator() noexcept { return elevator_curVal_; }
+int FlightData::get_elevator() noexcept { return elevator_val_; }
 
-int FlightData::get_rudder() noexcept { return elevator_curVal_; }
+int FlightData::get_rudder() noexcept { return elevator_val_; }
 
 spin_lock_t *FlightData::get_spinlock() noexcept { return dataLock_; }
 
@@ -46,11 +46,11 @@ void FlightData::on_rc_channels(const uint16_t channels[16]) noexcept
     uint32_t saveState = spin_lock_blocking(dataLock_);
 
     // Critical section
-    throttle_curVal_ = map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50);
+    throttle_val_ = map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50);
 
-    aileron_curVal_  = map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 70, 110);
-    elevator_curVal_ = map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 70, 110);
-    rudder_curVal_   = map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 70, 110);
+    aileron_val_  = map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 70, 110);
+    elevator_val_ = map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 70, 110);
+    rudder_val_   = map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 70, 110);
 
     spin_unlock(dataLock_, saveState);
 }

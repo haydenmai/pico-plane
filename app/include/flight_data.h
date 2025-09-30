@@ -29,10 +29,10 @@ class FlightData {
     spin_lock_t *get_spinlock() noexcept;
 
   private:
-    static int throttle_curVal_;
-    static int aileron_curVal_;
-    static int elevator_curVal_;
-    static int rudder_curVal_;
+    static int throttle_val_;
+    static int aileron_val_;
+    static int elevator_val_;
+    static int rudder_val_;
 
     static spin_lock_t *dataLock_;
     static uint dataLock_num_;
