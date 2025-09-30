@@ -39,7 +39,7 @@ int FlightData::get_elevator() noexcept { return elevator_curVal_; }
 
 int FlightData::get_rudder() noexcept { return elevator_curVal_; }
 
-spin_lock_t* FlightData::get_spinlock() noexcept { return dataLock_; }
+spin_lock_t *FlightData::get_spinlock() noexcept { return dataLock_; }
 
 void FlightData::on_rc_channels(const uint16_t channels[16]) noexcept
 {

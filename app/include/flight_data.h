@@ -21,12 +21,12 @@ class FlightData {
 
     void process_frames() noexcept;
 
-	int get_throttle() noexcept;
-	int get_aileron() noexcept;
-	int get_elevator() noexcept;
-	int get_rudder() noexcept;
+    int get_throttle() noexcept;
+    int get_aileron() noexcept;
+    int get_elevator() noexcept;
+    int get_rudder() noexcept;
 
-	spin_lock_t* get_spinlock() noexcept;
+    spin_lock_t *get_spinlock() noexcept;
 
   private:
     static int throttle_curVal_;
@@ -34,8 +34,8 @@ class FlightData {
     static int elevator_curVal_;
     static int rudder_curVal_;
 
-	static spin_lock_t *dataLock_;
-	static uint dataLock_num_;
+    static spin_lock_t *dataLock_;
+    static uint dataLock_num_;
 
     // Static callbacks (CRSF Module)
     static void on_rc_channels(const uint16_t channels[16]) noexcept;

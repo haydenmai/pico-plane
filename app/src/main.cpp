@@ -51,7 +51,7 @@ void core1_entry(void)
 
         spin_unlock(spinLock, saveState);
 
-		// Set new value only if needed
+        // Set new value only if needed
         if (throttle != throttle_curVal) {
             flightController.changeSpeed(throttle);
             throttle_curVal = throttle;
