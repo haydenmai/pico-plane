@@ -36,6 +36,11 @@ void core1_entry(void)
     // Retrieve spinlock from FlightData class
     spin_lock_t *spinLock = flightData.get_spinlock();
 
+    int throttle_curVal {};
+    int aileron_curVal {};
+    int rudder_curVal {};
+    int elevator_curVal {};
+
     while (1) {
         uint32_t saveState = spin_lock_blocking(spinLock);
 
@@ -46,10 +51,26 @@ void core1_entry(void)
 
         spin_unlock(spinLock, saveState);
 
-        flightController.changeSpeed(throttle);
-        flightController.changeAngle(AngleController::AILERON, aileron);
-        flightController.changeAngle(AngleController::RUDDER, rudder);
-        flightController.changeAngle(AngleController::ELEVATOR, elevator);
+		// Set new value only if needed
+        if (throttle != throttle_curVal) {
+            flightController.changeSpeed(throttle);
+            throttle_curVal = throttle;
+        }
+
+        if (aileron != aileron_curVal) {
+            flightController.changeAngle(AngleController::AILERON, aileron);
+            aileron_curVal = aileron;
+        }
+
+        if (rudder != rudder_curVal) {
+            flightController.changeAngle(AngleController::RUDDER, rudder);
+            rudder_curVal = rudder;
+        }
+
+        if (elevator != elevator_curVal) {
+            flightController.changeAngle(AngleController::ELEVATOR, elevator);
+            elevator_curVal = elevator;
+        }
     }
 }
 
