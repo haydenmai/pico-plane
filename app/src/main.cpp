@@ -6,13 +6,15 @@
  * @date Aug-22-2025
  */
 
-// hal layer 
+// hal layer
 #include "crsf/crsf.h"
 #include "hardware/pwm.h"
+#include "pico/multicore.h"
 #include "pico/stdlib.h"
 
 // app layer
 #include "flight_control.h"
+#include "flight_data.h"
 
 // SDK
 #include "hal/motor_esc.h"
@@ -22,59 +24,43 @@
 #include "hal/servo_ds_m005.h"
 #include <stdio.h>
 
+static auto flightData = FlightData();
 
-static auto flightController = FlightController();
-
-int map_to_range2(int range1_val, int range1_min, int range1_max, int range2_min,
-                  int range2_max)
+/**
+ * @brief Control hardware via core 1.
+ */
+void core1_entry(void)
 {
-    return (range2_max - range2_min) * static_cast<double>(range1_val - range1_min)
-             / static_cast<double>(range1_max - range1_min)
-         + range2_min;
+    auto flightController = FlightController();
+
+    // Retrieve spinlock from FlightData class
+    spin_lock_t *spinLock = flightData.get_spinlock();
+
+    while (1) {
+        uint32_t saveState = spin_lock_blocking(spinLock);
+
+        int throttle {flightData.get_throttle()};
+        int aileron {flightData.get_aileron()};
+        int rudder {flightData.get_rudder()};
+        int elevator {flightData.get_elevator()};
+
+        spin_unlock(spinLock, saveState);
+
+        flightController.changeSpeed(throttle);
+        flightController.changeAngle(AngleController::AILERON, aileron);
+        flightController.changeAngle(AngleController::RUDDER, rudder);
+        flightController.changeAngle(AngleController::ELEVATOR, elevator);
+    }
 }
-
-void on_rc_channels(const uint16_t channels[16])
-{
-	// TODO: Do the controls on the other core
-    int throttle {map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50)};
-
-    int aileron {map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 70, 110)};
-    int elevator {map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 70, 110)};
-    int rudder {map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 70, 110)};
-
-    flightController.changeSpeed(throttle);
-
-    flightController.changeAngle(AngleController::AILERON, aileron);
-    flightController.changeAngle(AngleController::RUDDER, rudder);
-    flightController.changeAngle(AngleController::ELEVATOR, elevator);
-}
-
-void on_link_stats(const link_statistics_t link_stats)
-{
-    printf("RSSI: %d\n", link_stats.rssi);
-    printf("Link Quality: %d\n", link_stats.link_quality);
-    printf("SNR: %d\n", link_stats.snr);
-    printf("TX Power: %d\n", link_stats.tx_power);
-}
-
-void on_failsafe(const bool failsafe) { printf("Failsafe: %d\n", failsafe); }
 
 int main()
 {
     stdio_init_all();
+    multicore_launch_core1(core1_entry);
 
-    crsf_set_link_quality_threshold(70);
-    crsf_set_rssi_threshold(105);
-
-    crsf_set_on_rc_channels(on_rc_channels);
-    crsf_set_on_link_statistics(on_link_stats);
-    crsf_set_on_failsafe(on_failsafe);
-
-    crsf_begin(uart1, 9, 8);
-
-    for (;;) {
-        crsf_process_frames();
-	}
+    while (1) {
+        flightData.process_frames();
+    }
 
     stdio_deinit_all();
 
