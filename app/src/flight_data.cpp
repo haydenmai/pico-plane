@@ -6,9 +6,17 @@
  */
 
 #include "flight_data.h"
-#include "crsf/crsf.h"
 
 #include <stdio.h>
+
+// Definitions of static members
+int FlightData::throttle_val_ = 0;
+int FlightData::aileron_val_  = 0;
+int FlightData::elevator_val_ = 0;
+int FlightData::rudder_val_   = 0;
+
+spin_lock_t *FlightData::dataLock_ = nullptr;
+uint FlightData::dataLock_num_     = 0;
 
 FlightData::FlightData()
 {
@@ -37,7 +45,7 @@ int FlightData::get_aileron() noexcept { return aileron_val_; }
 
 int FlightData::get_elevator() noexcept { return elevator_val_; }
 
-int FlightData::get_rudder() noexcept { return elevator_val_; }
+int FlightData::get_rudder() noexcept { return rudder_val_; }
 
 spin_lock_t *FlightData::get_spinlock() noexcept { return dataLock_; }
 
@@ -63,7 +71,10 @@ void FlightData::on_link_stats(const link_statistics_t link_stats) noexcept
     printf("TX Power: %d\n", link_stats.tx_power);
 }
 
-void on_failsafe(const bool failsafe) noexcept { printf("Failsafe: %d\n", failsafe); }
+void FlightData::on_failsafe(const bool failsafe) noexcept
+{
+    printf("Failsafe: %d\n", failsafe);
+}
 
 int FlightData::map_to_range2(int range1_val, int range1_min, int range1_max,
                               int range2_min, int range2_max) noexcept

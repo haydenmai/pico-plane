@@ -8,6 +8,7 @@
 #ifndef FLIGHT_DATA_H_
 #define FLIGHT_DATA_H_
 
+#include "crsf/crsf.h"
 #include "flight_control.h"
 #include "hardware/sync.h"
 
