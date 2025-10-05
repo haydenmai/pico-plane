@@ -12,194 +12,195 @@
 
 namespace AngleController {
 
-static bool isInitialized = false;
+    static bool isInitialized = false;
 
-void init(TurningRange aileronRange, TurningRange rudderRange, TurningRange elevatorRange)
-{
-    assert(!isInitialized);
-    setRange(AILERON, aileronRange.lower, aileronRange.upper);
-    setRange(RUDDER, rudderRange.lower, rudderRange.upper);
-    setRange(ELEVATOR, elevatorRange.lower, elevatorRange.upper);
-    isInitialized = true;
-}
-
-void cleanup()
-{
-    assert(isInitialized);
-    isInitialized = false;
-}
-
-void setRange(ControlType servotype, int min, int max) noexcept
-{
-    assert(isInitialized);
-
-    if (!rangeIsValid(min, max)) {
-        return;
+    void init(TurningRange aileronRange, TurningRange rudderRange,
+              TurningRange elevatorRange)
+    {
+        assert(!isInitialized);
+        setRange(AILERON, aileronRange.lower, aileronRange.upper);
+        setRange(RUDDER, rudderRange.lower, rudderRange.upper);
+        setRange(ELEVATOR, elevatorRange.lower, elevatorRange.upper);
+        isInitialized = true;
     }
 
-    switch (servotype) {
-    case AILERON:
-        aileronLims_.lower = min;
-        aileronLims_.upper = max;
-        break;
-
-    case RUDDER:
-        rudderLims_.lower = min;
-        rudderLims_.upper = max;
-        break;
-
-    case ELEVATOR:
-        elevatorLims_.lower = min;
-        elevatorLims_.upper = max;
-        break;
-    };
-}
-
-[[nodiscard]] TurningRange getRange(ControlType servoType) noexcept
-{
-    assert(isInitialized);
-
-    switch (servoType) {
-    case AILERON:
-        return aileronLims_;
-
-    case RUDDER:
-        return rudderLims_;
-
-    case ELEVATOR:
-        return elevatorLims_;
+    void cleanup()
+    {
+        assert(isInitialized);
+        isInitialized = false;
     }
 
-    printf("Error: No recognized servo type was found in getRange().\n");
+    void setRange(ControlType servotype, int min, int max) noexcept
+    {
+        assert(isInitialized);
 
-    return {0, 0};
-}
+        if (!rangeIsValid(min, max)) {
+            return;
+        }
 
-void setAngle(ControlType servoType, int degrees) noexcept
-{
-    assert(isInitialized);
+        switch (servotype) {
+        case AILERON:
+            aileronLims_.lower = min;
+            aileronLims_.upper = max;
+            break;
 
-    if (!angleIsInRange(servoType, degrees)) {
-        return;
+        case RUDDER:
+            rudderLims_.lower = min;
+            rudderLims_.upper = max;
+            break;
+
+        case ELEVATOR:
+            elevatorLims_.lower = min;
+            elevatorLims_.upper = max;
+            break;
+        };
     }
 
-    switch (servoType) {
-    case AILERON:
-        aileronLeft_.setAngle(degrees);
-        aileronRight_.setAngle(invertAngle(degrees));
-        break;
+    [[nodiscard]] TurningRange getRange(ControlType servoType) noexcept
+    {
+        assert(isInitialized);
 
-    case RUDDER:
-        rudder_.setAngle(degrees);
-        break;
+        switch (servoType) {
+        case AILERON:
+            return aileronLims_;
 
-    case ELEVATOR:
-        elevator_.setAngle(degrees);
-        break;
-    }
-}
+        case RUDDER:
+            return rudderLims_;
 
-[[nodiscard]] int getAngle(ControlType servoType, PlaneWing wing) noexcept
-{
-    assert(isInitialized);
+        case ELEVATOR:
+            return elevatorLims_;
+        }
 
-    switch (servoType) {
-    case AILERON:
-        return (wing == LEFT) ? aileronLeft_.getAngle() : aileronRight_.getAngle();
+        printf("Error: No recognized servo type was found in getRange().\n");
 
-    case RUDDER:
-        return rudder_.getAngle();
-
-    case ELEVATOR:
-        return elevator_.getAngle();
+        return {0, 0};
     }
 
-    printf("Error: No recognized servo type was found in getAngle().\n");
+    void setAngle(ControlType servoType, int degrees) noexcept
+    {
+        assert(isInitialized);
 
-    return -1;
-}
+        if (!angleIsInRange(servoType, degrees)) {
+            return;
+        }
 
-bool rangeIsValid(int lower, int upper)
-{
-    assert(isInitialized);
+        switch (servoType) {
+        case AILERON:
+            aileronLeft_.setAngle(degrees);
+            aileronRight_.setAngle(invertAngle(degrees));
+            break;
 
-    if (lower > upper) {
-        printf("Error: Servo's lower limit is not less than the upper limit.\n");
-        // TODO: Replace this with exception handling eventually.
+        case RUDDER:
+            rudder_.setAngle(degrees);
+            break;
 
-        return false;
+        case ELEVATOR:
+            elevator_.setAngle(degrees);
+            break;
+        }
     }
 
-    if (lower < ServoDSM005::MIN_DEG) {
-        printf("Error: Illegal value for the servo's lower limit.\n");
-        // TODO: Replace this with exception handling eventually.
+    [[nodiscard]] int getAngle(ControlType servoType, PlaneWing wing) noexcept
+    {
+        assert(isInitialized);
 
-        return false;
+        switch (servoType) {
+        case AILERON:
+            return (wing == LEFT) ? aileronLeft_.getAngle() : aileronRight_.getAngle();
+
+        case RUDDER:
+            return rudder_.getAngle();
+
+        case ELEVATOR:
+            return elevator_.getAngle();
+        }
+
+        printf("Error: No recognized servo type was found in getAngle().\n");
+
+        return -1;
     }
 
-    if (upper > ServoDSM005::MAX_DEG) {
-        printf("Error: Illegal value for the servo's upper limit.\n");
-        // TODO: Replace this with exception handling eventually.
+    bool rangeIsValid(int lower, int upper)
+    {
+        assert(isInitialized);
 
-        return false;
-    }
+        if (lower > upper) {
+            printf("Error: Servo's lower limit is not less than the upper limit.\n");
+            // TODO: Replace this with exception handling eventually.
 
-    return true;
-}
+            return false;
+        }
 
-bool angleIsInRange(ControlType servoType, int angle)
-{
-    assert(isInitialized);
+        if (lower < ServoDSM005::MIN_DEG) {
+            printf("Error: Illegal value for the servo's lower limit.\n");
+            // TODO: Replace this with exception handling eventually.
 
-    int lower {}, upper {};
+            return false;
+        }
 
-    switch (servoType) {
-    case AILERON:
-        lower = aileronLims_.lower;
-        upper = aileronLims_.upper;
-        break;
+        if (upper > ServoDSM005::MAX_DEG) {
+            printf("Error: Illegal value for the servo's upper limit.\n");
+            // TODO: Replace this with exception handling eventually.
 
-    case RUDDER:
-        lower = rudderLims_.lower;
-        upper = rudderLims_.upper;
-        break;
+            return false;
+        }
 
-    case ELEVATOR:
-        lower = elevatorLims_.lower;
-        upper = elevatorLims_.upper;
-        break;
-    }
-
-    if (angle >= lower && angle <= upper) {
         return true;
     }
 
-    printf("Error: Angle is not in within the set limits.\n");
-    // TODO: Replace this with exception handling eventually.
+    bool angleIsInRange(ControlType servoType, int angle)
+    {
+        assert(isInitialized);
 
-    return false;
-}
+        int lower {}, upper {};
 
-int invertAngle(int angle)
-{
-    assert(isInitialized);
-    return ServoDSM005::MAX_DEG - angle;
-}
+        switch (servoType) {
+        case AILERON:
+            lower = aileronLims_.lower;
+            upper = aileronLims_.upper;
+            break;
 
-// NOTE: Pin numbers still subject to change
-static constexpr int AILERON_LEFT_PIN  = 4;
-static constexpr int AILERON_RIGHT_PIN = 5;
-static constexpr int RUDDER_PIN        = 6;
-static constexpr int ELEVATOR_PIN      = 7;
-// NOTE: Pin numbers still subject to change
+        case RUDDER:
+            lower = rudderLims_.lower;
+            upper = rudderLims_.upper;
+            break;
 
-ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
-ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
-ServoDSM005 rudder_ {RUDDER_PIN};
-ServoDSM005 elevator_ {ELEVATOR_PIN};
+        case ELEVATOR:
+            lower = elevatorLims_.lower;
+            upper = elevatorLims_.upper;
+            break;
+        }
 
-TurningRange aileronLims_;
-TurningRange rudderLims_;
-TurningRange elevatorLims_;
+        if (angle >= lower && angle <= upper) {
+            return true;
+        }
+
+        printf("Error: Angle is not in within the set limits.\n");
+        // TODO: Replace this with exception handling eventually.
+
+        return false;
+    }
+
+    int invertAngle(int angle)
+    {
+        assert(isInitialized);
+        return ServoDSM005::MAX_DEG - angle;
+    }
+
+    // NOTE: Pin numbers still subject to change
+    static constexpr int AILERON_LEFT_PIN  = 4;
+    static constexpr int AILERON_RIGHT_PIN = 5;
+    static constexpr int RUDDER_PIN        = 6;
+    static constexpr int ELEVATOR_PIN      = 7;
+    // NOTE: Pin numbers still subject to change
+
+    ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
+    ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
+    ServoDSM005 rudder_ {RUDDER_PIN};
+    ServoDSM005 elevator_ {ELEVATOR_PIN};
+
+    TurningRange aileronLims_;
+    TurningRange rudderLims_;
+    TurningRange elevatorLims_;
 
 } // namespace AngleController

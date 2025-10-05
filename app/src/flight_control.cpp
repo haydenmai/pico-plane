@@ -10,40 +10,40 @@
 
 namespace FlightController {
 
-static bool isInitialized_ = false;
+    static bool isInitialized_ = false;
 
-void init()
-{
-    assert(!isInitialized_);
-    isInitialized_ = true;
-}
+    void init()
+    {
+        assert(!isInitialized_);
+        isInitialized_ = true;
+    }
 
-void cleanup()
-{
-    assert(isInitialized_);
-    isInitialized_ = false;
-}
+    void cleanup()
+    {
+        assert(isInitialized_);
+        isInitialized_ = false;
+    }
 
-void changeSpeed(int percent) noexcept
-{
-    assert(isInitialized_);
-    speedCTRL_.setSpeed(percent);
-}
+    void changeSpeed(int percent) noexcept
+    {
+        assert(isInitialized_);
+        speedCTRL_.setSpeed(percent);
+    }
 
-void changeAngle(AngleController::ControlType controlType, int angle) noexcept
-{
-    assert(isInitialized_);
-    AngleController::setAngle(controlType, angle);
-}
+    void changeAngle(AngleController::ControlType controlType, int angle) noexcept
+    {
+        assert(isInitialized_);
+        AngleController::setAngle(controlType, angle);
+    }
 
-/** @brief Maximum throttle percentage of the motors. */
-int throttleLimit {10};
+    /** @brief Maximum throttle percentage of the motors. */
+    int throttleLimit {10};
 
-SpeedController speedCTRL_ {throttleLimit};
+    SpeedController speedCTRL_ {throttleLimit};
 
-/** @brief Lower and upper limits of the angles the control surfaces can turn. */
-AngleController::TurningRange aileronRange {70, 110};
-AngleController::TurningRange rudderRange {70, 110};
-AngleController::TurningRange elevatorRange {70, 110};
+    /** @brief Lower and upper limits of the angles the control surfaces can turn. */
+    AngleController::TurningRange aileronRange {70, 110};
+    AngleController::TurningRange rudderRange {70, 110};
+    AngleController::TurningRange elevatorRange {70, 110};
 
 } // namespace FlightController

@@ -13,21 +13,22 @@
 #include "speed_control.h"
 
 namespace FlightController {
-void init();
-void cleanup();
 
-/**
- * @brief Changes the speed of the plane.
- * @param percent Throttle percentage of the the plane's motors.
- */
-void changeSpeed(int percent) noexcept;
+    void init();
+    void cleanup();
 
-/**
- * @brief Turns one of the plane's control surfaces.
- * @param controlType Ailerons, rudder, or elevator.
- * @param angle Angle in degrees to turn to. Resting position is 90 degrees.
- */
-void changeAngle(AngleController::ControlType controlType, int angle) noexcept;
+    /**
+     * @brief Changes the speed of the plane.
+     * @param percent Throttle percentage of the the plane's motors.
+     */
+    void changeSpeed(int percent) noexcept;
+
+    /**
+     * @brief Turns one of the plane's control surfaces.
+     * @param controlType Ailerons, rudder, or elevator.
+     * @param angle Angle in degrees to turn to. Resting position is 90 degrees.
+     */
+    void changeAngle(AngleController::ControlType controlType, int angle) noexcept;
 
 }; // namespace FlightController
 
