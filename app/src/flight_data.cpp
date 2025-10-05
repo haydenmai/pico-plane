@@ -72,30 +72,6 @@ namespace FlightData {
         crsf_process_frames();
     }
 
-    int get_throttle()
-    {
-        assert(isInitialized_);
-        return throttle_val_;
-    }
-
-    int get_aileron()
-    {
-        assert(isInitialized_);
-        return aileron_val_;
-    }
-
-    int get_elevator()
-    {
-        assert(isInitialized_);
-        return elevator_val_;
-    }
-
-    int get_rudder()
-    {
-        assert(isInitialized_);
-        return rudder_val_;
-    }
-
     void acquire_spinLock()
     {
         assert(isInitialized_);
@@ -106,6 +82,30 @@ namespace FlightData {
     {
         assert(isInitialized_);
         spin_unlock(dataLock_, saveState_);
+    }
+
+    [[nodiscard]] int get_throttle()
+    {
+        assert(isInitialized_);
+        return throttle_val_;
+    }
+
+    [[nodiscard]] int get_aileron()
+    {
+        assert(isInitialized_);
+        return aileron_val_;
+    }
+
+    [[nodiscard]] int get_elevator()
+    {
+        assert(isInitialized_);
+        return elevator_val_;
+    }
+
+    [[nodiscard]] int get_rudder()
+    {
+        assert(isInitialized_);
+        return rudder_val_;
     }
 
 
@@ -143,4 +143,5 @@ namespace FlightData {
                  / static_cast<double>(range1_max - range1_min)
              + range2_min;
     }
+
 } // namespace FlightData

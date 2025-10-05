@@ -22,15 +22,15 @@ namespace FlightData {
     // Call this in a loop to get new data from remote control
     void process_frames();
 
-    int get_throttle();
-    int get_aileron();
-    int get_elevator();
-    int get_rudder();
-
     // Note: To access data in this module,
     //  use the below functions for data-race-safe access
     void acquire_spinLock();
     void release_spinLock();
+
+    [[nodiscard]] int get_throttle();
+    [[nodiscard]] int get_aileron();
+    [[nodiscard]] int get_elevator();
+    [[nodiscard]] int get_rudder();
 
 }; // namespace FlightData
 
