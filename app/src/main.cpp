@@ -24,59 +24,11 @@
 #include "hal/pwm_led.h"
 #include "hal/servo_ds_m005.h"
 
-/**
- * @brief Control hardware via core 1.
- */
-void core1_entry(void)
-{
-    auto flightController = FlightController();
-
-    // Retrieve spinlock from FlightData class
-    spin_lock_t *spinLock = flightData.get_spinlock();
-
-    int throttle_curVal {};
-    int aileron_curVal {};
-    int rudder_curVal {};
-    int elevator_curVal {};
-
-    // Process data
-    while (1) {
-        uint32_t saveState = spin_lock_blocking(spinLock);
-
-        int throttle {flightData.get_throttle()};
-        int aileron {flightData.get_aileron()};
-        int rudder {flightData.get_rudder()};
-        int elevator {flightData.get_elevator()};
-
-        spin_unlock(spinLock, saveState);
-
-        // Set new value only if needed
-        if (throttle != throttle_curVal) {
-            flightController.changeSpeed(throttle);
-            throttle_curVal = throttle;
-        }
-
-        if (aileron != aileron_curVal) {
-            flightController.changeAngle(AngleController::AILERON, aileron);
-            aileron_curVal = aileron;
-        }
-
-        if (rudder != rudder_curVal) {
-            flightController.changeAngle(AngleController::RUDDER, rudder);
-            rudder_curVal = rudder;
-        }
-
-        if (elevator != elevator_curVal) {
-            flightController.changeAngle(AngleController::ELEVATOR, elevator);
-            elevator_curVal = elevator;
-        }
-    }
-}
 
 int main()
 {
     stdio_init_all();
-    multicore_launch_core1(core1_entry);
+    multicore_launch_core1(FlightController::process_data);
 
     FlightData::init();
 
@@ -90,5 +42,3 @@ int main()
 
     return 0;
 }
-
-void set_battery() { crsf_telem_set_battery_data(0, 0, 0, 0); }

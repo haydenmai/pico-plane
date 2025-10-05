@@ -18,17 +18,10 @@ namespace FlightController {
     void cleanup();
 
     /**
-     * @brief Changes the speed of the plane.
-     * @param percent Throttle percentage of the the plane's motors.
+     * @brief Process data from the FlightData module & apply controls to hardware.
+     *
      */
-    void changeSpeed(int percent) noexcept;
-
-    /**
-     * @brief Turns one of the plane's control surfaces.
-     * @param controlType Ailerons, rudder, or elevator.
-     * @param angle Angle in degrees to turn to. Resting position is 90 degrees.
-     */
-    void changeAngle(AngleController::ControlType controlType, int angle) noexcept;
+    void process_data() noexcept;
 
 }; // namespace FlightController
 

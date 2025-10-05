@@ -146,4 +146,6 @@ namespace FlightData {
              + range2_min;
     }
 
+    static void set_battery() { crsf_telem_set_battery_data(0, 0, 0, 0); }
+
 } // namespace FlightData
