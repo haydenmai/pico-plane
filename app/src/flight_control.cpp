@@ -36,4 +36,16 @@ void changeAngle(AngleController::ControlType controlType, int angle) noexcept
     angleCTRL_.setAngle(controlType, angle);
 }
 
+/** @brief Maximum throttle percentage of the motors. */
+int throttleLimit {10};
+
+SpeedController speedCTRL_ {throttleLimit};
+
+/** @brief Lower and upper limits of the angles the control surfaces can turn. */
+AngleController::TurningRange aileronRange {70, 110};
+AngleController::TurningRange rudderRange {70, 110};
+AngleController::TurningRange elevatorRange {70, 110};
+
+AngleController angleCTRL_ {aileronRange, rudderRange, elevatorRange};
+
 } // namespace FlightController
