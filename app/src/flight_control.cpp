@@ -12,6 +12,17 @@ namespace FlightController {
 
     static bool isInitialized_ = false;
 
+    /** @brief Maximum throttle percentage of the motors. */
+    static int throttleLimit {10};
+
+    static SpeedController speedCTRL_ {throttleLimit};
+
+    /** @brief Lower and upper limits of the angles the control surfaces can turn. */
+    static AngleController::TurningRange aileronRange {70, 110};
+    static AngleController::TurningRange rudderRange {70, 110};
+    static AngleController::TurningRange elevatorRange {70, 110};
+
+    
     void init()
     {
         assert(!isInitialized_);
@@ -36,14 +47,6 @@ namespace FlightController {
         AngleController::setAngle(controlType, angle);
     }
 
-    /** @brief Maximum throttle percentage of the motors. */
-    int throttleLimit {10};
 
-    SpeedController speedCTRL_ {throttleLimit};
-
-    /** @brief Lower and upper limits of the angles the control surfaces can turn. */
-    AngleController::TurningRange aileronRange {70, 110};
-    AngleController::TurningRange rudderRange {70, 110};
-    AngleController::TurningRange elevatorRange {70, 110};
 
 } // namespace FlightController

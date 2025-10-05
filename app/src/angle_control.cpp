@@ -11,9 +11,25 @@
 #include <stdio.h> // Remove later if not needed
 
 namespace AngleController {
+    // NOTE: Pin numbers still subject to change
+    constexpr int AILERON_LEFT_PIN  = 4;
+    constexpr int AILERON_RIGHT_PIN = 5;
+    constexpr int RUDDER_PIN        = 6;
+    constexpr int ELEVATOR_PIN      = 7;
+    // NOTE: Pin numbers still subject to change
 
     static bool isInitialized = false;
 
+    static ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
+    static ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
+    static ServoDSM005 rudder_ {RUDDER_PIN};
+    static ServoDSM005 elevator_ {ELEVATOR_PIN};
+
+    static TurningRange aileronLims_;
+    static TurningRange rudderLims_;
+    static TurningRange elevatorLims_;
+
+    
     void init(TurningRange aileronRange, TurningRange rudderRange,
               TurningRange elevatorRange)
     {
@@ -186,21 +202,5 @@ namespace AngleController {
         assert(isInitialized);
         return ServoDSM005::MAX_DEG - angle;
     }
-
-    // NOTE: Pin numbers still subject to change
-    static constexpr int AILERON_LEFT_PIN  = 4;
-    static constexpr int AILERON_RIGHT_PIN = 5;
-    static constexpr int RUDDER_PIN        = 6;
-    static constexpr int ELEVATOR_PIN      = 7;
-    // NOTE: Pin numbers still subject to change
-
-    ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
-    ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
-    ServoDSM005 rudder_ {RUDDER_PIN};
-    ServoDSM005 elevator_ {ELEVATOR_PIN};
-
-    TurningRange aileronLims_;
-    TurningRange rudderLims_;
-    TurningRange elevatorLims_;
 
 } // namespace AngleController

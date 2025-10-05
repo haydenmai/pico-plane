@@ -12,6 +12,7 @@
 
 namespace FlightData {
     // UART
+    constexpr uart_inst_t *UART {uart1};
     constexpr int TX_PIN {8};
     constexpr int RX_PIN {9};
 
@@ -24,6 +25,7 @@ namespace FlightData {
     // CRSF Limits set by controller
     constexpr int CRSF_LOWER {1000};
     constexpr int CRSF_UPPER {2000};
+
 
     static bool isInitialized_ {false};
 
@@ -55,7 +57,7 @@ namespace FlightData {
         crsf_set_on_link_statistics(on_link_stats);
         crsf_set_on_failsafe(on_failsafe);
 
-        crsf_begin(uart1, TX_PIN, RX_PIN);
+        crsf_begin(UART, TX_PIN, RX_PIN);
 
         isInitialized_ = true;
     }

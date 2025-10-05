@@ -24,10 +24,6 @@
 #include "hal/pwm_led.h"
 #include "hal/servo_ds_m005.h"
 
-#include <stdio.h>
-
-static auto flightData = FlightData();
-
 /**
  * @brief Control hardware via core 1.
  */
@@ -82,11 +78,14 @@ int main()
     stdio_init_all();
     multicore_launch_core1(core1_entry);
 
+    FlightData::init();
+
     // Handle receiving data
     while (1) {
-        flightData.process_frames();
+        FlightData::process_frames();
     }
 
+    FlightData::cleanup();
     stdio_deinit_all();
 
     return 0;
