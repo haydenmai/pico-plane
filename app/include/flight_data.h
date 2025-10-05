@@ -13,38 +13,20 @@
 #include "hardware/sync.h"
 
 /**
- * @class FlightData
+ * @namespace FlightData
  */
-class FlightData {
-  public:
-    explicit FlightData();
-    ~FlightData();
+namespace FlightData {
+    void init();
+    void cleanup();
 
-    void process_frames() noexcept;
+    void process_frames();
 
-    int get_throttle() noexcept;
-    int get_aileron() noexcept;
-    int get_elevator() noexcept;
-    int get_rudder() noexcept;
+    int get_throttle();
+    int get_aileron();
+    int get_elevator();
+    int get_rudder();
 
-    spin_lock_t *get_spinlock() noexcept;
-
-  private:
-    static int throttle_val_;
-    static int aileron_val_;
-    static int elevator_val_;
-    static int rudder_val_;
-
-    static spin_lock_t *dataLock_;
-    static uint dataLock_num_;
-
-    // Static callbacks (CRSF Module)
-    static void on_rc_channels(const uint16_t channels[16]) noexcept;
-    static void on_link_stats(const link_statistics_t link_stats) noexcept;
-    static void on_failsafe(const bool failsafe) noexcept;
-
-    static int map_to_range2(int range1_val, int range1_min, int range1_max,
-                             int range2_min, int range2_max) noexcept;
-};
+    spin_lock_t *get_spinlock();
+}; // namespace FlightData
 
 #endif
