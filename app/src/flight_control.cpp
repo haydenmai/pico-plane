@@ -33,7 +33,7 @@ void changeSpeed(int percent) noexcept
 void changeAngle(AngleController::ControlType controlType, int angle) noexcept
 {
     assert(isInitialized_);
-    angleCTRL_.setAngle(controlType, angle);
+    AngleController::setAngle(controlType, angle);
 }
 
 /** @brief Maximum throttle percentage of the motors. */
@@ -45,7 +45,5 @@ SpeedController speedCTRL_ {throttleLimit};
 AngleController::TurningRange aileronRange {70, 110};
 AngleController::TurningRange rudderRange {70, 110};
 AngleController::TurningRange elevatorRange {70, 110};
-
-AngleController angleCTRL_ {aileronRange, rudderRange, elevatorRange};
 
 } // namespace FlightController
