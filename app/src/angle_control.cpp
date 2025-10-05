@@ -2,25 +2,37 @@
  * @file angle_control.cpp
  * @brief Controls the flight direction of the plane.
  * @author Benley Hsiang
- * @date Jul-16-2025
+ * @date Oct-04-2025
  */
 
 #include "angle_control.h"
+#include <cassert>
 
 #include <stdio.h> // Remove later if not needed
 
-AngleController::AngleController(TurningRange aileronRange, TurningRange rudderRange,
-                                 TurningRange elevatorRange)
+namespace AngleController {
+
+static bool isInitialized = false;
+
+void init(TurningRange aileronRange, TurningRange rudderRange, TurningRange elevatorRange)
 {
+    assert(!isInitialized);
     setRange(AILERON, aileronRange.lower, aileronRange.upper);
     setRange(RUDDER, rudderRange.lower, rudderRange.upper);
     setRange(ELEVATOR, elevatorRange.lower, elevatorRange.upper);
+    isInitialized = true;
 }
 
-AngleController::~AngleController() {}
-
-void AngleController::setRange(ControlType servotype, int min, int max) noexcept
+void cleanup()
 {
+    assert(isInitialized);
+    isInitialized = false;
+}
+
+void setRange(ControlType servotype, int min, int max) noexcept
+{
+    assert(isInitialized);
+
     if (!rangeIsValid(min, max)) {
         return;
     }
@@ -43,9 +55,10 @@ void AngleController::setRange(ControlType servotype, int min, int max) noexcept
     };
 }
 
-[[nodiscard]] AngleController::TurningRange
-AngleController::getRange(ControlType servoType) const noexcept
+[[nodiscard]] TurningRange getRange(ControlType servoType) noexcept
 {
+    assert(isInitialized);
+
     switch (servoType) {
     case AILERON:
         return aileronLims_;
@@ -62,8 +75,10 @@ AngleController::getRange(ControlType servoType) const noexcept
     return {0, 0};
 }
 
-void AngleController::setAngle(ControlType servoType, int degrees) noexcept
+void setAngle(ControlType servoType, int degrees) noexcept
 {
+    assert(isInitialized);
+
     if (!angleIsInRange(servoType, degrees)) {
         return;
     }
@@ -84,9 +99,10 @@ void AngleController::setAngle(ControlType servoType, int degrees) noexcept
     }
 }
 
-[[nodiscard]] int AngleController::getAngle(ControlType servoType,
-                                            PlaneWing wing) const noexcept
+[[nodiscard]] int getAngle(ControlType servoType, PlaneWing wing) noexcept
 {
+    assert(isInitialized);
+
     switch (servoType) {
     case AILERON:
         return (wing == LEFT) ? aileronLeft_.getAngle() : aileronRight_.getAngle();
@@ -103,8 +119,10 @@ void AngleController::setAngle(ControlType servoType, int degrees) noexcept
     return -1;
 }
 
-bool AngleController::rangeIsValid(int lower, int upper)
+bool rangeIsValid(int lower, int upper)
 {
+    assert(isInitialized);
+
     if (lower > upper) {
         printf("Error: Servo's lower limit is not less than the upper limit.\n");
         // TODO: Replace this with exception handling eventually.
@@ -129,8 +147,10 @@ bool AngleController::rangeIsValid(int lower, int upper)
     return true;
 }
 
-bool AngleController::angleIsInRange(ControlType servoType, int angle)
+bool angleIsInRange(ControlType servoType, int angle)
 {
+    assert(isInitialized);
+
     int lower {}, upper {};
 
     switch (servoType) {
@@ -160,4 +180,26 @@ bool AngleController::angleIsInRange(ControlType servoType, int angle)
     return false;
 }
 
-int AngleController::invertAngle(int angle) { return ServoDSM005::MAX_DEG - angle; }
+int invertAngle(int angle)
+{
+    assert(isInitialized);
+    return ServoDSM005::MAX_DEG - angle;
+}
+
+// NOTE: Pin numbers still subject to change
+static constexpr int AILERON_LEFT_PIN  = 4;
+static constexpr int AILERON_RIGHT_PIN = 5;
+static constexpr int RUDDER_PIN        = 6;
+static constexpr int ELEVATOR_PIN      = 7;
+// NOTE: Pin numbers still subject to change
+
+ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
+ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
+ServoDSM005 rudder_ {RUDDER_PIN};
+ServoDSM005 elevator_ {ELEVATOR_PIN};
+
+TurningRange aileronLims_;
+TurningRange rudderLims_;
+TurningRange elevatorLims_;
+
+} // namespace AngleController
