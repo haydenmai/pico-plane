@@ -19,6 +19,7 @@ namespace FlightData {
     void init();
     void cleanup();
 
+    // Call this in a loop to get new data from remote control
     void process_frames();
 
     int get_throttle();
@@ -26,7 +27,11 @@ namespace FlightData {
     int get_elevator();
     int get_rudder();
 
-    spin_lock_t *get_spinlock();
+    // Note: To access data in this module,
+    //  use the below functions for data-race-safe access
+    void acquire_spinLock();
+    void release_spinLock();
+
 }; // namespace FlightData
 
 #endif

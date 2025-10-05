@@ -11,15 +11,32 @@
 #include <stdio.h>
 
 namespace FlightData {
+    // UART
+    constexpr int TX_PIN {8};
+    constexpr int RX_PIN {9};
+
+    // Channel indexes
+    constexpr int AILERON_IND {0};
+    constexpr int ELEVATOR_IND {1};
+    constexpr int THROTTLE_IND {2};
+    constexpr int RUDDER_IND {3};
+
+    // CRSF Limits set by controller
+    constexpr int CRSF_LOWER {1000};
+    constexpr int CRSF_UPPER {2000};
+
     static bool isInitialized_ {false};
 
+    // Read data from CRSF comms
     static int throttle_val_ {};
     static int aileron_val_ {};
     static int elevator_val_ {};
     static int rudder_val_ {};
 
+    // Uses a spinlock
     static spin_lock_t *dataLock_ {nullptr};
-    static uint dataLock_num_ {0};
+    static uint dataLock_num_ {};
+    static uint32_t saveState_ {};
 
 
     void init()
@@ -38,7 +55,7 @@ namespace FlightData {
         crsf_set_on_link_statistics(on_link_stats);
         crsf_set_on_failsafe(on_failsafe);
 
-        crsf_begin(uart1, 9, 8);
+        crsf_begin(uart1, TX_PIN, RX_PIN);
 
         isInitialized_ = true;
     }
@@ -79,23 +96,34 @@ namespace FlightData {
         return rudder_val_;
     }
 
-    spin_lock_t *get_spinlock()
+    void acquire_spinLock()
     {
         assert(isInitialized_);
-        return dataLock_;
+        saveState_ = spin_lock_blocking(dataLock_);
     }
+
+    void release_spinLock()
+    {
+        assert(isInitialized_);
+        spin_unlock(dataLock_, saveState_);
+    }
+
 
     static void on_rc_channels(const uint16_t channels[16])
     {
-        uint32_t saveState = spin_lock_blocking(dataLock_);
+        saveState_ = spin_lock_blocking(dataLock_);
 
         // Critical section
-        throttle_val_ = map_to_range2(TICKS_TO_US(channels[2]), 1000, 2000, 0, 50);
-        aileron_val_  = map_to_range2(TICKS_TO_US(channels[0]), 1000, 2000, 70, 110);
-        elevator_val_ = map_to_range2(TICKS_TO_US(channels[1]), 1000, 2000, 70, 110);
-        rudder_val_   = map_to_range2(TICKS_TO_US(channels[3]), 1000, 2000, 70, 110);
+        throttle_val_ = map_to_range2(TICKS_TO_US(channels[THROTTLE_IND]), CRSF_LOWER,
+                                      CRSF_UPPER, 0, 50);
+        aileron_val_  = map_to_range2(TICKS_TO_US(channels[AILERON_IND]), CRSF_LOWER,
+                                      CRSF_UPPER, 70, 110);
+        elevator_val_ = map_to_range2(TICKS_TO_US(channels[ELEVATOR_IND]), CRSF_LOWER,
+                                      CRSF_UPPER, 70, 110);
+        rudder_val_   = map_to_range2(TICKS_TO_US(channels[RUDDER_IND]), CRSF_LOWER,
+                                      CRSF_UPPER, 70, 110);
 
-        spin_unlock(dataLock_, saveState);
+        spin_unlock(dataLock_, saveState_);
     }
 
     static void on_link_stats(const link_statistics_t link_stats)

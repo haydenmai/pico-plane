@@ -28,6 +28,7 @@ void changeSpeed(int percent) noexcept;
  * @param angle Angle in degrees to turn to. Resting position is 90 degrees.
  */
 void changeAngle(AngleController::ControlType controlType, int angle) noexcept;
+
 }; // namespace FlightController
 
 #endif
