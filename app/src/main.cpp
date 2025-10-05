@@ -12,11 +12,11 @@
 #include "pico/stdlib.h"
 
 // app layer
+#include "angle_control.h"
 #include "flight_control.h"
 #include "flight_data.h"
-#include "angle_control.h"
 
-// hal layer 
+// hal layer
 #include "crsf/crsf.h"
 #include "hal/motor_esc.h"
 #include "hal/mpu6050.h"
@@ -43,7 +43,7 @@ void core1_entry(void)
     int rudder_curVal {};
     int elevator_curVal {};
 
-	// Process data
+    // Process data
     while (1) {
         uint32_t saveState = spin_lock_blocking(spinLock);
 
@@ -82,7 +82,7 @@ int main()
     stdio_init_all();
     multicore_launch_core1(core1_entry);
 
-	// Handle receiving data
+    // Handle receiving data
     while (1) {
         flightData.process_frames();
     }
