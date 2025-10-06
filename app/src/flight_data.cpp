@@ -12,7 +12,7 @@
 
 namespace FlightData {
     // UART
-    constexpr uart_inst_t *UART {uart1};
+    inline uart_inst_t *UART {uart1};
     constexpr int TX_PIN {8};
     constexpr int RX_PIN {9};
 
@@ -40,6 +40,14 @@ namespace FlightData {
     static uint dataLock_num_ {};
     static uint32_t saveState_ {};
 
+
+    // Local functions headers
+    static void on_rc_channels(const uint16_t channels[16]);
+    static void on_link_stats(const link_statistics_t link_stats);
+    static void on_failsafe(const bool failsafe);
+    static int map_to_range2(int range1_val, int range1_min, int range1_max,
+                             int range2_min, int range2_max);
+    // static void set_battery();
 
     void init()
     {
@@ -146,6 +154,6 @@ namespace FlightData {
              + range2_min;
     }
 
-    static void set_battery() { crsf_telem_set_battery_data(0, 0, 0, 0); }
+    // static void set_battery() { crsf_telem_set_battery_data(0, 0, 0, 0); }
 
 } // namespace FlightData

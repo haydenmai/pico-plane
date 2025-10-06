@@ -22,6 +22,11 @@ namespace FlightController {
 
     static bool isInitialized_ = false;
 
+
+    // Local functions headers
+    static void changeSpeed(int percent) noexcept;
+    static void changeAngle(AngleController::ControlType controlType, int angle) noexcept;
+
     void init()
     {
         assert(!isInitialized_);
