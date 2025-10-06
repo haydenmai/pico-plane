@@ -162,8 +162,6 @@ namespace AngleController {
 
     static bool rangeIsValid(int lower, int upper)
     {
-        assert(isInitialized);
-
         if (lower > upper) {
             printf("Error: Servo's lower limit is not less than the upper limit.\n");
             // TODO: Replace this with exception handling eventually.
@@ -190,8 +188,6 @@ namespace AngleController {
 
     static bool angleIsInRange(ControlType servoType, int angle)
     {
-        assert(isInitialized);
-
         int lower {}, upper {};
 
         switch (servoType) {
