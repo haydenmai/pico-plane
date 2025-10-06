@@ -43,7 +43,10 @@ int main()
     }
 
     FlightData::cleanup();
-    FlightController::cleanup;
+    FlightController::cleanup();
+    SpeedController::cleanup();
+    AngleController::cleanup();
+
     stdio_deinit_all();
 
     return 0;
