@@ -12,7 +12,7 @@
 
 namespace FlightData {
     // UART
-    inline uart_inst_t *UART {uart1};
+    inline static uart_inst_t *UART {uart1};
     constexpr int TX_PIN {8};
     constexpr int RX_PIN {9};
 
@@ -94,25 +94,25 @@ namespace FlightData {
         spin_unlock(dataLock_, saveState_);
     }
 
-    [[nodiscard]] const int get_throttle()
+    [[nodiscard]] int get_throttle()
     {
         assert(isInitialized_);
         return throttle_val_;
     }
 
-    [[nodiscard]] const int get_aileron()
+    [[nodiscard]] int get_aileron()
     {
         assert(isInitialized_);
         return aileron_val_;
     }
 
-    [[nodiscard]] const int get_elevator()
+    [[nodiscard]] int get_elevator()
     {
         assert(isInitialized_);
         return elevator_val_;
     }
 
-    [[nodiscard]] const int get_rudder()
+    [[nodiscard]] int get_rudder()
     {
         assert(isInitialized_);
         return rudder_val_;

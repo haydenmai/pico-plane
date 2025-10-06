@@ -27,10 +27,10 @@ namespace FlightData {
     void acquire_spinLock();
     void release_spinLock();
 
-    [[nodiscard]] const int get_throttle();
-    [[nodiscard]] const int get_aileron();
-    [[nodiscard]] const int get_elevator();
-    [[nodiscard]] const int get_rudder();
+    [[nodiscard]] int get_throttle();
+    [[nodiscard]] int get_aileron();
+    [[nodiscard]] int get_elevator();
+    [[nodiscard]] int get_rudder();
 
 }; // namespace FlightData
 

@@ -29,14 +29,38 @@ namespace AngleController {
     static TurningRange rudderLims_;
     static TurningRange elevatorLims_;
 
-    
-    void init(TurningRange aileronRange, TurningRange rudderRange,
-              TurningRange elevatorRange)
+    // Local headers
+    /**
+     * @brief Takes the angle for an aileron and inverts it for the aileron on the
+     *        opposite plane wing.
+     * @note It is assumed that the default position of the servos is at 90 degrees.
+     * @param angle The angle (in degrees) to be inverted.
+     * @return Integer representing the inverted angle in degrees.
+     */
+    static int invertAngle(int angle);
+
+    /**
+     * @brief Checks that the given angles are legal values.
+     * @param lower The lower limit angle to be verified.
+     * @param upper The upper limit angle to be verified.
+     * @pre Angles must be within [MIN_DEG, MAX_DEG].
+     *      The lower limit must be less than the upper limit.
+     * @return True if the angles are valid, false if they're out of range.
+     */
+    static bool rangeIsValid(int lower, int upper);
+
+    /**
+     * @brief Checks that the given angle is within the limits for the servo.
+     * @param servoType The desired servo(s) to check the angle for.
+     * @param angle The proposed angle (in degrees) to set the servo to.
+     * @pre Angle must be within the TurningRange limits for the corresponding servo.
+     * @return True if the angle is within the limits, false if not.
+     */
+    static bool angleIsInRange(ControlType servoType, int angle);
+
+    void init()
     {
         assert(!isInitialized);
-        setRange(AILERON, aileronRange.lower, aileronRange.upper);
-        setRange(RUDDER, rudderRange.lower, rudderRange.upper);
-        setRange(ELEVATOR, elevatorRange.lower, elevatorRange.upper);
         isInitialized = true;
     }
 
@@ -136,7 +160,7 @@ namespace AngleController {
         return -1;
     }
 
-    bool rangeIsValid(int lower, int upper)
+    static bool rangeIsValid(int lower, int upper)
     {
         assert(isInitialized);
 
@@ -164,7 +188,7 @@ namespace AngleController {
         return true;
     }
 
-    bool angleIsInRange(ControlType servoType, int angle)
+    static bool angleIsInRange(ControlType servoType, int angle)
     {
         assert(isInitialized);
 
@@ -197,10 +221,6 @@ namespace AngleController {
         return false;
     }
 
-    int invertAngle(int angle)
-    {
-        assert(isInitialized);
-        return ServoDSM005::MAX_DEG - angle;
-    }
+    static int invertAngle(int angle) { return ServoDSM005::MAX_DEG - angle; }
 
 } // namespace AngleController

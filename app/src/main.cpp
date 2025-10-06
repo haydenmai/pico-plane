@@ -12,6 +12,8 @@
 #include "pico/stdlib.h"
 
 // app layer
+#include "angle_control.h"
+#include "speed_control.h"
 #include "flight_control.h"
 #include "flight_data.h"
 
@@ -27,8 +29,11 @@
 int main()
 {
     stdio_init_all();
-    FlightData::init();
+
+    SpeedController::init();
+    AngleController::init();
     FlightController::init();
+    FlightData::init();
 
     multicore_launch_core1(FlightController::process_data);
 
@@ -38,6 +43,7 @@ int main()
     }
 
     FlightData::cleanup();
+    FlightController::cleanup;
     stdio_deinit_all();
 
     return 0;

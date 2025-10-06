@@ -19,7 +19,7 @@ namespace SpeedController {
      * @param throttleLim Limit for how fast the motor spins as a percentage.
      *                    Percentage must be within [MIN_THROT, MAX_THROT].
      */
-    void init(int throttleLim);
+    void init();
     void cleanup();
 
     /**
@@ -33,7 +33,7 @@ namespace SpeedController {
      * @brief Retrieves the most recent value of the throttle limit.
      * @return Integer representing the throttle percentage limit.
      */
-    [[nodiscard]] const int getThrottleLim(void) noexcept;
+    [[nodiscard]] int getThrottleLim(void) noexcept;
 
     /**
      * @brief Sets how fast the the motor spins.
@@ -47,7 +47,7 @@ namespace SpeedController {
      * @brief Retrieves the value of the most recent setSpeed() call.
      * @return Integer representing the throttle percentage.
      */
-    [[nodiscard]] const int getSpeed(void) noexcept;
+    [[nodiscard]] int getSpeed(void) noexcept;
 
 } // namespace SpeedController
 

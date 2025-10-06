@@ -17,11 +17,9 @@ namespace SpeedController {
     static bool throttleLim_ {};
     MotorEsc esc_ {ESC_PIN};
 
-    void init(int throttleLim)
+    void init()
     {
         assert(!isInitialized_);
-
-        setThrottleLim(throttleLim);
         isInitialized_ = true;
     }
 
@@ -35,6 +33,7 @@ namespace SpeedController {
 
     void setThrottleLim(int percent) noexcept
     {
+        assert(isInitialized_);
         if (percent >= MotorEsc::MIN_THROT && percent <= MotorEsc::MAX_THROT) {
             throttleLim_ = percent;
 
@@ -44,18 +43,24 @@ namespace SpeedController {
         }
     }
 
-    [[nodiscard]] const int getThrottleLim(void) noexcept { return throttleLim_; }
+    [[nodiscard]] int getThrottleLim(void) noexcept
+    {
+        assert(isInitialized_);
+        return throttleLim_;
+    }
 
     void setSpeed(int percent) noexcept
     {
+        assert(isInitialized_);
         // If percent is out of bounds, do nothing
         if (percent >= MotorEsc::MIN_THROT && percent <= throttleLim_) {
             esc_.setSpeed(percent);
         }
     }
 
-    [[nodiscard]] const int getSpeed(void) noexcept
+    [[nodiscard]] int getSpeed(void) noexcept
     {
+        assert(isInitialized_);
         return esc_.getSpeed();
     }
 } // namespace SpeedController

@@ -27,16 +27,10 @@ namespace AngleController {
     enum PlaneWing { LEFT, RIGHT };
 
     /**
-     * @brief Initialization function for the AngleController.
-     * @param aileronRange The range of angles (in degrees) that the ailerons can spin.
-     * @param rudderRange The range of angles (in degrees) that the rudder can spin.
-     * @param elevatorRange The range of angles (in degrees) that the elevator can spin.
-     * @pre Angles must be within [MIN_DEG, MAX_DEG].
-     *      The lower limit must be less than the upper limit.
+     * @brief Initialization function for the AngleController. The setRange function must be called
+     *        to configure each ControlType servos.
      */
-    void init(TurningRange aileronRange, TurningRange rudderRange,
-              TurningRange elevatorRange);
-
+    void init();
     void cleanup();
 
     /**
@@ -73,34 +67,6 @@ namespace AngleController {
      * @return Last set angle in degrees.
      */
     [[nodiscard]] int getAngle(ControlType servoType, PlaneWing wing = LEFT) noexcept;
-
-    /**
-     * @brief Checks that the given angles are legal values.
-     * @param lower The lower limit angle to be verified.
-     * @param upper The upper limit angle to be verified.
-     * @pre Angles must be within [MIN_DEG, MAX_DEG].
-     *      The lower limit must be less than the upper limit.
-     * @return True if the angles are valid, false if they're out of range.
-     */
-    bool rangeIsValid(int lower, int upper);
-
-    /**
-     * @brief Checks that the given angle is within the limits for the servo.
-     * @param servoType The desired servo(s) to check the angle for.
-     * @param angle The proposed angle (in degrees) to set the servo to.
-     * @pre Angle must be within the TurningRange limits for the corresponding servo.
-     * @return True if the angle is within the limits, false if not.
-     */
-    bool angleIsInRange(ControlType servoType, int angle);
-
-    /**
-     * @brief Takes the angle for an aileron and inverts it for the aileron on the
-     *        opposite plane wing.
-     * @note It is assumed that the default position of the servos is at 90 degrees.
-     * @param angle The angle (in degrees) to be inverted.
-     * @return Integer representing the inverted angle in degrees.
-     */
-    int invertAngle(int angle);
 
 }; // namespace AngleController
 

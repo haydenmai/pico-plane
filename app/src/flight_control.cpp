@@ -24,15 +24,32 @@ namespace FlightController {
 
 
     // Local functions headers
+    /**
+     * @brief Changes the speed of the plane.
+     * @param percent Throttle percentage of the the plane's motors.
+     */
     static void changeSpeed(int percent) noexcept;
+
+    /**
+     * @brief Turns one of the plane's control surfaces.
+     * @param controlType Ailerons, rudder, or elevator.
+     * @param angle Angle in degrees to turn to. Resting position is 90 degrees.
+     */
     static void changeAngle(AngleController::ControlType controlType, int angle) noexcept;
 
     void init()
     {
         assert(!isInitialized_);
 
-        SpeedController::init(THROTTLE_LIMIT);
-        AngleController::init(AILERON_RANGE, RUDDER_RANGE, ELEVATOR_RANGE);
+        // Configure speed & angle control limits
+        SpeedController::setThrottleLim(THROTTLE_LIMIT);
+        AngleController::setRange(AngleController::AILERON, AILERON_RANGE.lower,
+                                  AILERON_RANGE.upper);
+        AngleController::setRange(AngleController::RUDDER, RUDDER_RANGE.lower,
+                                  RUDDER_RANGE.upper);
+        AngleController::setRange(AngleController::ELEVATOR, ELEVATOR_RANGE.lower,
+                                  ELEVATOR_RANGE.upper);
+
         isInitialized_ = true;
     }
 
@@ -87,24 +104,10 @@ namespace FlightController {
     }
 
 
-    /**
-     * @brief Changes the speed of the plane.
-     * @param percent Throttle percentage of the the plane's motors.
-     */
-    static void changeSpeed(int percent) noexcept
-    {
-        assert(isInitialized_);
-        SpeedController::setSpeed(percent);
-    }
+    static void changeSpeed(int percent) noexcept { SpeedController::setSpeed(percent); }
 
-    /**
-     * @brief Turns one of the plane's control surfaces.
-     * @param controlType Ailerons, rudder, or elevator.
-     * @param angle Angle in degrees to turn to. Resting position is 90 degrees.
-     */
     static void changeAngle(AngleController::ControlType controlType, int angle) noexcept
     {
-        assert(isInitialized_);
         AngleController::setAngle(controlType, angle);
     }
 
