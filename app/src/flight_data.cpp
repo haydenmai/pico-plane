@@ -86,25 +86,25 @@ namespace FlightData {
         spin_unlock(dataLock_, saveState_);
     }
 
-    [[nodiscard]] int get_throttle()
+    [[nodiscard]] const int get_throttle()
     {
         assert(isInitialized_);
         return throttle_val_;
     }
 
-    [[nodiscard]] int get_aileron()
+    [[nodiscard]] const int get_aileron()
     {
         assert(isInitialized_);
         return aileron_val_;
     }
 
-    [[nodiscard]] int get_elevator()
+    [[nodiscard]] const int get_elevator()
     {
         assert(isInitialized_);
         return elevator_val_;
     }
 
-    [[nodiscard]] int get_rudder()
+    [[nodiscard]] const int get_rudder()
     {
         assert(isInitialized_);
         return rudder_val_;

@@ -7,26 +7,27 @@
 
 #include "flight_control.h"
 #include "flight_data.h"
+#include "speed_control.h"
+
 #include <cassert>
 
 namespace FlightController {
-
-    static bool isInitialized_ = false;
-
     /** @brief Maximum throttle percentage of the motors. */
-    static int throttleLimit {10};
-
-    static SpeedController speedCTRL_ {throttleLimit};
+    constexpr int THROTTLE_LIMIT {10};
 
     /** @brief Lower and upper limits of the angles the control surfaces can turn. */
-    static AngleController::TurningRange aileronRange {70, 110};
-    static AngleController::TurningRange rudderRange {70, 110};
-    static AngleController::TurningRange elevatorRange {70, 110};
+    constexpr AngleController::TurningRange AILERON_RANGE {70, 110};
+    constexpr AngleController::TurningRange RUDDER_RANGE {70, 110};
+    constexpr AngleController::TurningRange ELEVATOR_RANGE {70, 110};
 
+    static bool isInitialized_ = false;
 
     void init()
     {
         assert(!isInitialized_);
+
+        SpeedController::init(THROTTLE_LIMIT);
+        AngleController::init(AILERON_RANGE, RUDDER_RANGE, ELEVATOR_RANGE);
         isInitialized_ = true;
     }
 
@@ -88,7 +89,7 @@ namespace FlightController {
     static void changeSpeed(int percent) noexcept
     {
         assert(isInitialized_);
-        speedCTRL_.setSpeed(percent);
+        SpeedController::setSpeed(percent);
     }
 
     /**

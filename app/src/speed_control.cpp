@@ -7,37 +7,55 @@
 
 #include "speed_control.h"
 
+#include <cassert>
 #include <stdio.h> // Remove later if not needed
 
-SpeedController::SpeedController(int throttleLim) { setThrottleLim(throttleLim); }
+namespace SpeedController {
+    constexpr int ESC_PIN {18};
 
-SpeedController::~SpeedController() {}
+    static bool isInitialized_ {false};
+    static bool throttleLim_ {};
+    MotorEsc esc_ {ESC_PIN};
 
-void SpeedController::setThrottleLim(int percent) noexcept
-{
-    if (percent >= MotorEsc::MIN_THROT && percent <= MotorEsc::MAX_THROT) {
-        throttleLim_ = percent;
+    void init(int throttleLim)
+    {
+        assert(!isInitialized_);
 
-    } else {
-        printf("Error: Illegal value for throttle limit.\n");
-        // TODO: Replace this with exception handling eventually.
+        setThrottleLim(throttleLim);
+        isInitialized_ = true;
     }
-}
 
-[[nodiscard]] int SpeedController::getThrottleLim(void) const noexcept
-{
-    return throttleLim_;
-}
 
-void SpeedController::setSpeed(int percent) noexcept
-{
-    // If percent is out of bounds, do nothing
-    if (percent >= MotorEsc::MIN_THROT && percent <= throttleLim_) {
-        esc_.setSpeed(percent);
+    void cleanup()
+    {
+        assert(isInitialized_);
+        isInitialized_ = false;
     }
-}
 
-[[nodiscard]] int SpeedController::getSpeed(void) const noexcept
-{
-    return esc_.getSpeed();
-}
+
+    void setThrottleLim(int percent) noexcept
+    {
+        if (percent >= MotorEsc::MIN_THROT && percent <= MotorEsc::MAX_THROT) {
+            throttleLim_ = percent;
+
+        } else {
+            printf("Error: Illegal value for throttle limit.\n");
+            // TODO: Replace this with exception handling eventually.
+        }
+    }
+
+    [[nodiscard]] const int getThrottleLim(void) noexcept { return throttleLim_; }
+
+    void setSpeed(int percent) noexcept
+    {
+        // If percent is out of bounds, do nothing
+        if (percent >= MotorEsc::MIN_THROT && percent <= throttleLim_) {
+            esc_.setSpeed(percent);
+        }
+    }
+
+    [[nodiscard]] const int getSpeed(void) noexcept
+    {
+        return esc_.getSpeed();
+    }
+} // namespace SpeedController

@@ -9,7 +9,6 @@
 #define FLIGHT_CONTROL_H_
 
 #include "angle_control.h"
-#include "flight_control.h"
 #include "speed_control.h"
 
 namespace FlightController {

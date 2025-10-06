@@ -12,7 +12,6 @@
 #include "pico/stdlib.h"
 
 // app layer
-#include "angle_control.h"
 #include "flight_control.h"
 #include "flight_data.h"
 
@@ -28,9 +27,10 @@
 int main()
 {
     stdio_init_all();
-    multicore_launch_core1(FlightController::process_data);
-
     FlightData::init();
+    FlightController::init();
+
+    multicore_launch_core1(FlightController::process_data);
 
     // Handle receiving data
     while (1) {

@@ -11,17 +11,16 @@
 #include "hal/motor_esc.h"
 
 /**
- * @class SpeedController
+ * @namespace SpeedController
  */
-class SpeedController {
-  public:
+namespace SpeedController {
     /**
-     * @brief Constructor for the SpeedController class.
+     * @brief Initialization for the SpeedController module.
      * @param throttleLim Limit for how fast the motor spins as a percentage.
      *                    Percentage must be within [MIN_THROT, MAX_THROT].
      */
-    explicit SpeedController(int throttleLim);
-    ~SpeedController();
+    void init(int throttleLim);
+    void cleanup();
 
     /**
      * @brief Sets the limit for how fast the motor spins.
@@ -34,7 +33,7 @@ class SpeedController {
      * @brief Retrieves the most recent value of the throttle limit.
      * @return Integer representing the throttle percentage limit.
      */
-    [[nodiscard]] int getThrottleLim(void) const noexcept;
+    [[nodiscard]] const int getThrottleLim(void) noexcept;
 
     /**
      * @brief Sets how fast the the motor spins.
@@ -48,12 +47,8 @@ class SpeedController {
      * @brief Retrieves the value of the most recent setSpeed() call.
      * @return Integer representing the throttle percentage.
      */
-    [[nodiscard]] int getSpeed(void) const noexcept;
+    [[nodiscard]] const int getSpeed(void) noexcept;
 
-  private:
-    static constexpr int ESC_PIN = 18;
-    MotorEsc esc_ {ESC_PIN};
-    int throttleLim_ {}; ///< User-set limit for the throttle, never exceeds MAX_THROT
-};
+} // namespace SpeedController
 
 #endif
