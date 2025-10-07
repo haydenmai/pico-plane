@@ -1,7 +1,13 @@
 /**
  * @file flight_data.cpp
- * @brief Handles the data coming from the IMU (Inertial Measurement Unit).
- * @author Benley Hsiang, Hayden Mai
+ * @brief Handles the data coming from the receiver and manages
+ *        channel access via spinlocks.
+  @details Implements CRSF frame handling, synchronization using
+ *          hardware spinlocks, and channel value scaling for use
+ *          by other modules.
+ * @author
+ *  - Benley Hsiang,
+ *  - Hayden Mai
  * @date Sep-29-2025
  */
 
@@ -29,24 +35,49 @@ namespace FlightData {
 
     static bool isInitialized_ {false};
 
-    // Read data from CRSF comms
+    // Saved channel values for throttle, aileron, elevator, and rudder
     static int throttle_val_ {};
     static int aileron_val_ {};
     static int elevator_val_ {};
     static int rudder_val_ {};
 
-    // Uses a spinlock
+    // Spinlock, index, and interrupt state
     static spin_lock_t *dataLock_ {nullptr};
     static uint dataLock_num_ {};
     static uint32_t saveState_ {};
 
 
     // Local functions headers
+    /**
+     * @brief Callback triggered when a new RC channel frame is received.
+     * @param channels Array of 16 channel values in CRSF tick format.
+     */
     static void on_rc_channels(const uint16_t channels[16]);
+
+    /**
+     * @brief Callback triggered when link statistics are updated.
+     * @param link_stats Current CRSF link quality and signal metrics.
+     */
     static void on_link_stats(const link_statistics_t link_stats);
+
+    /**
+     * @brief Callback triggered when failsafe mode is entered or exited.
+     * @param failsafe True if failsafe is active.
+     */
     static void on_failsafe(const bool failsafe);
+
+    /**
+     * @brief Maps a value from one numerical range to another.
+     * @param range1_val Input value in range1.
+     * @param range1_min Minimum of input range.
+     * @param range1_max Maximum of input range.
+     * @param range2_min Minimum of output range.
+     * @param range2_max Maximum of output range.
+     * @return Scaled value in the new range.
+     */
     static int map_to_range2(int range1_val, int range1_min, int range1_max,
                              int range2_min, int range2_max);
+
     // static void set_battery();
 
     void init()

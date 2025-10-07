@@ -14,22 +14,68 @@
 
 /**
  * @namespace FlightData
+ * @brief Handles communication and safe access to remote-control channel data.
+ *
+ * This module manages CRSF receiver data.
+ * It provides initialization, CRSF frame processing, and
+ * spinlock-protected access to control channel values.
  */
 namespace FlightData {
+
+    /**
+     * @brief Initializes the FlightData module.
+     *
+     * Sets up UART communication, spinlocks, and internal buffers.
+     * Must be called before using any other FlightData functions.
+     */
     void init();
     void cleanup();
 
-    // Call this in a loop to get new data from remote control
+    /**
+     * @brief Reads and processes new receiver frames.
+     *
+     * Should be called frequently (e.g., in the main loop) to update
+     * control channel values from the receiver.
+     */
     void process_frames();
 
-    // Note: To access data in this module,
-    //  use the below functions for data-race-safe access
+    /**
+     * @brief Acquire the internal spinlock for thread/core-safe access.
+     *
+     * Use this before manually accessing internal shared data
+     * if you need to read or modify values atomically.
+     */
     void acquire_spinLock();
+
+    /**
+     * @brief Release the internal spinlock previously acquired.
+     *
+     * Must be called after `acquire_spinLock()` to avoid deadlocks.
+     */
     void release_spinLock();
 
+    /**
+     * @brief Returns the latest throttle channel value.
+     * @return Current throttle value (range: 1000–2000).
+     */
     [[nodiscard]] int get_throttle();
+
+    /**
+     * @brief Returns the latest aileron channel value.
+     * @return Current aileron value (range: 1000–2000).
+     */
     [[nodiscard]] int get_aileron();
+
+    /**
+     * @brief Returns the latest elevator channel value.
+     * @return Current elevator value (range: 1000–2000).
+     */
     [[nodiscard]] int get_elevator();
+
+    /**
+     * @brief Returns the latest rudder channel value.
+     * @return Current rudder value (range 1000–2000).
+     */
     [[nodiscard]] int get_rudder();
 
 }; // namespace FlightData
