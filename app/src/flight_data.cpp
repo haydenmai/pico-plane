@@ -40,6 +40,7 @@ namespace FlightData {
     int aileron_val_ {};
     int elevator_val_ {};
     int rudder_val_ {};
+    bool failsafeMode_ {};
 
     // Spinlock, index, and interrupt state
     spin_lock_t *dataLock_ {nullptr};
@@ -149,6 +150,10 @@ namespace FlightData {
         return rudder_val_;
     }
 
+    [[nodiscard]] bool get_FailsafeMode() {
+        assert(isInitialized_);
+        return failsafeMode_;
+    }
 
     static void on_rc_channels(const uint16_t channels[16])
     {
@@ -175,7 +180,7 @@ namespace FlightData {
         printf("TX Power: %d\n", link_stats.tx_power);
     }
 
-    static void on_failsafe(const bool failsafe) { printf("Failsafe: %d\n", failsafe); }
+    static void on_failsafe(const bool failsafe) { failsafeMode_ = failsafe; }
 
     static int map_to_range2(int range1_val, int range1_min, int range1_max,
                              int range2_min, int range2_max)

@@ -78,6 +78,8 @@ namespace FlightController {
             int rudder {FlightData::get_rudder()};
             int elevator {FlightData::get_elevator()};
 
+            bool failsafeMode {FlightData::get_FailsafeMode()};
+
             FlightData::release_spinLock();
 
             // Set new value only if needed
@@ -99,6 +101,11 @@ namespace FlightController {
             if (elevator != elevator_curVal) {
                 changeAngle(AngleController::ELEVATOR, elevator);
                 elevator_curVal = elevator;
+            }
+
+            // If controller disconnects, turn off engine
+            if (failsafeMode == true) {
+                changeSpeed(0);
             }
         }
     }

@@ -78,6 +78,12 @@ namespace FlightData {
      */
     [[nodiscard]] int get_rudder();
 
+    /**
+     * @brief Returns the failsafe status (whether the controller is connected).
+     * @return true if failsafe mode is active, false otherwise.
+     */
+    [[nodiscard]] bool get_FailsafeMode();
+
 }; // namespace FlightData
 
 #endif
