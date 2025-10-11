@@ -18,16 +18,16 @@ namespace AngleController {
     constexpr int ELEVATOR_PIN      = 7;
     // NOTE: Pin numbers still subject to change
 
-    static bool isInitialized = false;
+    bool isInitialized = false;
 
-    static ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
-    static ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
-    static ServoDSM005 rudder_ {RUDDER_PIN};
-    static ServoDSM005 elevator_ {ELEVATOR_PIN};
+    ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
+    ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
+    ServoDSM005 rudder_ {RUDDER_PIN};
+    ServoDSM005 elevator_ {ELEVATOR_PIN};
 
-    static TurningRange aileronLims_;
-    static TurningRange rudderLims_;
-    static TurningRange elevatorLims_;
+    TurningRange aileronLims_;
+    TurningRange rudderLims_;
+    TurningRange elevatorLims_;
 
     // Local headers
     /**

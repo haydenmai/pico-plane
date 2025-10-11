@@ -13,8 +13,8 @@
 namespace SpeedController {
     constexpr int ESC_PIN {18};
 
-    static bool isInitialized_ {false};
-    static bool throttleLim_ {};
+    bool isInitialized_ {false};
+    bool throttleLim_ {};
     MotorEsc esc_ {ESC_PIN};
 
     void init()

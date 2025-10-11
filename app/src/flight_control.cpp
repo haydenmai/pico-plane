@@ -20,7 +20,7 @@ namespace FlightController {
     constexpr AngleController::TurningRange RUDDER_RANGE {70, 110};
     constexpr AngleController::TurningRange ELEVATOR_RANGE {70, 110};
 
-    static bool isInitialized_ = false;
+    bool isInitialized_ = false;
 
 
     // Local functions headers

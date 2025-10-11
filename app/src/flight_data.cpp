@@ -33,18 +33,18 @@ namespace FlightData {
     constexpr int CRSF_UPPER {2000};
 
 
-    static bool isInitialized_ {false};
+    bool isInitialized_ {false};
 
     // Saved channel values for throttle, aileron, elevator, and rudder
-    static int throttle_val_ {};
-    static int aileron_val_ {};
-    static int elevator_val_ {};
-    static int rudder_val_ {};
+    int throttle_val_ {};
+    int aileron_val_ {};
+    int elevator_val_ {};
+    int rudder_val_ {};
 
     // Spinlock, index, and interrupt state
-    static spin_lock_t *dataLock_ {nullptr};
-    static uint dataLock_num_ {};
-    static uint32_t saveState_ {};
+    spin_lock_t *dataLock_ {nullptr};
+    uint dataLock_num_ {};
+    uint32_t saveState_ {};
 
 
     // Local functions headers
