@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Oct-04-2025
+ * @date Oct-14-2025
  */
 
 #include "flight_control.h"
@@ -16,9 +16,11 @@ namespace FlightController {
     constexpr int THROTTLE_LIMIT {10};
 
     /** @brief Lower and upper limits of the angles the control surfaces can turn. */
-    constexpr AngleController::TurningRange AILERON_RANGE {70, 110};
-    constexpr AngleController::TurningRange RUDDER_RANGE {70, 110};
-    constexpr AngleController::TurningRange ELEVATOR_RANGE {70, 110};
+    // TODO: Values are not in range, need to adjust them
+    constexpr AngleController::TurningRange AILERON_RANGE {175, 185};
+    constexpr AngleController::TurningRange RUDDER_RANGE {175, 185};
+    constexpr AngleController::TurningRange ELEVATOR_RANGE {-5, 5};
+    // TODO: Values are not in range, need to adjust them
 
     bool isInitialized_ = false;
 
