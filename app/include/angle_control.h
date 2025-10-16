@@ -27,8 +27,8 @@ namespace AngleController {
     enum PlaneWing { LEFT, RIGHT };
 
     /**
-     * @brief Initialization function for the AngleController. The setRange function must be called
-     *        to configure each ControlType servos.
+     * @brief Initialization function for the AngleController. The setRange function must
+     * be called to configure each ControlType servos.
      */
     void init();
     void cleanup();

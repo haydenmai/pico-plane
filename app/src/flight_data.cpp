@@ -11,6 +11,7 @@
  * @date Sep-29-2025
  */
 
+#include "flight_control.h"
 #include "flight_data.h"
 
 #include <cassert>
@@ -150,7 +151,8 @@ namespace FlightData {
         return rudder_val_;
     }
 
-    [[nodiscard]] bool get_FailsafeMode() {
+    [[nodiscard]] bool get_FailsafeMode()
+    {
         assert(isInitialized_);
         return failsafeMode_;
     }
@@ -161,13 +163,16 @@ namespace FlightData {
 
         // Critical section
         throttle_val_ = map_to_range2(TICKS_TO_US(channels[THROTTLE_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, 0, 50);
+                                      CRSF_UPPER, 0, FlightController::THROTTLE_LIMIT);
         aileron_val_  = map_to_range2(TICKS_TO_US(channels[AILERON_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, 70, 110);
+                                      CRSF_UPPER, FlightController::AILERON_RANGE.lower,
+                                      FlightController::AILERON_RANGE.upper);
         elevator_val_ = map_to_range2(TICKS_TO_US(channels[ELEVATOR_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, 70, 110);
+                                      CRSF_UPPER, FlightController::ELEVATOR_RANGE.lower,
+                                      FlightController::ELEVATOR_RANGE.upper);
         rudder_val_   = map_to_range2(TICKS_TO_US(channels[RUDDER_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, 70, 110);
+                                      CRSF_UPPER, FlightController::RUDDER_RANGE.lower,
+                                      FlightController::RUDDER_RANGE.upper);
 
         spin_unlock(dataLock_, saveState_);
     }

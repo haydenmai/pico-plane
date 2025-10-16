@@ -13,16 +13,6 @@
 #include <stdio.h>
 
 namespace FlightController {
-    /** @brief Maximum throttle percentage of the motors. */
-    constexpr int THROTTLE_LIMIT {10};
-
-    /** @brief Lower and upper limits of the angles the control surfaces can turn. */
-    // TODO: Values are not in range, need to adjust them
-    constexpr AngleController::TurningRange AILERON_RANGE {170, 180};
-    constexpr AngleController::TurningRange RUDDER_RANGE {170, 180};
-    constexpr AngleController::TurningRange ELEVATOR_RANGE {0, 10};
-    // TODO: Values are not in range, need to adjust them
-
     bool isInitialized_ = false;
 
 
