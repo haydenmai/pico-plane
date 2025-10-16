@@ -10,6 +10,7 @@
 #include "speed_control.h"
 
 #include <cassert>
+#include <stdio.h>
 
 namespace FlightController {
     /** @brief Maximum throttle percentage of the motors. */
@@ -51,11 +52,16 @@ namespace FlightController {
                                   RUDDER_RANGE.upper);
         AngleController::setRange(AngleController::ELEVATOR, ELEVATOR_RANGE.lower,
                                   ELEVATOR_RANGE.upper);
-        
+
         // Set default position of flaps to be flat with the plane
-        changeAngle(AngleController::AILERON, (AILERON_RANGE.upper - AILERON_RANGE.lower) / 2);
-        changeAngle(AngleController::RUDDER, (RUDDER_RANGE.upper - RUDDER_RANGE.lower) / 2);
-        changeAngle(AngleController::ELEVATOR, (ELEVATOR_RANGE.upper - ELEVATOR_RANGE.lower) / 2);
+        changeAngle(AngleController::AILERON,
+                    ((AILERON_RANGE.upper - AILERON_RANGE.lower) / 2)
+                        + AILERON_RANGE.lower);
+        changeAngle(AngleController::RUDDER,
+                    ((RUDDER_RANGE.upper - RUDDER_RANGE.lower) / 2) + RUDDER_RANGE.lower);
+        changeAngle(AngleController::ELEVATOR,
+                    ((ELEVATOR_RANGE.upper - ELEVATOR_RANGE.lower) / 2)
+                        + ELEVATOR_RANGE.lower);
 
         isInitialized_ = true;
     }

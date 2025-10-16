@@ -13,9 +13,9 @@
 
 // app layer
 #include "angle_control.h"
-#include "speed_control.h"
 #include "flight_control.h"
 #include "flight_data.h"
+#include "speed_control.h"
 
 // hal layer
 #include "crsf/crsf.h"
@@ -25,11 +25,10 @@
 #include "hal/pwm_led.h"
 #include "hal/servo_ds_m005.h"
 
-
 int main()
 {
     stdio_init_all();
-
+    sleep_ms(3000);
     SpeedController::init();
     AngleController::init();
     FlightController::init();
