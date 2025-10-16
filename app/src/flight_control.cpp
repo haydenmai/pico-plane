@@ -51,6 +51,11 @@ namespace FlightController {
                                   RUDDER_RANGE.upper);
         AngleController::setRange(AngleController::ELEVATOR, ELEVATOR_RANGE.lower,
                                   ELEVATOR_RANGE.upper);
+        
+        // Set default flaps to flat with the plane
+        changeAngle(AngleController::AILERON, (AILERON_RANGE.upper - AILERON_RANGE.lower) / 2);
+        changeAngle(AngleController::RUDDER, (RUDDER_RANGE.upper - RUDDER_RANGE.lower) / 2);
+        changeAngle(AngleController::ELEVATOR, (ELEVATOR_RANGE.upper - ELEVATOR_RANGE.lower) / 2);
 
         isInitialized_ = true;
     }
