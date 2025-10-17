@@ -127,15 +127,15 @@ namespace AngleController {
         switch (servoType) {
         case AILERON:
             aileronLeft_.setAngle(degrees);
-            aileronRight_.setAngle(invertAngle(degrees));
+            aileronRight_.setAngle(degrees);
             break;
 
         case RUDDER:
-            rudder_.setAngle(degrees);
+            rudder_.setAngle(invertAngle(degrees));
             break;
 
         case ELEVATOR:
-            elevator_.setAngle(degrees);
+            elevator_.setAngle(invertAngle(degrees));
             break;
         }
     }
