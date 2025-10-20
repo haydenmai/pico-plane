@@ -152,23 +152,22 @@ namespace FlightData {
                                       FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
                                       0, FlightConfig::THROTTLE_LIMIT);
 
-        aileron_val_ = map_to_range2(
-            TICKS_TO_US(channels[FlightConfig::AILERON_IND]), FlightConfig::CRSF_LOWER,
-            FlightConfig::CRSF_UPPER,
-            getTurningLimit(AngleController::AILERON).lowerLim(),
-            getTurningLimit(AngleController::AILERON).upperLim());
+        aileron_val_
+            = map_to_range2(TICKS_TO_US(channels[FlightConfig::AILERON_IND]),
+                            FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                            getTurningLimit(AngleController::AILERON).lowerLim(),
+                            getTurningLimit(AngleController::AILERON).upperLim());
 
-        elevator_val_ = map_to_range2(
-            TICKS_TO_US(channels[FlightConfig::ELEVATOR_IND]), FlightConfig::CRSF_LOWER,
-            FlightConfig::CRSF_UPPER,
-            getTurningLimit(AngleController::ELEVATOR).lowerLim(),
-            getTurningLimit(AngleController::ELEVATOR).upperLim());
+        elevator_val_
+            = map_to_range2(TICKS_TO_US(channels[FlightConfig::ELEVATOR_IND]),
+                            FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                            getTurningLimit(AngleController::ELEVATOR).lowerLim(),
+                            getTurningLimit(AngleController::ELEVATOR).upperLim());
 
-        rudder_val_ = map_to_range2(
-            TICKS_TO_US(channels[FlightConfig::RUDDER_IND]), FlightConfig::CRSF_LOWER,
-            FlightConfig::CRSF_UPPER,
-            getTurningLimit(AngleController::RUDDER).lowerLim(),
-            getTurningLimit(AngleController::RUDDER).upperLim());
+        rudder_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::RUDDER_IND]),
+                                    FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                                    getTurningLimit(AngleController::RUDDER).lowerLim(),
+                                    getTurningLimit(AngleController::RUDDER).upperLim());
 
         spin_unlock(dataLock_, saveState_);
     }
