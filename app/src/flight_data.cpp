@@ -8,9 +8,10 @@
  * @author
  *  - Benley Hsiang,
  *  - Hayden Mai
- * @date Sep-29-2025
+ * @date Oct-19-2025
  */
 
+#include "flight_config.h"
 #include "flight_control.h"
 #include "flight_data.h"
 
@@ -18,22 +19,6 @@
 #include <stdio.h>
 
 namespace FlightData {
-    // UART
-    inline static uart_inst_t *UART {uart1};
-    constexpr int TX_PIN {8};
-    constexpr int RX_PIN {9};
-
-    // Channel indexes
-    constexpr int AILERON_IND {0};
-    constexpr int ELEVATOR_IND {1};
-    constexpr int THROTTLE_IND {2};
-    constexpr int RUDDER_IND {3};
-
-    // CRSF Limits set by controller
-    constexpr int CRSF_LOWER {1000};
-    constexpr int CRSF_UPPER {2000};
-
-
     bool isInitialized_ {false};
 
     // Saved channel values for throttle, aileron, elevator, and rudder
@@ -98,7 +83,8 @@ namespace FlightData {
         crsf_set_on_link_statistics(on_link_stats);
         crsf_set_on_failsafe(on_failsafe);
 
-        crsf_begin(UART, TX_PIN, RX_PIN);
+        crsf_begin(FlightConfig::UART, FlightConfig::UART_TX_PIN,
+                   FlightConfig::UART_TX_PIN);
 
         isInitialized_ = true;
     }
@@ -162,17 +148,24 @@ namespace FlightData {
         saveState_ = spin_lock_blocking(dataLock_);
 
         // Critical section
-        throttle_val_ = map_to_range2(TICKS_TO_US(channels[THROTTLE_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, 0, FlightController::THROTTLE_LIMIT);
-        aileron_val_  = map_to_range2(TICKS_TO_US(channels[AILERON_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, FlightController::AILERON_RANGE.lower,
-                                      FlightController::AILERON_RANGE.upper);
-        elevator_val_ = map_to_range2(TICKS_TO_US(channels[ELEVATOR_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, FlightController::ELEVATOR_RANGE.lower,
-                                      FlightController::ELEVATOR_RANGE.upper);
-        rudder_val_   = map_to_range2(TICKS_TO_US(channels[RUDDER_IND]), CRSF_LOWER,
-                                      CRSF_UPPER, FlightController::RUDDER_RANGE.lower,
-                                      FlightController::RUDDER_RANGE.upper);
+        throttle_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::THROTTLE_IND]),
+                                      FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                                      0, FlightConfig::THROTTLE_LIMIT);
+
+        aileron_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::AILERON_IND]),
+                                     FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                                     FlightConfig::AILERON_LIM.lowerLim(),
+                                     FlightConfig::AILERON_LIM.upperLim());
+
+        elevator_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::ELEVATOR_IND]),
+                                      FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                                      FlightConfig::ELEVATOR_LIM.lowerLim(),
+                                      FlightConfig::ELEVATOR_LIM.upperLim());
+
+        rudder_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::RUDDER_IND]),
+                                    FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                                    FlightConfig::RUDDER_LIM.lowerLim(),
+                                    FlightConfig::RUDDER_LIM.upperLim());
 
         spin_unlock(dataLock_, saveState_);
     }

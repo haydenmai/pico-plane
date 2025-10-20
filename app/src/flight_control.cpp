@@ -2,9 +2,10 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Oct-14-2025
+ * @date Oct-19-2025
  */
 
+#include "flight_config.h"
 #include "flight_control.h"
 #include "flight_data.h"
 #include "speed_control.h"
@@ -35,23 +36,12 @@ namespace FlightController {
         assert(!isInitialized_);
 
         // Configure speed & angle control limits
-        SpeedController::setThrottleLim(THROTTLE_LIMIT);
-        AngleController::setRange(AngleController::AILERON, AILERON_RANGE.lower,
-                                  AILERON_RANGE.upper);
-        AngleController::setRange(AngleController::RUDDER, RUDDER_RANGE.lower,
-                                  RUDDER_RANGE.upper);
-        AngleController::setRange(AngleController::ELEVATOR, ELEVATOR_RANGE.lower,
-                                  ELEVATOR_RANGE.upper);
+        SpeedController::setThrottleLim(FlightConfig::THROTTLE_LIMIT);
 
         // Set default position of flaps to be flat with the plane
-        changeAngle(AngleController::AILERON,
-                    ((AILERON_RANGE.upper - AILERON_RANGE.lower) / 2)
-                        + AILERON_RANGE.lower);
-        changeAngle(AngleController::RUDDER,
-                    ((RUDDER_RANGE.upper - RUDDER_RANGE.lower) / 2) + RUDDER_RANGE.lower);
-        changeAngle(AngleController::ELEVATOR,
-                    ((ELEVATOR_RANGE.upper - ELEVATOR_RANGE.lower) / 2)
-                        + ELEVATOR_RANGE.lower);
+        changeAngle(AngleController::AILERON, FlightConfig::AILERON_CTR_DEG);
+        changeAngle(AngleController::RUDDER, FlightConfig::RUDDER_CTR_DEG);
+        changeAngle(AngleController::ELEVATOR, FlightConfig::ELEVATOR_CTR_DEG);
 
         isInitialized_ = true;
     }

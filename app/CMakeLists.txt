@@ -15,6 +15,7 @@ target_link_libraries(${APP_TARGET}
 	PRIVATE hardware_pwm
     PRIVATE hardware_i2c
 	PRIVATE hardware_sync
+	PRIVATE hardware_uart
 )
 
 # Set program name and version (used by tools like picotool)

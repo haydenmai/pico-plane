@@ -2,32 +2,22 @@
  * @file angle_control.cpp
  * @brief Controls the flight direction of the plane.
  * @author Benley Hsiang
- * @date Oct-04-2025
+ * @date Oct-19-2025
  */
 
 #include "angle_control.h"
-#include <cassert>
+#include "flight_config.h"
 
-#include <stdio.h> // Remove later if not needed
+#include <cassert>
+#include <stdio.h>
 
 namespace AngleController {
-    // NOTE: Pin numbers still subject to change
-    constexpr int AILERON_LEFT_PIN  = 4;
-    constexpr int AILERON_RIGHT_PIN = 5;
-    constexpr int RUDDER_PIN        = 6;
-    constexpr int ELEVATOR_PIN      = 7;
-    // NOTE: Pin numbers still subject to change
-
     bool isInitialized = false;
 
-    ServoDSM005 aileronLeft_ {AILERON_LEFT_PIN};
-    ServoDSM005 aileronRight_ {AILERON_RIGHT_PIN};
-    ServoDSM005 rudder_ {RUDDER_PIN};
-    ServoDSM005 elevator_ {ELEVATOR_PIN};
-
-    TurningRange aileronLims_;
-    TurningRange rudderLims_;
-    TurningRange elevatorLims_;
+    ServoDSM005 aileronLeft_ {FlightConfig::AILERON_LEFT_PIN};
+    ServoDSM005 aileronRight_ {FlightConfig::AILERON_RIGHT_PIN};
+    ServoDSM005 rudder_ {FlightConfig::RUDDER_PIN};
+    ServoDSM005 elevator_ {FlightConfig::ELEVATOR_PIN};
 
     // Local headers
     /**
@@ -38,25 +28,6 @@ namespace AngleController {
      * @return Integer representing the inverted angle in degrees.
      */
     static int invertAngle(int angle);
-
-    /**
-     * @brief Checks that the given angles are legal values.
-     * @param lower The lower limit angle to be verified.
-     * @param upper The upper limit angle to be verified.
-     * @pre Angles must be within [MIN_DEG, MAX_DEG].
-     *      The lower limit must be less than the upper limit.
-     * @return True if the angles are valid, false if they're out of range.
-     */
-    static bool rangeIsValid(int lower, int upper);
-
-    /**
-     * @brief Checks that the given angle is within the limits for the servo.
-     * @param servoType The desired servo(s) to check the angle for.
-     * @param angle The proposed angle (in degrees) to set the servo to.
-     * @pre Angle must be within the TurningRange limits for the corresponding servo.
-     * @return True if the angle is within the limits, false if not.
-     */
-    static bool angleIsInRange(ControlType servoType, int angle);
 
     void init()
     {
@@ -70,45 +41,20 @@ namespace AngleController {
         isInitialized = false;
     }
 
-    void setRange(ControlType servotype, int min, int max) noexcept
-    {
-        assert(isInitialized);
 
-        if (!rangeIsValid(min, max)) {
-            return;
-        }
-
-        switch (servotype) {
-        case AILERON:
-            aileronLims_.lower = min;
-            aileronLims_.upper = max;
-            break;
-
-        case RUDDER:
-            rudderLims_.lower = min;
-            rudderLims_.upper = max;
-            break;
-
-        case ELEVATOR:
-            elevatorLims_.lower = min;
-            elevatorLims_.upper = max;
-            break;
-        };
-    }
-
-    [[nodiscard]] TurningRange getRange(ControlType servoType) noexcept
+    [[nodiscard]] TurningLimit getTurningLimit(ControlType servoType) noexcept
     {
         assert(isInitialized);
 
         switch (servoType) {
         case AILERON:
-            return aileronLims_;
+            return FlightConfig::AILERON_LIM;
 
         case RUDDER:
-            return rudderLims_;
+            return FlightConfig::RUDDER_LIM;
 
         case ELEVATOR:
-            return elevatorLims_;
+            return FlightConfig::ELEVATOR_LIM;
         }
 
         printf("Error: No recognized servo type was found in getRange().\n");
@@ -120,21 +66,26 @@ namespace AngleController {
     {
         assert(isInitialized);
 
-        if (!angleIsInRange(servoType, degrees)) {
-            return;
-        }
-
         switch (servoType) {
         case AILERON:
+            if (!FlightConfig::AILERON_LIM.inRange(degrees)) {
+                return;
+            }
             aileronLeft_.setAngle(degrees);
-            aileronRight_.setAngle(degrees + 13);
+            aileronRight_.setAngle(degrees + FlightConfig::AILERON_RIGHT_DEG_OFFSET);
             break;
 
         case RUDDER:
+            if (!FlightConfig::RUDDER_LIM.inRange(degrees)) {
+                return;
+            }
             rudder_.setAngle(invertAngle(degrees));
             break;
 
         case ELEVATOR:
+            if (!FlightConfig::ELEVATOR_LIM.inRange(degrees)) {
+                return;
+            }
             elevator_.setAngle(invertAngle(degrees));
             break;
         }
@@ -158,63 +109,6 @@ namespace AngleController {
         printf("Error: No recognized servo type was found in getAngle().\n");
 
         return -1;
-    }
-
-    static bool rangeIsValid(int lower, int upper)
-    {
-        if (lower > upper) {
-            printf("Error: Servo's lower limit is not less than the upper limit.\n");
-            // TODO: Replace this with exception handling eventually.
-
-            return false;
-        }
-
-        if (lower < ServoDSM005::MIN_DEG) {
-            printf("Error: Illegal value for the servo's lower limit.\n");
-            // TODO: Replace this with exception handling eventually.
-
-            return false;
-        }
-
-        if (upper > ServoDSM005::MAX_DEG) {
-            printf("Error: Illegal value for the servo's upper limit.\n");
-            // TODO: Replace this with exception handling eventually.
-
-            return false;
-        }
-
-        return true;
-    }
-
-    static bool angleIsInRange(ControlType servoType, int angle)
-    {
-        int lower {}, upper {};
-
-        switch (servoType) {
-        case AILERON:
-            lower = aileronLims_.lower;
-            upper = aileronLims_.upper;
-            break;
-
-        case RUDDER:
-            lower = rudderLims_.lower;
-            upper = rudderLims_.upper;
-            break;
-
-        case ELEVATOR:
-            lower = elevatorLims_.lower;
-            upper = elevatorLims_.upper;
-            break;
-        }
-
-        if (angle >= lower && angle <= upper) {
-            return true;
-        }
-
-        printf("Error: Angle is not in within the set limits.\n");
-        // TODO: Replace this with exception handling eventually.
-
-        return false;
     }
 
     static int invertAngle(int angle) { return ServoDSM005::MAX_DEG - angle; }

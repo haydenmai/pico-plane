@@ -2,7 +2,7 @@
  * @file angle_control.h
  * @brief Controls the flight direction of the plane.
  * @author Benley Hsiang
- * @date Oct-04-2025
+ * @date Oct-19-2025
  */
 
 #ifndef ANGLE_CONTROL_H_
@@ -13,13 +13,34 @@
 namespace AngleController {
 
     /**
-     * @brief Contains the range of angles that a servo is allowed to spin within.
-     * @param lower The lower limit of the turning range, in degrees.
-     * @param upper The upper limit of the turning range, in degrees.
+     * @brief Contains the center & range of angles that a servo is allowed to spin
+     * within.
+     * @param center The resting angle of servo arms, in degrees.
+     * @param rangeLim The limit of the turning range from the center, in degrees.
      */
-    struct TurningRange {
-        int lower;
-        int upper;
+    struct TurningLimit {
+        int center;
+        int rangeLim;
+
+        int upperLim() const { return center + rangeLim; }
+        int lowerLim() const { return center - rangeLim; }
+
+        bool isValid() const
+        {
+            return (upperLim() <= ServoDSM005::MAX_DEG
+                    && lowerLim() >= ServoDSM005::MIN_DEG);
+        }
+
+        bool isValid(int range) const
+        {
+            return ((center + range) <= ServoDSM005::MAX_DEG
+                    && (center - range) >= ServoDSM005::MIN_DEG);
+        }
+
+        bool inRange(int degree) const
+        {
+            return (degree <= upperLim() && degree >= lowerLim());
+        }
     };
 
     enum ControlType { AILERON, RUDDER, ELEVATOR };
@@ -32,23 +53,13 @@ namespace AngleController {
      */
     void init();
     void cleanup();
-
-    /**
-     * @brief Sets the range of angles that the given servo can spin within.
-     * @param servoType The desired servo(s) to set limits for.
-     * @param min The lower limit of the servo's turning range as an angle in degrees.
-     * @param max The upper limit of the servo's turning range as an angle in degrees.
-     * @pre Angles must be within [MIN_DEG, MAX_DEG].
-     *      The lower limit must be less than the upper limit.
-     */
-    void setRange(ControlType servoType, int min, int max) noexcept;
-
+    
     /**
      * @brief Retrieves the most recently set turning range of the given servo.
      * @param servoType The desired servo(s) to set limits for.
      * @return TurningRange struct containing the degree limits of the servo.
      */
-    [[nodiscard]] TurningRange getRange(ControlType servoType) noexcept;
+    [[nodiscard]] TurningLimit getTurningLimit(ControlType servoType) noexcept;
 
     /**
      * @brief Commands the given servo(s) to move to a specified angle.

@@ -3,7 +3,7 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Aug-22-2025
+ * @date Oct-19-2025
  */
 
 // SDK
@@ -28,7 +28,7 @@
 int main()
 {
     stdio_init_all();
-    sleep_ms(3000);
+    sleep_ms(2000);
     SpeedController::init();
     AngleController::init();
     FlightController::init();

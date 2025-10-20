@@ -2,20 +2,19 @@
  * @file speed_control.cpp
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Jul-16-2025
+ * @date Oct-19-2025
  */
 
 #include "speed_control.h"
+#include "flight_config.h"
 
 #include <cassert>
 #include <stdio.h> // Remove later if not needed
 
 namespace SpeedController {
-    constexpr int ESC_PIN {18};
-
     bool isInitialized_ {false};
     bool throttleLim_ {};
-    MotorEsc esc_ {ESC_PIN};
+    MotorEsc esc_ {FlightConfig::ESC_PIN};
 
     void init()
     {
