@@ -12,12 +12,12 @@
 #include <stdio.h>
 
 namespace AngleController {
-    constexpr AngleController::TurningLimit AILERON_LIM {FlightConfig::AILERON_CTR_DEG,
-                                                         FlightConfig::AILERON_RNG_DEG};
-    constexpr AngleController::TurningLimit RUDDER_LIM {FlightConfig::RUDDER_CTR_DEG,
-                                                        FlightConfig::RUDDER_RNG_DEG};
-    constexpr AngleController::TurningLimit ELEVATOR_LIM {FlightConfig::ELEVATOR_CTR_DEG,
-                                                          FlightConfig::ELEVATOR_RNG_DEG};
+    constexpr TurningLimit AILERON_LIM {FlightConfig::AILERON_CTR_DEG,
+                                        FlightConfig::AILERON_RNG_DEG};
+    constexpr TurningLimit RUDDER_LIM {FlightConfig::RUDDER_CTR_DEG,
+                                       FlightConfig::RUDDER_RNG_DEG};
+    constexpr TurningLimit ELEVATOR_LIM {FlightConfig::ELEVATOR_CTR_DEG,
+                                         FlightConfig::ELEVATOR_RNG_DEG};
 
     bool isInitialized = false;
 
