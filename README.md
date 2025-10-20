@@ -1,2 +1,51 @@
 # Pico Plane
-Here you will find our blood sweat and tears... not yet
+This mini-project explores programming a microcontroller to fly an FPV (First-Person View) plane using the **RP2040**. The plane uses an **ExpressLRS-based SpeedyBee Nano 2.4 GHz receiver** to receive control signals and is built using the freely available **[Micro SportCam airframe](https://www.3daeroventures.com/microsportcam)** designed by 3DAeroventures.
+
+### Project Goals
+
+- Learn and practice embedded systems programming using the **RP2040 microcontroller**
+- Improve our **C++ development skills** in a low-level environment
+- Gain a deeper understanding of the **RP2040 architecture**, including its capabilities and limitations
+
+### State of the Project
+
+This project is a **work in progress**. As life gets busy and priorities shift, development may slow down, but our goal is to complete the Pico Plane within a reasonable timeframe—ideally by the end of **2025**, including polishing the codebase.
+
+## Features
+As mentioned, the code is designed for the RP2040 Pi Pico W. Our code features:
+- Multicore flight controller
+    - Core 0 parses CRSF frames & (soon!) IMU data to uSD card
+    - Core 1 reads & applies the controls to the motors and servos
+- PWM control for electronic speed controller (ESC) and servos (DS-M005)
+- MPU6050 via I2C
+- CRSF communication using UART
+- (soon!) MSP communication for FPV camera 
+
+
+## Hardware List
+To replicate our project, the following hardware are needed:
+- x1 - Pi Pico W (or any RP2040/2350-based microcontroller if you're willing to modify code)
+- x1 - Brushless DC Motor
+- x4 - DS-M005 servos
+- x1 - MPU6050 IMU
+- x1 - 4S batteries
+- x1 - 30A ESC with BEC
+- x1 - FPV camera
+- x1 - Buck converter (for powering camera from battery)
+- x1 - ExpressLRS 2.4G receiver
+
+Hardware may vary and other specifications may also work.
+
+## Future plans
+Here is our current to-do list:
+- [ ] Implement exceptions and handling
+- [ ] Proper MSP communication line for the FPV camera
+- [ ] Flight recorder using IMU and uSD card reader via SPI
+- [ ] Flight data visualizations
+
+Possible future things (future projects?):
+- [ ] RTOS layer for multithreading
+- [ ] DMA channels to read data from flight receiver
+
+## Links
+https://www.3daeroventures.com/microsportcam
