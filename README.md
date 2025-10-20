@@ -9,9 +9,9 @@ This mini-project explores programming a microcontroller to fly an FPV (First-Pe
 
 ### State of the Project
 
-This project is a **work in progress**. As life gets busy and priorities shift, development may slow down, but our goal is to complete the Pico Plane within a reasonable timeframe—ideally by the end of **2025**, including polishing the codebase.
+This project is a **work in progress**. As life gets busy and priorities shift, development may slow down, but our goal is to complete the Pico Plane within a reasonable timeframe (ideally by the end of **2025**), including polishing the codebase.
 
-So far, the **majority** of the code is **completed**. We are missing a few minor (but critical!) features required for polishing. The plane should in theory fly with the current implementation (we are stilling working on the 3D prints of the plane, it's proving to be quite a difficult process).
+So far, the **majority** of the code is **completed**. We are missing a few minor (but **critical!**) features required for polishing. The plane should in theory fly with the current implementation (we are stilling working on the 3D prints of the plane, it's proving to be quite a difficult process).
 
 ## Features
 As mentioned, the code is designed for the RP2040 Pi Pico W. Our code features:
