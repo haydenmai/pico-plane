@@ -2,7 +2,7 @@
  * @file angle_control.cpp
  * @brief Controls the flight direction of the plane.
  * @author Benley Hsiang
- * @date Oct-19-2025
+ * @date Oct-20-2025
  */
 
 #include "angle_control.h"
@@ -12,6 +12,13 @@
 #include <stdio.h>
 
 namespace AngleController {
+    constexpr AngleController::TurningLimit AILERON_LIM {FlightConfig::AILERON_CTR_DEG,
+                                                         FlightConfig::AILERON_RNG_DEG};
+    constexpr AngleController::TurningLimit RUDDER_LIM {FlightConfig::RUDDER_CTR_DEG,
+                                                        FlightConfig::RUDDER_RNG_DEG};
+    constexpr AngleController::TurningLimit ELEVATOR_LIM {FlightConfig::ELEVATOR_CTR_DEG,
+                                                          FlightConfig::ELEVATOR_RNG_DEG};
+
     bool isInitialized = false;
 
     ServoDSM005 aileronLeft_ {FlightConfig::AILERON_LEFT_PIN};
@@ -33,9 +40,8 @@ namespace AngleController {
     {
         assert(!isInitialized);
 
-        // Check if limit is valid, otherwise don't initialize 
-        if (FlightConfig::AILERON_LIM.isValid() && FlightConfig::RUDDER_LIM.isValid()
-            && FlightConfig::ELEVATOR_LIM.isValid()) {
+        // Check if limit is valid, otherwise don't initialize
+        if (AILERON_LIM.isValid() && RUDDER_LIM.isValid() && ELEVATOR_LIM.isValid()) {
             isInitialized = true;
         }
     }
@@ -53,13 +59,13 @@ namespace AngleController {
 
         switch (servoType) {
         case AILERON:
-            return FlightConfig::AILERON_LIM;
+            return AILERON_LIM;
 
         case RUDDER:
-            return FlightConfig::RUDDER_LIM;
+            return RUDDER_LIM;
 
         case ELEVATOR:
-            return FlightConfig::ELEVATOR_LIM;
+            return ELEVATOR_LIM;
         }
 
         printf("Error: No recognized servo type was found in getRange().\n");
@@ -72,7 +78,7 @@ namespace AngleController {
 
         switch (servoType) {
         case AILERON:
-            if (!FlightConfig::AILERON_LIM.inRange(degrees)) {
+            if (!AILERON_LIM.inRange(degrees)) {
                 return;
             }
             aileronLeft_.setAngle(degrees);
@@ -80,14 +86,14 @@ namespace AngleController {
             break;
 
         case RUDDER:
-            if (!FlightConfig::RUDDER_LIM.inRange(degrees)) {
+            if (!RUDDER_LIM.inRange(degrees)) {
                 return;
             }
             rudder_.setAngle(invertAngle(degrees));
             break;
 
         case ELEVATOR:
-            if (!FlightConfig::ELEVATOR_LIM.inRange(degrees)) {
+            if (!ELEVATOR_LIM.inRange(degrees)) {
                 return;
             }
             elevator_.setAngle(invertAngle(degrees));

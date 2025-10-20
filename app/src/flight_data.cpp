@@ -8,7 +8,7 @@
  * @author
  *  - Benley Hsiang,
  *  - Hayden Mai
- * @date Oct-19-2025
+ * @date Oct-20-2025
  */
 
 #include "flight_config.h"
@@ -152,20 +152,23 @@ namespace FlightData {
                                       FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
                                       0, FlightConfig::THROTTLE_LIMIT);
 
-        aileron_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::AILERON_IND]),
-                                     FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
-                                     FlightConfig::AILERON_LIM.lowerLim(),
-                                     FlightConfig::AILERON_LIM.upperLim());
+        aileron_val_ = map_to_range2(
+            TICKS_TO_US(channels[FlightConfig::AILERON_IND]), FlightConfig::CRSF_LOWER,
+            FlightConfig::CRSF_UPPER,
+            AngleController::getTurningLimit(AngleController::AILERON).lowerLim(),
+            AngleController::getTurningLimit(AngleController::AILERON).upperLim());
 
-        elevator_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::ELEVATOR_IND]),
-                                      FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
-                                      FlightConfig::ELEVATOR_LIM.lowerLim(),
-                                      FlightConfig::ELEVATOR_LIM.upperLim());
+        elevator_val_ = map_to_range2(
+            TICKS_TO_US(channels[FlightConfig::ELEVATOR_IND]), FlightConfig::CRSF_LOWER,
+            FlightConfig::CRSF_UPPER,
+            AngleController::getTurningLimit(AngleController::ELEVATOR).lowerLim(),
+            AngleController::getTurningLimit(AngleController::ELEVATOR).upperLim());
 
-        rudder_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::RUDDER_IND]),
-                                    FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
-                                    FlightConfig::RUDDER_LIM.lowerLim(),
-                                    FlightConfig::RUDDER_LIM.upperLim());
+        rudder_val_ = map_to_range2(
+            TICKS_TO_US(channels[FlightConfig::RUDDER_IND]), FlightConfig::CRSF_LOWER,
+            FlightConfig::CRSF_UPPER,
+            AngleController::getTurningLimit(AngleController::RUDDER).lowerLim(),
+            AngleController::getTurningLimit(AngleController::RUDDER).upperLim());
 
         spin_unlock(dataLock_, saveState_);
     }

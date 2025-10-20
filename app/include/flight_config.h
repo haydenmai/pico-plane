@@ -35,19 +35,14 @@ namespace FlightConfig {
     constexpr int AILERON_CTR_DEG {87};
     constexpr int AILERON_RNG_DEG {20};
     constexpr int AILERON_RIGHT_DEG_OFFSET {13};
-    constexpr AngleController::TurningLimit AILERON_LIM {AILERON_CTR_DEG,
-                                                         AILERON_RNG_DEG};
 
     /** @brief Rudder servos centre and range in degrees*/
     constexpr int RUDDER_CTR_DEG {82};
     constexpr int RUDDER_RNG_DEG {35};
-    constexpr AngleController::TurningLimit RUDDER_LIM {RUDDER_CTR_DEG, RUDDER_RNG_DEG};
 
     /** @brief Elevator servos centre and range in degrees*/
     constexpr int ELEVATOR_CTR_DEG {95};
     constexpr int ELEVATOR_RNG_DEG {25};
-    constexpr AngleController::TurningLimit ELEVATOR_LIM {ELEVATOR_CTR_DEG,
-                                                          ELEVATOR_RNG_DEG};
 
 
     /** @brief CRSF Settings */
