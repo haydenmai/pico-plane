@@ -11,7 +11,6 @@
 #include "speed_control.h"
 
 #include <cassert>
-#include <stdio.h>
 
 namespace FlightController {
     bool isInitialized_ = false;

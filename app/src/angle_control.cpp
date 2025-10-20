@@ -58,7 +58,6 @@ namespace AngleController {
         }
 
         printf("Error: No recognized servo type was found in getRange().\n");
-
         return {0, 0};
     }
 

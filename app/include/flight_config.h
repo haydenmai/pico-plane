@@ -23,7 +23,7 @@ namespace FlightConfig {
     constexpr int ELEVATOR_PIN {7};
 
     // UART
-    uart_inst_t *UART {uart1};
+    inline uart_inst_t *UART {uart1};
     constexpr int UART_TX_PIN {8};
     constexpr int UART_RX_PIN {9};
 
