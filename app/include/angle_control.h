@@ -31,12 +31,6 @@ namespace AngleController {
                     && lowerLim() >= ServoDSM005::MIN_DEG);
         }
 
-        bool isValid(int range) const
-        {
-            return ((center + range) <= ServoDSM005::MAX_DEG
-                    && (center - range) >= ServoDSM005::MIN_DEG);
-        }
-
         bool inRange(int degree) const
         {
             return (degree <= upperLim() && degree >= lowerLim());

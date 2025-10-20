@@ -32,7 +32,12 @@ namespace AngleController {
     void init()
     {
         assert(!isInitialized);
-        isInitialized = true;
+
+        // Check if limit is valid, otherwise don't initialize 
+        if (FlightConfig::AILERON_LIM.isValid() && FlightConfig::RUDDER_LIM.isValid()
+            && FlightConfig::ELEVATOR_LIM.isValid()) {
+            isInitialized = true;
+        }
     }
 
     void cleanup()
