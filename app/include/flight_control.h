@@ -17,9 +17,9 @@ namespace FlightController {
 
     /** @brief Lower and upper limits of the angles the control surfaces can turn. */
     // TODO: Values are not in range, need to adjust them
-    constexpr AngleController::TurningRange AILERON_RANGE {75, 105};
-    constexpr AngleController::TurningRange RUDDER_RANGE {75, 105};
-    constexpr AngleController::TurningRange ELEVATOR_RANGE {75, 105};
+    constexpr AngleController::TurningRange AILERON_RANGE {67, 107};
+    constexpr AngleController::TurningRange RUDDER_RANGE {47, 117};
+    constexpr AngleController::TurningRange ELEVATOR_RANGE {70, 120};
     // TODO: Values are not in range, need to adjust them
 
     void init();

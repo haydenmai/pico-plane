@@ -127,7 +127,7 @@ namespace AngleController {
         switch (servoType) {
         case AILERON:
             aileronLeft_.setAngle(degrees);
-            aileronRight_.setAngle(degrees);
+            aileronRight_.setAngle(degrees + 13);
             break;
 
         case RUDDER:
