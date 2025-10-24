@@ -8,7 +8,7 @@
  * @author
  *  - Benley Hsiang,
  *  - Hayden Mai
- * @date Oct-20-2025
+ * @date Oct-23-2025
  */
 
 #include "flight_config.h"
@@ -83,7 +83,7 @@ namespace FlightData {
         crsf_set_on_link_statistics(on_link_stats);
         crsf_set_on_failsafe(on_failsafe);
 
-        crsf_begin(FlightConfig::UART, FlightConfig::UART_TX_PIN,
+        crsf_begin(FlightConfig::UART, FlightConfig::UART_RX_PIN,
                    FlightConfig::UART_TX_PIN);
 
         isInitialized_ = true;
