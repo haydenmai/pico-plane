@@ -2,7 +2,7 @@
  * @file flight_config.h
  * @brief Configurations for the plane
  * @author Hayden Mai
- * @date Oct-19-2025
+ * @date Oct-23-2025
  */
 
 #ifndef FLIGHT_CONFIG_H_
@@ -14,18 +14,18 @@
 namespace FlightConfig {
     /** @brief GPIO pin settings */
     // ESC
-    constexpr int ESC_PIN {18};
+    constexpr int ESC_PIN {1};
 
     // Servos
-    constexpr int AILERON_LEFT_PIN {4};
-    constexpr int AILERON_RIGHT_PIN {5};
-    constexpr int RUDDER_PIN {6};
-    constexpr int ELEVATOR_PIN {7};
+    constexpr int AILERON_LEFT_PIN {6};
+    constexpr int AILERON_RIGHT_PIN {7};
+    constexpr int RUDDER_PIN {2};
+    constexpr int ELEVATOR_PIN {3};
 
     // UART
     inline uart_inst_t *UART {uart1};
-    constexpr int UART_TX_PIN {8};
-    constexpr int UART_RX_PIN {9};
+    constexpr int UART_TX_PIN {4};
+    constexpr int UART_RX_PIN {5};
 
 
     /** @brief Maximum throttle percentage of the motors. */
