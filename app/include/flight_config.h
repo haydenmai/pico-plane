@@ -29,7 +29,7 @@ namespace FlightConfig {
 
 
     /** @brief Maximum throttle percentage of the motors. */
-    constexpr int THROTTLE_LIMIT {10};
+    constexpr int THROTTLE_LIMIT {80};
 
     /** @brief Aileron servos center and range in degrees*/
     constexpr int AILERON_CTR_DEG {87};
@@ -51,6 +51,7 @@ namespace FlightConfig {
     constexpr int ELEVATOR_IND {1};
     constexpr int THROTTLE_IND {2};
     constexpr int RUDDER_IND {3};
+    constexpr int TOGGLE_IND {4};
 
     // CRSF Limits set by controller
     constexpr int CRSF_LOWER {1000};

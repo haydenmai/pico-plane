@@ -69,6 +69,7 @@ namespace FlightController {
             int aileron {FlightData::get_aileron()};
             int rudder {FlightData::get_rudder()};
             int elevator {FlightData::get_elevator()};
+            int toggle {FlightData::get_toggle()};
 
             bool failsafeMode {FlightData::get_FailsafeMode()};
 
@@ -76,8 +77,12 @@ namespace FlightController {
 
             // Set new value only if needed
             if (throttle != throttle_curVal) {
-                changeSpeed(throttle);
-                throttle_curVal = throttle;
+                if (toggle == true) {
+                    changeSpeed(throttle);
+                    throttle_curVal = throttle;
+                } else {
+                    changeSpeed(0);
+                }
             }
 
             if (aileron != aileron_curVal) {

@@ -26,6 +26,7 @@ namespace FlightData {
     int aileron_val_ {};
     int elevator_val_ {};
     int rudder_val_ {};
+    bool toggle_val_ {};
     bool failsafeMode_ {};
 
     // Spinlock, index, and interrupt state
@@ -137,6 +138,11 @@ namespace FlightData {
         return rudder_val_;
     }
 
+    [[nodiscard]] bool get_toggle() {
+        assert(isInitialized_);
+        return toggle_val_;
+    }
+
     [[nodiscard]] bool get_FailsafeMode()
     {
         assert(isInitialized_);
@@ -168,6 +174,13 @@ namespace FlightData {
                                     FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
                                     getTurningLimit(AngleController::RUDDER).lowerLim(),
                                     getTurningLimit(AngleController::RUDDER).upperLim());
+
+        int toggle_intVal = TICKS_TO_US(channels[FlightConfig::TOGGLE_IND]);
+        if (toggle_intVal > 1500) {
+            toggle_val_ = true;
+        } else {
+            toggle_val_ = false;
+        }
 
         spin_unlock(dataLock_, saveState_);
     }
