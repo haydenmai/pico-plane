@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Oct-19-2025
+ * @date Oct-30-2025
  */
 
 #include "flight_config.h"
@@ -69,7 +69,6 @@ namespace FlightController {
             int aileron {FlightData::get_aileron()};
             int rudder {FlightData::get_rudder()};
             int elevator {FlightData::get_elevator()};
-            int toggle {FlightData::get_toggle()};
 
             bool failsafeMode {FlightData::get_FailsafeMode()};
 
@@ -77,12 +76,8 @@ namespace FlightController {
 
             // Set new value only if needed
             if (throttle != throttle_curVal) {
-                if (toggle == true) {
-                    changeSpeed(throttle);
-                    throttle_curVal = throttle;
-                } else {
-                    changeSpeed(0);
-                }
+                changeSpeed(throttle);
+                throttle_curVal = throttle;
             }
 
             if (aileron != aileron_curVal) {

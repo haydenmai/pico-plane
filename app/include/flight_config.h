@@ -17,10 +17,10 @@ namespace FlightConfig {
     constexpr int ESC_PIN {1};
 
     // Servos
-    constexpr int AILERON_LEFT_PIN {6};
-    constexpr int AILERON_RIGHT_PIN {7};
-    constexpr int RUDDER_PIN {2};
-    constexpr int ELEVATOR_PIN {3};
+    constexpr int AILERON_LEFT_PIN {2};
+    constexpr int AILERON_RIGHT_PIN {3};
+    constexpr int RUDDER_PIN {6};
+    constexpr int ELEVATOR_PIN {7};
 
     // UART
     inline uart_inst_t *UART {uart1};
@@ -29,7 +29,7 @@ namespace FlightConfig {
 
 
     /** @brief Maximum throttle percentage of the motors. */
-    constexpr int THROTTLE_LIMIT {80};
+    constexpr int THROTTLE_LIMIT {100};
 
     /** @brief Aileron servos center and range in degrees*/
     constexpr int AILERON_CTR_DEG {87};
