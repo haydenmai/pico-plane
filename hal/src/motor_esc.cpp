@@ -2,7 +2,7 @@
  * @file motor_esc.cpp
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
- * @date Jul-09-2025
+ * @date Nov-07-2025
  */
 
 #include "hal/motor_esc.h"
@@ -50,10 +50,9 @@ void MotorEsc::setSpeed(int percent) noexcept
     constexpr uint16_t MAX_US {2000};
     constexpr double PERCENT_SCALE {100.0};
 
-    // Testing, remove temp variable later
-    uint16_t temp
-        = (static_cast<double>(percent) * (MAX_US - MIN_US)) / PERCENT_SCALE + MIN_US;
-    printf("\nmotor_esc.cpp: percentToPulse_us(%u) == %d\n\n", percent, temp);
-    return temp;
-    // Testing, remove temp variable later
+    return static_cast<uint16_t>(
+               static_cast<double>(percent)
+               * ((static_cast<double>(MAX_US) - static_cast<double>(MIN_US)))
+               / PERCENT_SCALE)
+         + MIN_US;
 }
