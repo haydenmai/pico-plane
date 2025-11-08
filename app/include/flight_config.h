@@ -29,7 +29,7 @@ namespace FlightConfig {
 
 
     /** @brief Maximum throttle percentage of the motors. */
-    constexpr int THROTTLE_LIMIT {100};
+    constexpr int THROTTLE_LIMIT {5};
 
     /** @brief Aileron servos center and range in degrees*/
     constexpr int AILERON_CTR_DEG {87};
