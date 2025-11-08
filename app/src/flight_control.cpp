@@ -16,32 +16,20 @@ namespace FlightController {
     bool isInitialized_ = false;
 
 
-    // Local functions headers
-    /**
-     * @brief Changes the speed of the plane.
-     * @param percent Throttle percentage of the the plane's motors.
-     */
-    static void changeSpeed(int percent) noexcept;
-
-    /**
-     * @brief Turns one of the plane's control surfaces.
-     * @param controlType Ailerons, rudder, or elevator.
-     * @param angle Angle in degrees to turn to. Resting position is 90 degrees.
-     */
-    static void changeAngle(AngleController::ControlType controlType, int angle) noexcept;
-
     void init()
     {
         assert(!isInitialized_);
 
         // Configure speed & angle control limits
         SpeedController::setThrottleLim(FlightConfig::THROTTLE_LIMIT);
-        changeSpeed(0);
+        SpeedController::setSpeed(0);
 
         // Set default position of flaps to be flat with the plane
-        changeAngle(AngleController::AILERON, FlightConfig::AILERON_CTR_DEG);
-        changeAngle(AngleController::RUDDER, FlightConfig::RUDDER_CTR_DEG);
-        changeAngle(AngleController::ELEVATOR, FlightConfig::ELEVATOR_CTR_DEG);
+        AngleController::setAngle(AngleController::AILERON,
+                                  FlightConfig::AILERON_CTR_DEG);
+        AngleController::setAngle(AngleController::RUDDER, FlightConfig::RUDDER_CTR_DEG);
+        AngleController::setAngle(AngleController::ELEVATOR,
+                                  FlightConfig::ELEVATOR_CTR_DEG);
 
         isInitialized_ = true;
     }
@@ -78,38 +66,31 @@ namespace FlightController {
 
             // Set new value only if needed
             if (throttle != throttle_curVal) {
-                changeSpeed(throttle);
+                SpeedController::setSpeed(throttle);
                 throttle_curVal = throttle;
             }
 
             if (aileron != aileron_curVal) {
-                changeAngle(AngleController::AILERON, aileron);
+                AngleController::setAngle(AngleController::AILERON, aileron);
                 aileron_curVal = aileron;
             }
 
             if (rudder != rudder_curVal) {
-                changeAngle(AngleController::RUDDER, rudder);
+                AngleController::setAngle(AngleController::RUDDER, rudder);
                 rudder_curVal = rudder;
             }
 
             if (elevator != elevator_curVal) {
-                changeAngle(AngleController::ELEVATOR, elevator);
+                AngleController::setAngle(AngleController::ELEVATOR, elevator);
                 elevator_curVal = elevator;
             }
 
             // If controller disconnects, turn off engine
             if (failsafeMode == true) {
-                changeSpeed(0);
+                SpeedController::setSpeed(0);
             }
         }
     }
 
-
-    static void changeSpeed(int percent) noexcept { SpeedController::setSpeed(percent); }
-
-    static void changeAngle(AngleController::ControlType controlType, int angle) noexcept
-    {
-        AngleController::setAngle(controlType, angle);
-    }
 
 } // namespace FlightController

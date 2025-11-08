@@ -2,7 +2,7 @@
  * @file speed_control.cpp
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Oct-19-2025
+ * @date Nov-07-2025
  */
 
 #include "speed_control.h"
@@ -13,7 +13,7 @@
 
 namespace SpeedController {
     bool isInitialized_ {false};
-    bool throttleLim_ {};
+    int throttleLim_ {};
     MotorEsc esc_ {FlightConfig::ESC_PIN};
 
     void init()

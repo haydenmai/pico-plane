@@ -8,7 +8,7 @@
  * @author
  *  - Benley Hsiang,
  *  - Hayden Mai
- * @date Oct-30-2025
+ * @date Nov-07-2025
  */
 
 #include "flight_config.h"
@@ -26,7 +26,7 @@ namespace FlightData {
     int aileron_val_ {};
     int elevator_val_ {};
     int rudder_val_ {};
-    bool failsafeMode_ {};
+    bool failsafeMode_ {false};
 
     // Spinlock, index, and interrupt state
     spin_lock_t *dataLock_ {nullptr};
