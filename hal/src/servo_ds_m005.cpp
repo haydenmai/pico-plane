@@ -2,7 +2,7 @@
  * @file servo_ds_m005.cpp
  * @brief Controls a DS-M005 servo via PWM on a Raspberry Pi Pico W.
  * @author Hayden Mai, Benley Hsiang
- * @date Jul-09-2025
+ * @date Nov-07-2025
  */
 
 #include "hal/servo_ds_m005.h"
@@ -31,7 +31,7 @@ void ServoDSM005::setAngle(int degrees) noexcept
 {
     // If degrees are out of bounds, do nothing
     if (degrees >= MIN_DEG && degrees <= MAX_DEG) {
-        int pulse_us {angleToPulse_us(degrees)};
+        uint16_t pulse_us {angleToPulse_us(degrees)};
         pwm_set_chan_level(sliceNum_, channelNum_, pulse_us);
         curAngle_ = degrees;
     }

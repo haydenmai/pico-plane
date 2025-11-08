@@ -184,8 +184,9 @@ namespace FlightData {
     static int map_to_range2(int range1_val, int range1_min, int range1_max,
                              int range2_min, int range2_max)
     {
-        return (range2_max - range2_min) * static_cast<double>(range1_val - range1_min)
-                 / static_cast<double>(range1_max - range1_min)
+        return (static_cast<double>(range2_max - range2_min)
+                * static_cast<double>(range1_val - range1_min)
+                / static_cast<double>(range1_max - range1_min))
              + range2_min;
     }
 

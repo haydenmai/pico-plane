@@ -31,7 +31,7 @@ void MotorEsc::setSpeed(int percent) noexcept
 {
     // If percent is out of bounds, do nothing
     if (percent >= MIN_THROT && percent <= MAX_THROT) {
-        int pulse_us {percentToPulse_us(percent)};
+        uint16_t pulse_us {percentToPulse_us(percent)};
         pwm_set_chan_level(sliceNum_, channelNum_, pulse_us);
         curSpeed_ = percent;
     }
@@ -50,9 +50,7 @@ void MotorEsc::setSpeed(int percent) noexcept
     constexpr uint16_t MAX_US {2000};
     constexpr double PERCENT_SCALE {100.0};
 
-    return static_cast<uint16_t>(
-               static_cast<double>(percent)
-               * ((static_cast<double>(MAX_US) - static_cast<double>(MIN_US)))
-               / PERCENT_SCALE)
-         + MIN_US;
+    return MIN_US
+         + (static_cast<double>(percent) / PERCENT_SCALE
+            * static_cast<double>(MAX_US - MIN_US));
 }
