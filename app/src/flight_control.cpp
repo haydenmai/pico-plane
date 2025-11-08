@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Oct-30-2025
+ * @date Nov-07-2025
  */
 
 #include "flight_config.h"
@@ -36,6 +36,7 @@ namespace FlightController {
 
         // Configure speed & angle control limits
         SpeedController::setThrottleLim(FlightConfig::THROTTLE_LIMIT);
+        changeSpeed(0);
 
         // Set default position of flaps to be flat with the plane
         changeAngle(AngleController::AILERON, FlightConfig::AILERON_CTR_DEG);
@@ -60,6 +61,7 @@ namespace FlightController {
         int aileron_curVal {};
         int rudder_curVal {};
         int elevator_curVal {};
+
 
         // Process data
         while (1) {
