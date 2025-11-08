@@ -36,7 +36,7 @@ namespace FlightController {
 
         // Configure speed & angle control limits
         SpeedController::setThrottleLim(FlightConfig::THROTTLE_LIMIT);
-        changeSpeed(0);
+        changeSpeed(100);
 
         // Set default position of flaps to be flat with the plane
         changeAngle(AngleController::AILERON, FlightConfig::AILERON_CTR_DEG);
