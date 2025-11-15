@@ -49,7 +49,7 @@ namespace FlightController {
         while (1) {
             FlightData::acquire_spinLock();
 
-            int throttle {FlightData::get_throttle()};
+            double throttle {FlightData::get_throttle()};
             int aileron {FlightData::get_aileron()};
             int rudder {FlightData::get_rudder()};
             int elevator {FlightData::get_elevator()};

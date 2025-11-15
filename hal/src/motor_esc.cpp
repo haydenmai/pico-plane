@@ -27,7 +27,7 @@ MotorEsc::MotorEsc(int pinNum) : pinNum_(pinNum)
 
 MotorEsc::~MotorEsc() { pwm_set_enabled(sliceNum_, false); }
 
-void MotorEsc::setSpeed(int percent) noexcept
+void MotorEsc::setSpeed(double percent) noexcept
 {
     // If percent is out of bounds, do nothing
     if (percent >= MIN_THROT && percent <= MAX_THROT) {
@@ -40,7 +40,7 @@ void MotorEsc::setSpeed(int percent) noexcept
 
 [[nodiscard]] int MotorEsc::getSpeed(void) const noexcept { return curSpeed_; }
 
-[[nodiscard]] uint16_t MotorEsc::percentToPulse_us(int percent) const noexcept
+[[nodiscard]] uint16_t MotorEsc::percentToPulse_us(double percent) const noexcept
 {
     /**
      *   0% speed   -> 1000 us == 1.0 ms pulse
@@ -51,7 +51,5 @@ void MotorEsc::setSpeed(int percent) noexcept
     constexpr uint16_t MAX_US {2000};
     constexpr double PERCENT_SCALE {100.0f};
 
-    return MIN_US
-         + static_cast<double>(percent) * static_cast<double>(MAX_US - MIN_US)
-               / PERCENT_SCALE;
+    return MIN_US + percent * static_cast<double>(MAX_US - MIN_US) / PERCENT_SCALE;
 }

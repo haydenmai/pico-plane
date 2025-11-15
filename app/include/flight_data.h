@@ -2,7 +2,7 @@
  * @file flight_data.h
  * @brief Handles the data coming from the IMU (Inertial Measurement Unit).
  * @author Benley Hsiang, Hayden Mai
- * @date Sep-29-2025
+ * @date Nov-14-2025
  */
 
 #ifndef FLIGHT_DATA_H_
@@ -58,7 +58,7 @@ namespace FlightData {
      * @brief Returns the latest throttle channel value.
      * @return Current throttle value (range: 1000–2000).
      */
-    [[nodiscard]] int get_throttle();
+    [[nodiscard]] double get_throttle();
 
     /**
      * @brief Returns the latest aileron channel value.

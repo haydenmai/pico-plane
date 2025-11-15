@@ -2,11 +2,11 @@
  * @file speed_control.cpp
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Nov-07-2025
+ * @date Nov-14-2025
  */
 
-#include "speed_control.h"
 #include "flight_config.h"
+#include "speed_control.h"
 
 #include <cassert>
 #include <stdio.h> // Remove later if not needed
@@ -48,11 +48,12 @@ namespace SpeedController {
         return throttleLim_;
     }
 
-    void setSpeed(int percent) noexcept
+    void setSpeed(double percent) noexcept
     {
         assert(isInitialized_);
         // If percent is out of bounds, do nothing
-        if (percent >= MotorEsc::MIN_THROT && percent <= throttleLim_) {
+        if (percent >= static_cast<double>(MotorEsc::MIN_THROT)
+            && percent <= static_cast<double>(throttleLim_)) {
             esc_.setSpeed(percent);
         }
     }

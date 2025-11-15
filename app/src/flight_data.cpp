@@ -22,7 +22,7 @@ namespace FlightData {
     bool isInitialized_ {false};
 
     // Saved channel values for throttle, aileron, elevator, and rudder
-    int throttle_val_ {};
+    double throttle_val_ {};
     int aileron_val_ {};
     int elevator_val_ {};
     int rudder_val_ {};
@@ -64,6 +64,9 @@ namespace FlightData {
      */
     static int map_to_range2(int range1_val, int range1_min, int range1_max,
                              int range2_min, int range2_max);
+
+    static double map_to_range2f(int range1_val, int range1_min, int range1_max,
+                                 int range2_min, int range2_max);
 
     // static void set_battery();
 
@@ -113,7 +116,7 @@ namespace FlightData {
         spin_unlock(dataLock_, saveState_);
     }
 
-    [[nodiscard]] int get_throttle()
+    [[nodiscard]] double get_throttle()
     {
         assert(isInitialized_);
         return throttle_val_;
@@ -148,9 +151,9 @@ namespace FlightData {
         saveState_ = spin_lock_blocking(dataLock_);
 
         // Critical section
-        throttle_val_ = map_to_range2(TICKS_TO_US(channels[FlightConfig::THROTTLE_IND]),
-                                      FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
-                                      0, FlightConfig::THROTTLE_LIMIT);
+        throttle_val_ = map_to_range2f(TICKS_TO_US(channels[FlightConfig::THROTTLE_IND]),
+                                       FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
+                                       0, FlightConfig::THROTTLE_LIMIT);
 
         aileron_val_
             = map_to_range2(TICKS_TO_US(channels[FlightConfig::AILERON_IND]),
@@ -185,6 +188,15 @@ namespace FlightData {
                              int range2_min, int range2_max)
     {
         return range2_min
+             + (static_cast<double>(range2_max - range2_min)
+                * static_cast<double>(range1_val - range1_min))
+                   / static_cast<double>(range1_max - range1_min);
+    }
+
+    static double map_to_range2f(int range1_val, int range1_min, int range1_max,
+                                 int range2_min, int range2_max)
+    {
+        return static_cast<double>(range2_min)
              + (static_cast<double>(range2_max - range2_min)
                 * static_cast<double>(range1_val - range1_min))
                    / static_cast<double>(range1_max - range1_min);

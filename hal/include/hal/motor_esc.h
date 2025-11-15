@@ -2,7 +2,7 @@
  * @file motor_esc.h
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
- * @date Nov-08-2025
+ * @date Nov-14-2025
  */
 
 #ifndef MOTOR_ESC_H_
@@ -35,7 +35,7 @@ class MotorEsc {
      * @pre Percentage must be within [MIN_THROT, MAX_THROT].
      * @note Values outside of [MIN_THROT, MAX_THROT] are ignored.
      */
-    void setSpeed(int percent) noexcept;
+    void setSpeed(double percent) noexcept;
 
     /**
      * @brief Retrieves the value of the most recent setSpeed() call.
@@ -60,7 +60,7 @@ class MotorEsc {
      * @pre Percentage must be within [MIN_THROT, MAX_THROT].
      * @return Pulse width in microseconds (us) corresponding to the percentage.
      */
-    [[nodiscard]] uint16_t percentToPulse_us(int percent) const noexcept;
+    [[nodiscard]] uint16_t percentToPulse_us(double percent) const noexcept;
 };
 
 #endif
