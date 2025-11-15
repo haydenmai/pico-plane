@@ -2,7 +2,7 @@
  * @file motor_esc.h
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
- * @date Jul-09-2025
+ * @date Nov-08-2025
  */
 
 #ifndef MOTOR_ESC_H_
@@ -16,7 +16,7 @@
  */
 class MotorEsc {
   public:
-    /** @brief Minimum motor throttle as a percentage */
+     /** @brief Minimum motor throttle as a percentage */
     static constexpr int MIN_THROT {0};
 
     /** @brief Maximum motor throttle as a percentage */

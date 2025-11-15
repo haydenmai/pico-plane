@@ -2,7 +2,7 @@
  * @file flight_config.h
  * @brief Configurations for the plane
  * @author Hayden Mai
- * @date Nov-07-2025
+ * @date Nov-08-2025
  */
 
 #ifndef FLIGHT_CONFIG_H_

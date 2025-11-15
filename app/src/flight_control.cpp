@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Nov-07-2025
+ * @date Nov-08-2025
  */
 
 #include "flight_config.h"

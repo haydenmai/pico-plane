@@ -8,7 +8,7 @@
  * @author
  *  - Benley Hsiang,
  *  - Hayden Mai
- * @date Nov-07-2025
+ * @date Nov-08-2025
  */
 
 #include "flight_config.h"
@@ -173,10 +173,10 @@ namespace FlightData {
 
     static void on_link_stats(const link_statistics_t link_stats)
     {
-        printf("RSSI: %d\n", link_stats.rssi);
-        printf("Link Quality: %d\n", link_stats.link_quality);
-        printf("SNR: %d\n", link_stats.snr);
-        printf("TX Power: %d\n", link_stats.tx_power);
+        //printf("RSSI: %d\n", link_stats.rssi);
+        //printf("Link Quality: %d\n", link_stats.link_quality);
+        //printf("SNR: %d\n", link_stats.snr);
+        //printf("TX Power: %d\n", link_stats.tx_power);
     }
 
     static void on_failsafe(const bool failsafe) { failsafeMode_ = failsafe; }

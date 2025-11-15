@@ -2,7 +2,7 @@
  * @file motor_esc.cpp
  * @brief Manages the ESC (Electronic Speed Controller) for an electric motor.
  * @author Benley Hsiang
- * @date Nov-07-2025
+ * @date Nov-14-2025
  */
 
 #include "hal/motor_esc.h"
@@ -32,6 +32,7 @@ void MotorEsc::setSpeed(int percent) noexcept
     // If percent is out of bounds, do nothing
     if (percent >= MIN_THROT && percent <= MAX_THROT) {
         uint16_t pulse_us {percentToPulse_us(percent)};
+        //printf("%u \n", pulse_us);
         pwm_set_chan_level(sliceNum_, channelNum_, pulse_us);
         curSpeed_ = percent;
     }
