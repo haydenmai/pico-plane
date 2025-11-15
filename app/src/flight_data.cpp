@@ -8,7 +8,7 @@
  * @author
  *  - Benley Hsiang,
  *  - Hayden Mai
- * @date Nov-08-2025
+ * @date Nov-14-2025
  */
 
 #include "flight_config.h"
@@ -173,10 +173,10 @@ namespace FlightData {
 
     static void on_link_stats(const link_statistics_t link_stats)
     {
-        //printf("RSSI: %d\n", link_stats.rssi);
-        //printf("Link Quality: %d\n", link_stats.link_quality);
-        //printf("SNR: %d\n", link_stats.snr);
-        //printf("TX Power: %d\n", link_stats.tx_power);
+        // printf("RSSI: %d\n", link_stats.rssi);
+        // printf("Link Quality: %d\n", link_stats.link_quality);
+        // printf("SNR: %d\n", link_stats.snr);
+        // printf("TX Power: %d\n", link_stats.tx_power);
     }
 
     static void on_failsafe(const bool failsafe) { failsafeMode_ = failsafe; }
@@ -184,10 +184,10 @@ namespace FlightData {
     static int map_to_range2(int range1_val, int range1_min, int range1_max,
                              int range2_min, int range2_max)
     {
-        return (static_cast<double>(range2_max - range2_min)
-                * static_cast<double>(range1_val - range1_min)
-                / static_cast<double>(range1_max - range1_min))
-             + range2_min;
+        return range2_min
+             + (static_cast<double>(range2_max - range2_min)
+                * static_cast<double>(range1_val - range1_min))
+                   / static_cast<double>(range1_max - range1_min);
     }
 
     // static void set_battery() { crsf_telem_set_battery_data(0, 0, 0, 0); }

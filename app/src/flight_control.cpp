@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Nov-08-2025
+ * @date Nov-14-2025
  */
 
 #include "flight_config.h"
@@ -11,6 +11,7 @@
 #include "speed_control.h"
 
 #include <cassert>
+#include <stdio.h>
 
 namespace FlightController {
     bool isInitialized_ = false;
@@ -44,13 +45,6 @@ namespace FlightController {
     {
         assert(isInitialized_);
 
-        // Variables to keep track
-        int throttle_curVal {};
-        int aileron_curVal {};
-        int rudder_curVal {};
-        int elevator_curVal {};
-
-
         // Process data
         while (1) {
             FlightData::acquire_spinLock();
@@ -64,29 +58,14 @@ namespace FlightController {
 
             FlightData::release_spinLock();
 
-            // Set new value only if needed
-            if (throttle != throttle_curVal) {
-                SpeedController::setSpeed(throttle);
-                throttle_curVal = throttle;
-            }
-
-            if (aileron != aileron_curVal) {
-                AngleController::setAngle(AngleController::AILERON, aileron);
-                aileron_curVal = aileron;
-            }
-
-            if (rudder != rudder_curVal) {
-                AngleController::setAngle(AngleController::RUDDER, rudder);
-                rudder_curVal = rudder;
-            }
-
-            if (elevator != elevator_curVal) {
-                AngleController::setAngle(AngleController::ELEVATOR, elevator);
-                elevator_curVal = elevator;
-            }
+            SpeedController::setSpeed(throttle);
+            AngleController::setAngle(AngleController::AILERON, aileron);
+            AngleController::setAngle(AngleController::RUDDER, rudder);
+            AngleController::setAngle(AngleController::ELEVATOR, elevator);
 
             // If controller disconnects, turn off engine
             if (failsafeMode == true) {
+                printf("FAILSAFE = TRUE\n");
                 SpeedController::setSpeed(0);
             }
         }
