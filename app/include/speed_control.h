@@ -2,7 +2,7 @@
  * @file speed_control.h
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Jul-16-2025
+ * @date Nov-14-2025
  */
 
 #ifndef SPEED_CONTROL_H_
@@ -41,7 +41,7 @@ namespace SpeedController {
      * @pre Percentage must be within [MIN_THROT, throttleLim_].
      * @note Values outside of [MIN_THROT, throttleLim_] are ignored.
      */
-    void setSpeed(int percent) noexcept;
+    void setSpeed(double percent) noexcept;
 
     /**
      * @brief Retrieves the value of the most recent setSpeed() call.
