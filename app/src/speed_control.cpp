@@ -2,11 +2,13 @@
  * @file speed_control.cpp
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Nov-14-2025
+ * @date Apr-30-2026
  */
 
-#include "flight_config.h"
 #include "speed_control.h"
+#include "flight_config.h"
+
+#include "pico/stdlib.h"
 
 #include <cassert>
 #include <stdio.h> // Remove later if not needed
@@ -22,13 +24,11 @@ namespace SpeedController {
         isInitialized_ = true;
     }
 
-
     void cleanup()
     {
         assert(isInitialized_);
         isInitialized_ = false;
     }
-
 
     void setThrottleLim(int percent) noexcept
     {
@@ -62,5 +62,27 @@ namespace SpeedController {
     {
         assert(isInitialized_);
         return esc_.getSpeed();
+    }
+
+    void calibrate()
+    {
+        assert(isInitialized_);
+
+        // Save current throttle limit and temporarily raise to full for calibration
+        int prevLimit {throttleLim_};
+        throttleLim_ = MotorEsc::MAX_THROT;
+
+        // Typical ESC calibration: max throttle on power-up, then min throttle
+        printf("ESC calibration: setting MAX throttle\n");
+        esc_.setSpeed(static_cast<double>(MotorEsc::MAX_THROT));
+        sleep_ms(2000);
+
+        printf("ESC calibration: setting MIN throttle\n");
+        esc_.setSpeed(static_cast<double>(MotorEsc::MIN_THROT));
+        sleep_ms(1500);
+
+        // Restore previous throttle limit and stop motor
+        throttleLim_ = prevLimit;
+        esc_.setSpeed(static_cast<double>(MotorEsc::MIN_THROT));
     }
 } // namespace SpeedController

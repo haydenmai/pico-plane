@@ -2,11 +2,11 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Nov-14-2025
+ * @date Apr-30-2026
  */
 
-#include "flight_config.h"
 #include "flight_control.h"
+#include "flight_config.h"
 #include "flight_data.h"
 #include "speed_control.h"
 
@@ -15,7 +15,6 @@
 
 namespace FlightController {
     bool isInitialized_ = false;
-
 
     void init()
     {
@@ -70,6 +69,5 @@ namespace FlightController {
             }
         }
     }
-
 
 } // namespace FlightController

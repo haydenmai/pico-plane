@@ -2,7 +2,7 @@
  * @file speed_control.h
  * @brief Controls the speed of the plane.
  * @author Benley Hsiang
- * @date Nov-14-2025
+ * @date Apr-30-2026
  */
 
 #ifndef SPEED_CONTROL_H_
@@ -48,6 +48,12 @@ namespace SpeedController {
      * @return Integer representing the throttle percentage.
      */
     [[nodiscard]] int getSpeed(void) noexcept;
+
+    /**
+     * @brief Run ESC calibration sequence (max -> min throttle).
+     * @note This will command the ESC directly; call only when safe.
+     */
+    void calibrate();
 
 } // namespace SpeedController
 

@@ -3,13 +3,18 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Nov-14-2025
+ * @date Apr-30-2026
  */
 
 // SDK
 #include "hardware/pwm.h"
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
+
+// Set to 1 to run ESC calibration sequence at startup (max->min throttle).
+#ifndef ESC_CALIBRATE_ON_START
+#define ESC_CALIBRATE_ON_START 1
+#endif
 
 // app layer
 #include "angle_control.h"
@@ -29,6 +34,13 @@ int main()
 {
     stdio_init_all();
     SpeedController::init();
+#if ESC_CALIBRATE_ON_START
+    // Calibration mode is standalone: do not start normal flight control.
+    SpeedController::calibrate();
+    while (1) {
+        tight_loop_contents();
+    }
+#else
     AngleController::init();
     FlightController::init();
     FlightData::init();
@@ -39,6 +51,7 @@ int main()
     while (1) {
         FlightData::process_frames();
     }
+#endif
 
     FlightData::cleanup();
     FlightController::cleanup();
