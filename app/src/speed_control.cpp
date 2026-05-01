@@ -75,7 +75,7 @@ namespace SpeedController {
         // Typical ESC calibration: max throttle on power-up, then min throttle
         printf("ESC calibration: setting MAX throttle\n");
         esc_.setSpeed(static_cast<double>(MotorEsc::MAX_THROT));
-        sleep_ms(2000);
+        sleep_ms(3000);
 
         printf("ESC calibration: setting MIN throttle\n");
         esc_.setSpeed(static_cast<double>(MotorEsc::MIN_THROT));
