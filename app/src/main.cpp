@@ -13,7 +13,7 @@
 
 // Set to 1 to run ESC calibration sequence at startup (max->min throttle).
 #ifndef ESC_CALIBRATE_ON_START
-#define ESC_CALIBRATE_ON_START 1
+#define ESC_CALIBRATE_ON_START 0
 #endif
 
 // app layer
