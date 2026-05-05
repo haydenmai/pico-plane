@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Apr-30-2026
+ * @date May-04-2026
  */
 
 #include "flight_control.h"
@@ -52,15 +52,28 @@ namespace FlightController {
             int aileron {FlightData::get_aileron()};
             int rudder {FlightData::get_rudder()};
             int elevator {FlightData::get_elevator()};
+            int toggle {FlightData::get_toggle()};
 
             bool failsafeMode {FlightData::get_FailsafeMode()};
 
             FlightData::release_spinLock();
 
-            SpeedController::setSpeed(throttle);
-            AngleController::setAngle(AngleController::AILERON, aileron);
-            AngleController::setAngle(AngleController::RUDDER, rudder);
-            AngleController::setAngle(AngleController::ELEVATOR, elevator);
+            bool controlsEnabled {toggle >= FlightConfig::CRSF_UPPER};
+
+            if (controlsEnabled) {
+                SpeedController::setSpeed(throttle);
+                AngleController::setAngle(AngleController::AILERON, aileron);
+                AngleController::setAngle(AngleController::RUDDER, rudder);
+                AngleController::setAngle(AngleController::ELEVATOR, elevator);
+            } else {
+                SpeedController::setSpeed(0);
+                AngleController::setAngle(AngleController::AILERON,
+                                          FlightConfig::AILERON_CTR_DEG);
+                AngleController::setAngle(AngleController::RUDDER,
+                                          FlightConfig::RUDDER_CTR_DEG);
+                AngleController::setAngle(AngleController::ELEVATOR,
+                                          FlightConfig::ELEVATOR_CTR_DEG);
+            }
 
             // If controller disconnects, turn off engine
             if (failsafeMode == true) {

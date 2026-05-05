@@ -2,7 +2,7 @@
  * @file flight_data.h
  * @brief Handles the data coming from the IMU (Inertial Measurement Unit).
  * @author Benley Hsiang, Hayden Mai
- * @date Nov-14-2025
+ * @date May-04-2026
  */
 
 #ifndef FLIGHT_DATA_H_
@@ -83,6 +83,12 @@ namespace FlightData {
      * @return true if failsafe mode is active, false otherwise.
      */
     [[nodiscard]] bool get_FailsafeMode();
+
+    /**
+     * @brief Returns the latest toggle channel value in CRSF microseconds.
+     * @return Current toggle value (range: 1000-2000).
+     */
+    [[nodiscard]] int get_toggle();
 
 }; // namespace FlightData
 

@@ -8,12 +8,12 @@
  * @author
  *  - Benley Hsiang,
  *  - Hayden Mai
- * @date Nov-14-2025
+ * @date May-04-2026
  */
 
+#include "flight_data.h"
 #include "flight_config.h"
 #include "flight_control.h"
-#include "flight_data.h"
 
 #include <cassert>
 #include <stdio.h>
@@ -26,6 +26,7 @@ namespace FlightData {
     int aileron_val_ {};
     int elevator_val_ {};
     int rudder_val_ {};
+    int toggle_val_ {FlightConfig::CRSF_LOWER};
     bool failsafeMode_ {false};
 
     // Spinlock, index, and interrupt state
@@ -146,6 +147,12 @@ namespace FlightData {
         return failsafeMode_;
     }
 
+    [[nodiscard]] int get_toggle()
+    {
+        assert(isInitialized_);
+        return toggle_val_;
+    }
+
     static void on_rc_channels(const uint16_t channels[16])
     {
         saveState_ = spin_lock_blocking(dataLock_);
@@ -171,6 +178,8 @@ namespace FlightData {
                                     FlightConfig::CRSF_LOWER, FlightConfig::CRSF_UPPER,
                                     getTurningLimit(AngleController::RUDDER).lowerLim(),
                                     getTurningLimit(AngleController::RUDDER).upperLim());
+
+        toggle_val_ = TICKS_TO_US(channels[FlightConfig::TOGGLE_IND]);
         spin_unlock(dataLock_, saveState_);
     }
 

@@ -2,7 +2,7 @@
  * @file flight_config.h
  * @brief Configurations for the plane
  * @author Hayden Mai
- * @date Nov-14-2025
+ * @date May-04-2026
  */
 
 #ifndef FLIGHT_CONFIG_H_
@@ -29,7 +29,7 @@ namespace FlightConfig {
 
 
     /** @brief Maximum throttle percentage of the motors. */
-    constexpr int THROTTLE_LIMIT {10};
+    constexpr int THROTTLE_LIMIT {100};
 
     /** @brief Aileron servos center and range in degrees*/
     constexpr int AILERON_CTR_DEG {87};
