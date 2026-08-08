@@ -2,7 +2,7 @@
  * @file mpu6050.h
  * @brief Controls the MPU 6050 accelerometer and gyroscope.
  * @author Benley Hsiang
- * @date Jun-11-2025
+ * @date Aug-08-2026
  */
 
 #ifndef MPU_6050_H_
@@ -23,6 +23,7 @@ class MPU6050 {
     /**
      * @struct AccelVal
      * @brief Holds accelerometer readings for the x, y, and z axes.
+     * Values are expected to be in g's (gravity units).
      */
     typedef struct {
         double x;
@@ -33,6 +34,7 @@ class MPU6050 {
     /**
      * @struct GyroVal
      * @brief Holds gyroscope readings for the x, y, and z axes.
+     * Values are expected to be in degrees per second.
      */
     typedef struct {
         double x;
@@ -43,12 +45,14 @@ class MPU6050 {
     /**
      * @brief Samples the accelerometer values.
      * @return AccelVal struct containing XYZ readings from the accelerometer.
+     * Values are in g's (gravity units).
      */
     [[nodiscard]] AccelVal getAccelValues(void);
 
     /**
      * @brief Samples the gyroscope values.
      * @return GyroVal struct containing XYZ readings from the gyroscope.
+     * Values are in degrees per second.
      */
     [[nodiscard]] GyroVal getGyroValues(void);
 
