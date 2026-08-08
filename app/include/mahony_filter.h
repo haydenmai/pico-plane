@@ -2,7 +2,7 @@
  * @file mahony_filter.h
  * @brief Filters the raw values from the MPU6050 accelerometer and gyroscope.
  * @author Benley Hsiang
- * @date Aug-07-2026
+ * @date Aug-08-2026
  */
 
 #ifndef MAHONY_FILTER_H_
@@ -76,7 +76,10 @@ namespace MahonyFilter {
     [[nodiscard]] float getYaw(void) noexcept;
 
     /**
-     * @brief Resets the filter to its default values. For use in case of emergency.
+     * @brief Resets the filter's internal state to forget any gyroscope bias. Can be used
+     * to set a new starting orientation where the roll, pitch, and yaw are all back at 0.
+     * @note The proportional gain (Kp) and integral gain (Ki) do not get reset.
+     * @warning Not to be used mid-flight unless it's an emergency.
      */
     void reset(void);
 
