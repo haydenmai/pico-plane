@@ -9,17 +9,25 @@
 #define MAHONY_FILTER_H_
 
 /**
- * @namespace MahonyFilter
+ * @class MahonyFilter
  * @brief Filters raw accelerometer and gyroscope values.
  */
-namespace MahonyFilter {
+class MahonyFilter {
+  public:
+    /**
+     * @brief Constructor for the MahonyFilter class.
+     * @param Kp Proportional gain, i.e. how much the filter uses the
+     * accelerometer values to correct for the gyroscope's immediate error.
+     * Typically ranges between 0.5 and 5.0.
+     * @param Ki Integral gain, i.e. how much the filter corrects for the
+     * gyroscope's accumulated error.
+     * Typically ranges between 0.0 and 0.1.
+     */
+    explicit MahonyFilter(float Kp = 1.0f, float Ki = 0.0f) : kp_(Kp), ki_(Ki) {};
 
     /**
-     * @brief Sets the filter's proportional gain, i.e. how much the filter uses the
-     * accelerometer values to correct for the gyroscope's immediate error.
-     * @note Typically ranges between 0.5 and 5.0, the default is currently 1.0.
-     *
-     * Low Kp values can result in slower correction of gyroscope drift.
+     * @brief Sets the filter's proportional gain.
+     * @note Low Kp values can result in slower correction of gyroscope drift.
      *
      * High Kp values can result in overcorrecting the gyroscope values during sharp
      * turns.
@@ -27,12 +35,9 @@ namespace MahonyFilter {
     void setKp(float Kp);
 
     /**
-     * @brief Sets the filter's integral gain, i.e. how much the filter corrects for the
-     * gyroscope's accumulated error.
-     * @note Typically ranges between 0.0 and 0.1, the default is currently 0.0.
-     *
-     * Low Ki values can result in good response to sharp turns, but suffers more from
-     * long-term gyroscope drift.
+     * @brief Sets the filter's integral gain.
+     * @note Low Ki values can result in good response to sharp turns, but suffers more
+     * from long-term gyroscope drift.
      *
      * High Ki values can eliminate gyroscope drift very quickly but can also fight
      * against actual sustained rotation.
@@ -61,19 +66,19 @@ namespace MahonyFilter {
      * @brief Returns the current roll angle, i.e. the rotation around the forward axis.
      * @return Roll angle in degrees.
      */
-    [[nodiscard]] float getRoll(void) noexcept;
+    [[nodiscard]] float getRoll(void) const noexcept;
 
     /**
      * @brief Returns the current pitch angle, i.e. the rotation around the lateral axis.
      * @return Pitch angle in degrees.
      */
-    [[nodiscard]] float getPitch(void) noexcept;
+    [[nodiscard]] float getPitch(void) const noexcept;
 
     /**
      * @brief Returns the current yaw angle, i.e. the rotation around the vertical axis.
      * @return Yaw angle in degrees.
      */
-    [[nodiscard]] float getYaw(void) noexcept;
+    [[nodiscard]] float getYaw(void) const noexcept;
 
     /**
      * @brief Resets the filter's internal state to forget any gyroscope bias. Can be used
@@ -83,6 +88,30 @@ namespace MahonyFilter {
      */
     void reset(void);
 
-} // namespace MahonyFilter
+  private:
+    static constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;
+
+    // Quaternion values
+    float q0_ {1.0f};
+    float q1_ {};
+    float q2_ {};
+    float q3_ {};
+
+    // Integral feedback values (accumulates gyroscope error)
+    float integralFBx_ {};
+    float integralFBy_ {};
+    float integralFBz_ {};
+
+    // Proportional gain and integral gain
+    float kp_ {1.0f};
+    float ki_ {};
+
+    // Euler angles
+    float roll_ {};
+    float pitch_ {};
+    float yaw_ {};
+
+    void computeEulerAngles(void);
+};
 
 #endif
