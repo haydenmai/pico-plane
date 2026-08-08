@@ -2,13 +2,11 @@
  * @file mahony_filter.h
  * @brief Filters the raw values from the MPU6050 accelerometer and gyroscope.
  * @author Benley Hsiang
- * @date Aug-04-2026
+ * @date Aug-07-2026
  */
 
 #ifndef MAHONY_FILTER_H_
 #define MAHONY_FILTER_H_
-
-#include "hal/mpu6050.h"
 
 /**
  * @namespace MahonyFilter
