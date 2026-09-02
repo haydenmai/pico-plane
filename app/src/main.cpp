@@ -7,6 +7,7 @@
  */
 
 // SDK
+#include "hardware/clocks.h"
 #include "hardware/pwm.h"
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
@@ -68,6 +69,17 @@ int main()
     stdio_init_all();
     sleep_ms(10000);
 
+    auto &onboard_led = PicoLED::get();
+    bool configured   = set_sys_clock_khz(200000, true);
+    if (!configured) {
+        while (true) {
+            onboard_led.on();
+            sleep_ms(50);
+            onboard_led.off();
+            sleep_ms(50);
+        }
+    }
+
     MPU6050 sensor      = MPU6050();
     MahonyFilter filter = MahonyFilter();
 
@@ -93,13 +105,13 @@ int main()
 
         filter.update(raw_accel.x, raw_accel.y, raw_accel.z, gx, gy, gz, dt);
 
-        if (counter % 100 == 0) {
-            printf("Roll: %.2f, pitch: %.2f, yaw: %.2f\n", filter.getRoll(),
-                   filter.getPitch(), filter.getYaw());
+        if (counter % 2 == 0) {
+            printf("%.2f, %.2f, %.2f\n", filter.getRoll(), filter.getPitch(),
+                   filter.getYaw());
             counter = 0;
         }
         counter++;
-        sleep_ms(10);
+        sleep_ms(5);
     }
 
     stdio_deinit_all();
