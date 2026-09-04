@@ -1,4 +1,7 @@
 # Pico Plane
+
+![Pico Plane - 3D-printed Micro SportCam with electronics & battery](plane_10-30-2025.jpg)
+
 This mini-project explores programming a microcontroller to fly an FPV (First-Person View) plane using the **RP2040**. The plane uses an **ExpressLRS-based SpeedyBee Nano 2.4 GHz receiver** to receive control signals and is built using the freely available **[Micro SportCam](https://www.3daeroventures.com/microsportcam)** designed by 3DAeroventures.
 
 ### Project Goals
