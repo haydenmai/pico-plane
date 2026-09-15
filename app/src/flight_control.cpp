@@ -2,11 +2,10 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Sep-10-2026
+ * @date Sep-15-2026
  */
 
 // SDK
-#include "hardware/clocks.h"
 #include "pico/stdlib.h"
 #include "pico/time.h"
 
@@ -24,7 +23,7 @@
 #include <cassert>
 #include <cstdio>
 
-// #define DEBUG
+// #define DEBUG // Comment out to disable debug mode
 #ifdef DEBUG
 #define DEBUG_PRINT(roll, pitch, yaw, counter)                                           \
     do {                                                                                 \
@@ -43,10 +42,15 @@
 namespace FlightController {
     bool isInitialized_ {false};
 
-    MPU6050 imu               = MPU6050();
-    MahonyFilter filter       = MahonyFilter();
-    absolute_time_t prev_time = get_absolute_time();
-    const float DEG_TO_RAD    = 3.14159265f / 180.0f;
+    const float DEG_TO_RAD = 3.14159265f / 180.0f;
+    const float US_PER_SEC {1000000.0f};
+
+    absolute_time_t prev_filter_time {};
+    absolute_time_t prev_process_time {};
+
+    // Controls speed of the data processing/filtering function calls, adjust as needed
+    uint32_t FILTER_FREQ_US {5000};
+    uint32_t PROCESS_FREQ_US {10000};
 
 #ifdef DEBUG
     static int counter = 0;
@@ -117,15 +121,15 @@ namespace FlightController {
         }
     }
 
-    void filter_imu_data() noexcept
+    void filter_imu_data(MPU6050 &imu, MahonyFilter &filter, float dt) noexcept
     {
         assert(isInitialized_);
 
-        absolute_time_t now = get_absolute_time();
-        float dt            = (float)absolute_time_diff_us(prev_time, now) / 1000000.0f;
-        prev_time           = now;
         if (dt < 0.0001f) {
             dt = 0.0001f;
+        }
+        if (dt > 0.05f) {
+            dt = 0.05f;
         }
 
         MPU6050::AccelVal raw_accel = imu.getAccelValues();
@@ -144,10 +148,38 @@ namespace FlightController {
     {
         assert(isInitialized_);
 
+        MPU6050 imu         = MPU6050();
+        MahonyFilter filter = MahonyFilter();
+
+        prev_filter_time  = get_absolute_time();
+        prev_process_time = get_absolute_time();
+
         while (1) {
-            filter_imu_data();
-            process_data();
-            sleep_ms(5);
+            absolute_time_t now = get_absolute_time();
+
+            int64_t filter_time_diff = absolute_time_diff_us(prev_filter_time, now);
+            if (filter_time_diff >= (int64_t)FILTER_FREQ_US) {
+                float dt = (float)filter_time_diff / US_PER_SEC;
+                filter_imu_data(imu, filter, dt);
+                prev_filter_time = now;
+            }
+
+            if (absolute_time_diff_us(prev_process_time, now) >= PROCESS_FREQ_US) {
+                process_data();
+                prev_process_time = now;
+            }
+
+            absolute_time_t next_filter_time
+                = delayed_by_us(prev_filter_time, FILTER_FREQ_US);
+            absolute_time_t next_process_time
+                = delayed_by_us(prev_process_time, PROCESS_FREQ_US);
+
+            absolute_time_t next_loop_start = next_filter_time;
+            if (next_process_time < next_filter_time) {
+                next_loop_start = next_process_time;
+            }
+
+            sleep_until(next_loop_start);
         }
     }
 } // namespace FlightController
