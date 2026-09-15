@@ -44,6 +44,8 @@ namespace FlightController {
 
     const float DEG_TO_RAD = 3.14159265f / 180.0f;
     const float US_PER_SEC {1000000.0f};
+    const float DT_LOWER_BOUND {0.0001f};
+    const float DT_UPPER_BOUND {0.05f};
 
     absolute_time_t prev_filter_time {};
     absolute_time_t prev_process_time {};
@@ -84,6 +86,8 @@ namespace FlightController {
     {
         assert(isInitialized_);
 
+        static bool wasFailSafe {false};
+
         // Process data
         FlightData::acquire_spinLock();
 
@@ -115,21 +119,24 @@ namespace FlightController {
         }
 
         // If controller disconnects, turn off engine
-        if (failsafeMode == true) {
-            printf("FAILSAFE = TRUE\n");
+        if (failsafeMode) {
             SpeedController::setSpeed(0);
         }
+        if (failsafeMode && !wasFailSafe) {
+            printf("FAILSAFE = TRUE\n");
+        }
+        wasFailSafe = failsafeMode;
     }
 
     void filter_imu_data(MPU6050 &imu, MahonyFilter &filter, float dt) noexcept
     {
         assert(isInitialized_);
 
-        if (dt < 0.0001f) {
-            dt = 0.0001f;
+        if (dt < DT_LOWER_BOUND) {
+            dt = DT_LOWER_BOUND;
         }
-        if (dt > 0.05f) {
-            dt = 0.05f;
+        if (dt > DT_UPPER_BOUND) {
+            dt = DT_UPPER_BOUND;
         }
 
         MPU6050::AccelVal raw_accel = imu.getAccelValues();
