@@ -10,6 +10,7 @@
 #include "pico/time.h"
 
 // app layer
+#include "autopilot.h"
 #include "flight_config.h"
 #include "flight_control.h"
 #include "flight_data.h"
@@ -54,6 +55,11 @@ namespace FlightController {
     uint32_t FILTER_FREQ_US {5000};
     uint32_t PROCESS_FREQ_US {10000};
 
+    // Angle info for autopilot
+    static float roll {};
+    static float pitch {};
+    static float yaw {};
+
 #ifdef DEBUG
     static int counter = 0;
 #endif
@@ -82,11 +88,13 @@ namespace FlightController {
         isInitialized_ = false;
     }
 
-    void process_data() noexcept
+    void process_data(uint32_t dt_ms) noexcept
     {
         assert(isInitialized_);
 
         static bool wasFailSafe {false};
+        static bool autopilotWasRequested {false};
+        bool autopilotBeingRequested {false}; // TODO
 
         // Process data
         FlightData::acquire_spinLock();
@@ -103,7 +111,28 @@ namespace FlightController {
 
         bool controlsEnabled {toggle >= FlightConfig::CRSF_UPPER};
 
-        if (controlsEnabled) {
+        if (autopilotBeingRequested && !autopilotWasRequested) {
+            Autopilot::engage(roll, pitch, yaw, throttle);
+        } else if (!autopilotBeingRequested && autopilotWasRequested) {
+            Autopilot::disengage();
+        }
+        autopilotWasRequested = autopilotBeingRequested;
+
+        // If controller disconnects, turn off engine
+        // Autopilot will have to be turned off and on to be used again.
+        if (failsafeMode) {
+            Autopilot::disengage();
+            SpeedController::setSpeed(0);
+        } else if (Autopilot::isEngaged()) {
+            Autopilot::update(roll, pitch, yaw, dt_ms);
+            SpeedController::setSpeed(Autopilot::getThrottleCommand());
+            AngleController::setAngle(AngleController::AILERON,
+                                      Autopilot::getAileronCommand());
+            AngleController::setAngle(AngleController::RUDDER,
+                                      Autopilot::getRudderCommand());
+            AngleController::setAngle(AngleController::ELEVATOR,
+                                      Autopilot::getElevatorCommand());
+        } else if (controlsEnabled) {
             SpeedController::setSpeed(throttle);
             AngleController::setAngle(AngleController::AILERON, aileron);
             AngleController::setAngle(AngleController::RUDDER, rudder);
@@ -118,10 +147,6 @@ namespace FlightController {
                                       FlightConfig::ELEVATOR_CTR_DEG);
         }
 
-        // If controller disconnects, turn off engine
-        if (failsafeMode) {
-            SpeedController::setSpeed(0);
-        }
         if (failsafeMode && !wasFailSafe) {
             printf("FAILSAFE = TRUE\n");
         }
@@ -147,6 +172,9 @@ namespace FlightController {
         float gz = raw_gyro.z * DEG_TO_RAD;
 
         filter.update(raw_accel.x, raw_accel.y, raw_accel.z, gx, gy, gz, dt);
+        roll  = filter.getRoll();
+        pitch = filter.getPitch();
+        yaw   = filter.getYaw();
 
         DEBUG_PRINT(filter.getRoll(), filter.getPitch(), filter.getYaw(), counter);
     }
@@ -172,7 +200,9 @@ namespace FlightController {
             }
 
             if (absolute_time_diff_us(prev_process_time, now) >= PROCESS_FREQ_US) {
-                process_data();
+                uint32_t dt_ms
+                    = (uint32_t)(absolute_time_diff_us(prev_process_time, now) / 1000);
+                process_data(dt_ms);
                 prev_process_time = now;
             }
 

@@ -3,7 +3,7 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Sep-10-2026
+ * @date Sep-15-2026
  */
 
 // SDK
@@ -19,6 +19,7 @@
 
 // app layer
 #include "angle_control.h"
+#include "autopilot.h"
 #include "flight_control.h"
 #include "flight_data.h"
 #include "mahony_filter.h"
@@ -57,6 +58,7 @@ int main()
 #else
     AngleController::init();
     FlightController::init();
+    Autopilot::init();
     FlightData::init();
 
     multicore_launch_core1(FlightController::process_and_filter);
@@ -68,6 +70,7 @@ int main()
 #endif
 
     FlightData::cleanup();
+    Autopilot::cleanup();
     FlightController::cleanup();
     SpeedController::cleanup();
     AngleController::cleanup();

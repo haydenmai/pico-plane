@@ -2,11 +2,13 @@
  * @file autopilot.h
  * @brief Automatically maintains the angle and speed of the plane.
  * @author Benley Hsiang
- * @date Sep-02-2026
+ * @date Sep-15-2026
  */
 
 #ifndef AUTOPILOT_H_
 #define AUTOPILOT_H_
+
+#include <cstdint>
 
 namespace Autopilot {
 
@@ -35,8 +37,10 @@ namespace Autopilot {
      * @param roll_current Current roll angle (degrees) from the Mahony filter.
      * @param pitch_current Current pitch angle (degrees) from the Mahony filter.
      * @param yaw_current Current yaw angle (degrees) from the Mahony filter.
+     * @param dt_ms Time since the previous autopilot update.
      */
-    void update(float roll_current, float pitch_current, float yaw_current);
+    void update(float roll_current, float pitch_current, float yaw_current,
+                uint32_t dt_ms);
 
     /**
      * @brief Indicates whether autopilot is on or off.
@@ -68,7 +72,6 @@ namespace Autopilot {
      * @return Throttle value between 1 and 100.
      */
     [[nodiscard]] int getThrottleCommand();
-
 
 } // namespace Autopilot
 
