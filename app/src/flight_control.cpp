@@ -52,8 +52,8 @@ namespace FlightController {
     absolute_time_t prev_process_time {};
 
     // Controls speed of the data processing/filtering function calls, adjust as needed
-    uint32_t FILTER_FREQ_US {5000};
-    uint32_t PROCESS_FREQ_US {10000};
+    const uint32_t FILTER_FREQ_US {5000};
+    const uint32_t PROCESS_FREQ_US {10000};
 
     // Angle info for autopilot
     static float roll {};
