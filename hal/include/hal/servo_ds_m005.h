@@ -31,6 +31,12 @@ class ServoDSM005 {
     ~ServoDSM005();
 
     /**
+     * @brief Configures the PWM slice for a 1 µs tick at the current system clock.
+     * @note Call after any system-clock change. Global constructors run at 125 MHz.
+     */
+    void configure() noexcept;
+
+    /**
      * @brief Commands the servo to move to a specified angle.
      * @param degrees Target angle in degrees (0 to 180).
      * @pre Angle must be within [MIN_DEG, MAX_DEG].
@@ -47,8 +53,6 @@ class ServoDSM005 {
   private:
     /** @brief PWM counter wrap value for a 20ms frame at 1MHz tick. */
     static constexpr int WRAP_COUNT {20000};
-    /** @brief PWM clock divider to derive 1MHz from the 125MHz system clock. */
-    static constexpr float DIVIDER {125.0f};
 
     const int pinNum_; ///< GPIO pin
     int sliceNum_;     ///< PWM slice index

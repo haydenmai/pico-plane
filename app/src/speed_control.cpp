@@ -21,6 +21,7 @@ namespace SpeedController {
     void init()
     {
         assert(!isInitialized_);
+        esc_.configure();
         isInitialized_ = true;
     }
 

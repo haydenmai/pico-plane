@@ -18,6 +18,9 @@ namespace {
     constexpr uint I2C_SDA_PIN {8};
     constexpr uint I2C_SCL_PIN {9};
     i2c_inst_t *const I2C_PORT {i2c0};
+    // Keep shorter than the 5 ms filter period so a missing IMU cannot stall
+    // the core that writes motor/servo commands.
+    constexpr uint I2C_TIMEOUT_US {2000};
 } // namespace
 
 /**
@@ -36,6 +39,11 @@ MPU6050::MPU6050()
     gpio_pull_up(I2C_SCL_PIN);
     // Make the I2C pins available to picotool
     bi_decl(bi_2pins_with_func(I2C_SDA_PIN, I2C_SCL_PIN, GPIO_FUNC_I2C));
+
+    // MPU6050 powers up in sleep. A timed write avoids hanging if the chip
+    // is missing or the bus is stuck.
+    uint8_t wake_cmd[] {PWR_MANAGE_1, 0x00};
+    i2c_write_timeout_us(I2C_PORT, MPU6050_ADDR, wake_cmd, 2, false, I2C_TIMEOUT_US);
 }
 
 MPU6050::~MPU6050() { i2c_deinit(I2C_PORT); }
@@ -57,10 +65,17 @@ MPU6050::~MPU6050() { i2c_deinit(I2C_PORT); }
 void MPU6050::readAccelValues(void)
 {
     uint8_t reg = ACCEL_X_HIGH;
-    i2c_write_blocking(I2C_PORT, MPU6050_ADDR, &reg, 1, true);
+    if (i2c_write_timeout_us(I2C_PORT, MPU6050_ADDR, &reg, 1, true, I2C_TIMEOUT_US)
+        != 1) {
+        return;
+    }
 
     uint8_t readings[NUM_REGISTERS];
-    i2c_read_blocking(I2C_PORT, MPU6050_ADDR, readings, NUM_REGISTERS, false);
+    if (i2c_read_timeout_us(I2C_PORT, MPU6050_ADDR, readings, NUM_REGISTERS, false,
+                            I2C_TIMEOUT_US)
+        != NUM_REGISTERS) {
+        return;
+    }
 
     const int BIT_OFFSET = 8;
     int16_t accel_raw_x  = combineBits(readings, 0, 1, BIT_OFFSET);
@@ -75,10 +90,17 @@ void MPU6050::readAccelValues(void)
 void MPU6050::readGyroValues(void)
 {
     uint8_t reg = GYRO_X_HIGH;
-    i2c_write_blocking(I2C_PORT, MPU6050_ADDR, &reg, 1, true);
+    if (i2c_write_timeout_us(I2C_PORT, MPU6050_ADDR, &reg, 1, true, I2C_TIMEOUT_US)
+        != 1) {
+        return;
+    }
 
     uint8_t readings[NUM_REGISTERS];
-    i2c_read_blocking(I2C_PORT, MPU6050_ADDR, readings, NUM_REGISTERS, false);
+    if (i2c_read_timeout_us(I2C_PORT, MPU6050_ADDR, readings, NUM_REGISTERS, false,
+                            I2C_TIMEOUT_US)
+        != NUM_REGISTERS) {
+        return;
+    }
 
     const int BIT_OFFSET = 8;
     int16_t gyro_raw_x   = combineBits(readings, 0, 1, BIT_OFFSET);

@@ -118,12 +118,13 @@ namespace FlightController {
         }
         apWasRequested = apBeingRequested;
 
-        // If controller disconnects, turn off engine
-        // Autopilot will have to be turned off and on to be used again.
+        // Failsafe disengages autopilot; motor is cut after surface commands so
+        // servos still track the receiver like they do on main.
         if (failsafeMode) {
             Autopilot::disengage();
-            SpeedController::setSpeed(0);
-        } else if (Autopilot::isEngaged()) {
+        }
+
+        if (Autopilot::isEngaged()) {
             Autopilot::update(roll, pitch, yaw, dt_ms);
             SpeedController::setSpeed(Autopilot::getThrottleCommand());
             AngleController::setAngle(AngleController::AILERON,
@@ -145,6 +146,10 @@ namespace FlightController {
                                       FlightConfig::RUDDER_CTR_DEG);
             AngleController::setAngle(AngleController::ELEVATOR,
                                       FlightConfig::ELEVATOR_CTR_DEG);
+        }
+
+        if (failsafeMode) {
+            SpeedController::setSpeed(0);
         }
 
         if (failsafeMode && !wasFailSafe) {

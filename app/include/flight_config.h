@@ -37,11 +37,11 @@ namespace FlightConfig {
     constexpr int AILERON_RIGHT_DEG_OFFSET {13};
 
     /** @brief Rudder servos centre and range in degrees*/
-    constexpr int RUDDER_CTR_DEG {82};
+    constexpr int RUDDER_CTR_DEG {100};
     constexpr int RUDDER_RNG_DEG {35};
 
     /** @brief Elevator servos centre and range in degrees*/
-    constexpr int ELEVATOR_CTR_DEG {95};
+    constexpr int ELEVATOR_CTR_DEG {90};
     constexpr int ELEVATOR_RNG_DEG {25};
 
 
