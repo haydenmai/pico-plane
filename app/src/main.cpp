@@ -3,7 +3,7 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Sep-15-2026
+ * @date Sep-23-2026
  */
 
 // SDK
@@ -51,6 +51,7 @@ int main()
     SpeedController::init();
 #if ESC_CALIBRATE_ON_START
     // Calibration mode is standalone: do not start normal flight control.
+    sleep_ms(1000);
     SpeedController::calibrate();
     while (1) {
         tight_loop_contents();
