@@ -29,7 +29,7 @@ namespace FlightData {
     int toggle_val_ {FlightConfig::CRSF_LOWER};
     int autopilot_val_ {FlightConfig::CRSF_LOWER};
     bool failsafeMode_ {false};
-    static constexpr int64_t FAILSAFE_HOLD_US {5 * 1000 * 1000};
+    static constexpr int64_t FAILSAFE_HOLD_US {1 * 1000 * 1000};
 
     bool badLinkTiming_ {false};
     absolute_time_t badLinkSince_ {};
