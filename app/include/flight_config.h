@@ -1,8 +1,8 @@
 /**
  * @file flight_config.h
  * @brief Configurations for the plane
- * @author Hayden Mai
- * @date May-04-2026
+ * @author Hayden Mai, Benley Hsiang
+ * @date Sep-23-2026
  */
 
 #ifndef FLIGHT_CONFIG_H_
@@ -52,6 +52,7 @@ namespace FlightConfig {
     constexpr int THROTTLE_IND {2};
     constexpr int RUDDER_IND {3};
     constexpr int TOGGLE_IND {4};
+    constexpr int AUTOPILOT_IND {9};
 
     // CRSF Limits set by controller
     constexpr int CRSF_LOWER {1000};

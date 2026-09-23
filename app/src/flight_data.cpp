@@ -2,13 +2,13 @@
  * @file flight_data.cpp
  * @brief Handles the data coming from the receiver and manages
  *        channel access via spinlocks.
-  @details Implements CRSF frame handling, synchronization using
+ * @details Implements CRSF frame handling, synchronization using
  *          hardware spinlocks, and channel value scaling for use
  *          by other modules.
  * @author
- *  - Benley Hsiang,
+ *  - Benley Hsiang
  *  - Hayden Mai
- * @date May-04-2026
+ * @date Sep-23-2026
  */
 
 #include "flight_data.h"
@@ -27,13 +27,13 @@ namespace FlightData {
     int elevator_val_ {};
     int rudder_val_ {};
     int toggle_val_ {FlightConfig::CRSF_LOWER};
+    int autopilot_val_ {FlightConfig::CRSF_LOWER};
     bool failsafeMode_ {false};
 
     // Spinlock, index, and interrupt state
     spin_lock_t *dataLock_ {nullptr};
     uint dataLock_num_ {};
     uint32_t saveState_ {};
-
 
     // Local functions headers
     /**
@@ -153,6 +153,12 @@ namespace FlightData {
         return toggle_val_;
     }
 
+    [[nodiscard]] int get_autopilot()
+    {
+        assert(isInitialized_);
+        return autopilot_val_;
+    }
+
     static void on_rc_channels(const uint16_t channels[16])
     {
         saveState_ = spin_lock_blocking(dataLock_);
@@ -179,7 +185,9 @@ namespace FlightData {
                                     getTurningLimit(AngleController::RUDDER).lowerLim(),
                                     getTurningLimit(AngleController::RUDDER).upperLim());
 
-        toggle_val_ = TICKS_TO_US(channels[FlightConfig::TOGGLE_IND]);
+        toggle_val_    = TICKS_TO_US(channels[FlightConfig::TOGGLE_IND]);
+        autopilot_val_ = TICKS_TO_US(channels[FlightConfig::AUTOPILOT_IND]);
+
         spin_unlock(dataLock_, saveState_);
     }
 

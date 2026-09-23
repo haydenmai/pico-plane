@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Sep-15-2026
+ * @date Sep-23-2026
  */
 
 // SDK
@@ -93,8 +93,7 @@ namespace FlightController {
         assert(isInitialized_);
 
         static bool wasFailSafe {false};
-        static bool autopilotWasRequested {false};
-        bool autopilotBeingRequested {false}; // TODO
+        static bool apWasRequested {false};
 
         // Process data
         FlightData::acquire_spinLock();
@@ -104,19 +103,20 @@ namespace FlightController {
         int rudder {FlightData::get_rudder()};
         int elevator {FlightData::get_elevator()};
         int toggle {FlightData::get_toggle()};
-
+        int autopilot {FlightData::get_autopilot()};
         bool failsafeMode {FlightData::get_FailsafeMode()};
 
         FlightData::release_spinLock();
 
         bool controlsEnabled {toggle >= FlightConfig::CRSF_UPPER};
+        bool apBeingRequested {autopilot >= FlightConfig::CRSF_UPPER};
 
-        if (autopilotBeingRequested && !autopilotWasRequested) {
+        if (apBeingRequested && !apWasRequested) {
             Autopilot::engage(roll, pitch, yaw, throttle);
-        } else if (!autopilotBeingRequested && autopilotWasRequested) {
+        } else if (!apBeingRequested && apWasRequested) {
             Autopilot::disengage();
         }
-        autopilotWasRequested = autopilotBeingRequested;
+        apWasRequested = apBeingRequested;
 
         // If controller disconnects, turn off engine
         // Autopilot will have to be turned off and on to be used again.
