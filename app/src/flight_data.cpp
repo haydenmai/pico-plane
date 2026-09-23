@@ -5,15 +5,15 @@
  * @details Implements CRSF frame handling, synchronization using
  *          hardware spinlocks, and channel value scaling for use
  *          by other modules.
- * @author
- *  - Benley Hsiang
- *  - Hayden Mai
+ * @author Benley Hsiang, Hayden Mai
  * @date Sep-23-2026
  */
 
 #include "flight_data.h"
 #include "flight_config.h"
 #include "flight_control.h"
+
+#include "pico/time.h"
 
 #include <cassert>
 #include <stdio.h>
@@ -29,6 +29,10 @@ namespace FlightData {
     int toggle_val_ {FlightConfig::CRSF_LOWER};
     int autopilot_val_ {FlightConfig::CRSF_LOWER};
     bool failsafeMode_ {false};
+    static constexpr int64_t FAILSAFE_HOLD_US {5 * 1000 * 1000};
+
+    bool badLinkTiming_ {false};
+    absolute_time_t badLinkSince_ {};
 
     // Spinlock, index, and interrupt state
     spin_lock_t *dataLock_ {nullptr};
@@ -49,8 +53,8 @@ namespace FlightData {
     static void on_link_stats(const link_statistics_t link_stats);
 
     /**
-     * @brief Callback triggered when failsafe mode is entered or exited.
-     * @param failsafe True if failsafe is active.
+     * @brief Callback triggered when CRSF enters or exits failsafe.
+     * @param failsafe True if CRSF currently reports a failsafe condition.
      */
     static void on_failsafe(const bool failsafe);
 
@@ -79,13 +83,13 @@ namespace FlightData {
         dataLock_num_ = spin_lock_claim_unused(true);
         dataLock_     = spin_lock_instance(dataLock_num_);
 
-        // CRSF setup
-        crsf_set_link_quality_threshold(70);
-        crsf_set_rssi_threshold(105);
-
         crsf_set_on_rc_channels(on_rc_channels);
         crsf_set_on_link_statistics(on_link_stats);
         crsf_set_on_failsafe(on_failsafe);
+
+        // CRSF starts in failsafe; the callback only fires on change.
+        badLinkSince_  = get_absolute_time();
+        badLinkTiming_ = true;
 
         crsf_begin(FlightConfig::UART, FlightConfig::UART_RX_PIN,
                    FlightConfig::UART_TX_PIN);
@@ -103,6 +107,12 @@ namespace FlightData {
     {
         assert(isInitialized_);
         crsf_process_frames();
+
+        if (badLinkTiming_ && !failsafeMode_
+            && absolute_time_diff_us(badLinkSince_, get_absolute_time())
+                   >= FAILSAFE_HOLD_US) {
+            failsafeMode_ = true;
+        }
     }
 
     void acquire_spinLock()
@@ -199,7 +209,19 @@ namespace FlightData {
         // printf("TX Power: %d\n", link_stats.tx_power);
     }
 
-    static void on_failsafe(const bool failsafe) { failsafeMode_ = failsafe; }
+    static void on_failsafe(const bool failsafe)
+    {
+        if (!failsafe) {
+            badLinkTiming_ = false;
+            failsafeMode_  = false;
+            return;
+        }
+
+        if (!badLinkTiming_) {
+            badLinkSince_  = get_absolute_time();
+            badLinkTiming_ = true;
+        }
+    }
 
     static int map_to_range2(int range1_val, int range1_min, int range1_max,
                              int range2_min, int range2_max)

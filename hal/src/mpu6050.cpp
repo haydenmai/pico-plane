@@ -14,11 +14,11 @@
 #include <cstdint>
 
 namespace {
-// I2C0 on GP8/GP9. Default I2C pins (GP4, GP5) are used by UART1.
-constexpr uint I2C_SDA_PIN {8};
-constexpr uint I2C_SCL_PIN {9};
-i2c_inst_t *const I2C_PORT {i2c0};
-}  // namespace
+    // I2C0 on GP8/GP9. Default I2C pins (GP4, GP5) are used by UART1.
+    constexpr uint I2C_SDA_PIN {8};
+    constexpr uint I2C_SCL_PIN {9};
+    i2c_inst_t *const I2C_PORT {i2c0};
+} // namespace
 
 /**
  * Taken from:
