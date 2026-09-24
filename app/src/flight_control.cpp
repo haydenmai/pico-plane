@@ -2,7 +2,7 @@
  * @file flight_control.cpp
  * @brief Controls the direction and speed of the plane.
  * @author Benley Hsiang
- * @date Sep-23-2026
+ * @date Sep-24-2026
  */
 
 // SDK
@@ -112,7 +112,7 @@ namespace FlightController {
         bool apBeingRequested {autopilot >= FlightConfig::CRSF_UPPER};
 
         if (apBeingRequested && !apWasRequested) {
-            Autopilot::engage(roll, pitch, yaw, throttle);
+            Autopilot::engage();
         } else if (!apBeingRequested && apWasRequested) {
             Autopilot::disengage();
         }

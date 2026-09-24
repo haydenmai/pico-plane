@@ -2,7 +2,7 @@
  * @file autopilot.h
  * @brief Automatically maintains the angle and speed of the plane.
  * @author Benley Hsiang
- * @date Sep-15-2026
+ * @date Sep-24-2026
  */
 
 #ifndef AUTOPILOT_H_
@@ -12,19 +12,25 @@
 
 namespace Autopilot {
 
+    // Preset target angles
+    constexpr float TARGET_ROLL {0.0f};
+    constexpr float TARGET_PITCH {10.0f};
+    constexpr float TARGET_YAW {0.0f}; // Not actually used at the moment
+    constexpr int TARGET_THROTTLE {80};
+
     void init();
     void cleanup();
 
     /**
      * @brief Engages the autopilot.
      *
-     * @param roll_target Target roll angle (degrees) for the autopilot to hold.
-     * @param pitch_target Target pitch angle (degrees) for the autopilot to hold.
-     * @param yaw_target Target yaw angle (degrees) for the autopilot to hold.
-     * @param throttle_target Target throttle value (1-100) for the autopilot to hold.
+     * @param roll_target Target roll angle (degrees) for the autopilot to reach.
+     * @param pitch_target Target pitch angle (degrees) for the autopilot to reach.
+     * @param yaw_target Target yaw angle (degrees) for the autopilot to reach.
+     * @param throttle_target Target throttle value (1-100) for the autopilot to reach.
      */
-    void engage(float roll_target, float pitch_target, float yaw_target,
-                int throttle_target);
+    void engage(float roll_target = TARGET_ROLL, float pitch_target = TARGET_PITCH,
+                float yaw_target = TARGET_YAW, int throttle_target = TARGET_THROTTLE);
 
     /**
      * @brief Disengages the autopilot.
