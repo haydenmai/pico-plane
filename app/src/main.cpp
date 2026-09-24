@@ -3,10 +3,11 @@
  *
  * @author Hayden Mai, Benley Hsiang
  * @brief Controls an airplane and data
- * @date Apr-30-2026
+ * @date Sep-23-2026
  */
 
 // SDK
+#include "hardware/clocks.h"
 #include "hardware/pwm.h"
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
@@ -18,8 +19,10 @@
 
 // app layer
 #include "angle_control.h"
+#include "autopilot.h"
 #include "flight_control.h"
 #include "flight_data.h"
+#include "mahony_filter.h"
 #include "speed_control.h"
 
 // hal layer
@@ -33,9 +36,22 @@
 int main()
 {
     stdio_init_all();
+
+    auto &onboard_led = PicoLED::get();
+    bool configured   = set_sys_clock_khz(200000, true);
+    if (!configured) {
+        while (true) {
+            onboard_led.on();
+            sleep_ms(50);
+            onboard_led.off();
+            sleep_ms(50);
+        }
+    }
+
     SpeedController::init();
 #if ESC_CALIBRATE_ON_START
     // Calibration mode is standalone: do not start normal flight control.
+    sleep_ms(1000);
     SpeedController::calibrate();
     while (1) {
         tight_loop_contents();
@@ -43,9 +59,10 @@ int main()
 #else
     AngleController::init();
     FlightController::init();
+    Autopilot::init();
     FlightData::init();
 
-    multicore_launch_core1(FlightController::process_data);
+    multicore_launch_core1(FlightController::process_and_filter);
 
     // Handle receiving data
     while (1) {
@@ -54,11 +71,11 @@ int main()
 #endif
 
     FlightData::cleanup();
+    Autopilot::cleanup();
     FlightController::cleanup();
     SpeedController::cleanup();
     AngleController::cleanup();
 
     stdio_deinit_all();
-
     return 0;
 }

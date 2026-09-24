@@ -42,6 +42,10 @@ namespace AngleController {
 
         // Check if limit is valid, otherwise don't initialize
         if (AILERON_LIM.isValid() && RUDDER_LIM.isValid() && ELEVATOR_LIM.isValid()) {
+            aileronLeft_.configure();
+            aileronRight_.configure();
+            rudder_.configure();
+            elevator_.configure();
             isInitialized = true;
         }
     }
