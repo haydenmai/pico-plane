@@ -49,9 +49,9 @@ Hardware may vary and other specifications may also work.
 | 2026 | Early May | New ESC installed | --- |
 |  | May 4 | First flight test | Crashed |
 |  | Sep 3 | Glide test | Plane glided, broke apart upon landing |
-|  | 2nd week of Sep | Plane repairs | Expected |
-|  | 2nd week of Sep | Plane ground-speed test | Expected |
-|  | 2nd week of Sep | Second flight | Expected |
+|  | Sep 23 | Plane repaired | Tests start |
+|  | Sep 23 | Code diagnostics & Plane ground-speed test | Completed, one servo broken |
+|  | Oct 07 | Second flight | Expected |
 
 ## Future plans
 Here is our current to-do list:
