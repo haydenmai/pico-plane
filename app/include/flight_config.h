@@ -2,7 +2,7 @@
  * @file flight_config.h
  * @brief Configurations for the plane
  * @author Hayden Mai, Benley Hsiang
- * @date Sep-23-2026
+ * @date Oct-07-2026
  */
 
 #ifndef FLIGHT_CONFIG_H_
@@ -34,7 +34,7 @@ namespace FlightConfig {
     /** @brief Aileron servos center and range in degrees*/
     constexpr int AILERON_CTR_DEG {87};
     constexpr int AILERON_RNG_DEG {20};
-    constexpr int AILERON_RIGHT_DEG_OFFSET {13};
+    constexpr int AILERON_RIGHT_DEG_OFFSET {7};
 
     /** @brief Rudder servos centre and range in degrees*/
     constexpr int RUDDER_CTR_DEG {100};
