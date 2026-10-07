@@ -12,6 +12,7 @@ target_link_libraries(hal
     PRIVATE pico_stdlib
     PRIVATE pico_cyw43_arch_none
 	PRIVATE hardware_adc
+	PRIVATE hardware_clocks
 	PRIVATE hardware_gpio
 	PRIVATE hardware_pwm
 	PRIVATE hardware_i2c

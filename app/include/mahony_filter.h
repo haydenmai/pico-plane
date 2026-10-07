@@ -23,7 +23,7 @@ class MahonyFilter {
      * gyroscope's accumulated error.
      * Typically ranges between 0.0 and 0.1.
      */
-    explicit MahonyFilter(float Kp = 1.0f, float Ki = 0.0f) : kp_(Kp), ki_(Ki) {};
+    explicit MahonyFilter(float Kp = 1.0f, float Ki = 0.001f) : kp_(Kp), ki_(Ki) {};
 
     /**
      * @brief Sets the filter's proportional gain.

@@ -2,7 +2,7 @@
  * @file flight_data.h
  * @brief Handles the data coming from the IMU (Inertial Measurement Unit).
  * @author Benley Hsiang, Hayden Mai
- * @date May-04-2026
+ * @date Sep-23-2026
  */
 
 #ifndef FLIGHT_DATA_H_
@@ -89,6 +89,12 @@ namespace FlightData {
      * @return Current toggle value (range: 1000-2000).
      */
     [[nodiscard]] int get_toggle();
+
+    /**
+     * @brief Returns the latest autopilot channel value in CRSF microseconds.
+     * @return Current autopilot value (range: 1000-2000).
+     */
+    [[nodiscard]] int get_autopilot();
 
 }; // namespace FlightData
 

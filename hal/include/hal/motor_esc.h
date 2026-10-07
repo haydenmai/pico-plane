@@ -30,6 +30,12 @@ class MotorEsc {
     ~MotorEsc();
 
     /**
+     * @brief Configures the PWM slice for a 1 µs tick at the current system clock.
+     * @note Call after any system-clock change. Global constructors run at 125 MHz.
+     */
+    void configure() noexcept;
+
+    /**
      * @brief Sets how fast the the motor spins.
      * @param percent The percentage of the motor's maximum throttle.
      * @pre Percentage must be within [MIN_THROT, MAX_THROT].
@@ -46,8 +52,6 @@ class MotorEsc {
   private:
     /** @brief PWM counter wrap value for a 20ms frame at 1MHz tick. */
     static constexpr int WRAP_COUNT {20000};
-    /** @brief PWM clock divider to derive 1MHz from the 125MHz system clock. */
-    static constexpr float DIVIDER {125.0f};
 
     const int pinNum_; ///< GPIO pin
     int sliceNum_;     ///< PWM slice index

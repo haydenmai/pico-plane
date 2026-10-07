@@ -7,6 +7,7 @@
 
 #include "hal/motor_esc.h"
 
+#include "hardware/clocks.h"
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 
@@ -14,14 +15,18 @@
 
 MotorEsc::MotorEsc(int pinNum) : pinNum_(pinNum)
 {
-    // Route pin to the PWM block
     gpio_set_function(pinNum, GPIO_FUNC_PWM);
     sliceNum_   = pwm_gpio_to_slice_num(pinNum);
     channelNum_ = pwm_gpio_to_channel(pinNum);
+}
 
+void MotorEsc::configure() noexcept
+{
+    // clk_sys / divider = 1 MHz, so WRAP_COUNT ticks = 20 ms (50 Hz).
+    const float divider {static_cast<float>(clock_get_hz(clk_sys)) / 1000000.0f};
     pwm_config cfg = pwm_get_default_config();
-    pwm_config_set_clkdiv(&cfg, DIVIDER);  // 125 MHz / 125 = 1MHz
-    pwm_config_set_wrap(&cfg, WRAP_COUNT); // 20,000 ticks = 20ms (50hz)
+    pwm_config_set_clkdiv(&cfg, divider);
+    pwm_config_set_wrap(&cfg, WRAP_COUNT);
     pwm_init(sliceNum_, &cfg, true);
 }
 

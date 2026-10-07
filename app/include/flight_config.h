@@ -1,8 +1,8 @@
 /**
  * @file flight_config.h
  * @brief Configurations for the plane
- * @author Hayden Mai
- * @date May-04-2026
+ * @author Hayden Mai, Benley Hsiang
+ * @date Oct-07-2026
  */
 
 #ifndef FLIGHT_CONFIG_H_
@@ -34,14 +34,14 @@ namespace FlightConfig {
     /** @brief Aileron servos center and range in degrees*/
     constexpr int AILERON_CTR_DEG {87};
     constexpr int AILERON_RNG_DEG {20};
-    constexpr int AILERON_RIGHT_DEG_OFFSET {13};
+    constexpr int AILERON_RIGHT_DEG_OFFSET {7};
 
     /** @brief Rudder servos centre and range in degrees*/
-    constexpr int RUDDER_CTR_DEG {82};
+    constexpr int RUDDER_CTR_DEG {100};
     constexpr int RUDDER_RNG_DEG {35};
 
     /** @brief Elevator servos centre and range in degrees*/
-    constexpr int ELEVATOR_CTR_DEG {95};
+    constexpr int ELEVATOR_CTR_DEG {90};
     constexpr int ELEVATOR_RNG_DEG {25};
 
 
@@ -52,6 +52,7 @@ namespace FlightConfig {
     constexpr int THROTTLE_IND {2};
     constexpr int RUDDER_IND {3};
     constexpr int TOGGLE_IND {4};
+    constexpr int AUTOPILOT_IND {9};
 
     // CRSF Limits set by controller
     constexpr int CRSF_LOWER {1000};
